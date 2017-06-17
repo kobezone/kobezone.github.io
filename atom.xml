@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>JUN的博客</title>
+  <subtitle>文档整理和学习笔记记录</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="https://kobezone.github.io/"/>
+  <updated>2017-06-17T06:32:26.216Z</updated>
+  <id>https://kobezone.github.io/</id>
+  
+  <author>
+    <name>JUN</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>视频直播流web播放</title>
+    <link href="https://kobezone.github.io/2017/06/17/%E8%A7%86%E9%A2%91%E7%9B%B4%E6%92%AD%E6%B5%81web%E6%92%AD%E6%94%BE/"/>
+    <id>https://kobezone.github.io/2017/06/17/视频直播流web播放/</id>
+    <published>2017-06-17T06:31:27.000Z</published>
+    <updated>2017-06-17T06:32:26.216Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="视频直播放映解决方案"><a href="#视频直播放映解决方案" class="headerlink" title="视频直播放映解决方案"></a>视频直播放映解决方案</h1><h4 id="分为PC-web端和移动web端"><a href="#分为PC-web端和移动web端" class="headerlink" title="分为PC-web端和移动web端"></a>分为PC-web端和移动web端</h4><blockquote>
+<p>pc-web端采用<a href="http://www.ckplayer.com/" target="_blank" rel="external">Ckplay播放器</a> 通过RTMP协议 传输视频流<br>mobile-web端采用h5 <code>video</code>标签 通过HLS 传输视频流</p>
+</blockquote>
+<h4 id="核心代码示例"><a href="#核心代码示例" class="headerlink" title="核心代码示例"></a>核心代码示例</h4><ul>
+<li>pc-web端 ckplayer</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--pc-web端 ckplayer--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"a1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"ckplayer/ckplayer.js"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">	<span class="keyword">var</span> flashvars=&#123;</div><div class="line">    <span class="comment">//配置视频地址</span></div><div class="line">		f:<span class="string">'rtmp://192.168.31.31:1935/live/stream'</span>,</div><div class="line">		<span class="attr">c</span>:<span class="number">0</span>,</div><div class="line">		<span class="attr">b</span>:<span class="number">1</span>,</div><div class="line">    <span class="comment">//配置封面</span></div><div class="line">		i:<span class="string">'http://www.ckplayer.com/static/images/cqdw.jpg'</span></div><div class="line">		&#125;;</div><div class="line">    <span class="comment">// 具体配置 参考和查看 [http://www.ckplayer.com/tool/flashvars.htm](http://www.ckplayer.com/tool/flashvars.htm)</span></div><div class="line">	<span class="keyword">var</span> params=&#123;<span class="attr">bgcolor</span>:<span class="string">'#FFF'</span>,<span class="attr">allowFullScreen</span>:<span class="literal">true</span>,<span class="attr">allowScriptAccess</span>:<span class="string">'always'</span>,<span class="attr">wmode</span>:<span class="string">'transparent'</span>&#125;;</div><div class="line">	CKobject.embedSWF(<span class="string">'ckplayer/ckplayer.swf'</span>,<span class="string">'a1'</span>,<span class="string">'ckplayer_a1'</span>,<span class="string">'600'</span>,<span class="string">'400'</span>,flashvars,params);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<ul>
+<li>mobile-web 端[HTML5 player]<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">video</span> <span class="attr">controls</span> <span class="attr">autoplay</span> <span class="attr">webkit-playsinline</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">source</span> <span class="attr">src</span>=<span class="string">"http://192.168.31.31:9090/live/stream.m3u8"</span> <span class="attr">type</span>=<span class="string">"application/vnd.apple.mpegurl"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"warin"</span>&gt;</span>Your browser does not support HTML5 video<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">video</span>&gt;</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;视频直播放映解决方案&quot;&gt;&lt;a href=&quot;#视频直播放映解决方案&quot; class=&quot;headerlink&quot; title=&quot;视频直播放映解决方案&quot;&gt;&lt;/a&gt;视频直播放映解决方案&lt;/h1&gt;&lt;h4 id=&quot;分为PC-web端和移动web端&quot;&gt;&lt;a href=&quot;#分为PC-
+    
+    </summary>
+    
+    
+      <category term="技术文章" scheme="https://kobezone.github.io/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>github个人博客</title>
+    <link href="https://kobezone.github.io/2017/06/15/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/"/>
+    <id>https://kobezone.github.io/2017/06/15/github个人博客/</id>
+    <published>2017-06-15T02:48:05.000Z</published>
+    <updated>2017-06-15T02:49:42.937Z</updated>
+    
+    <content type="html"><![CDATA[<p>  今天把博客弄到github上,计划以后再github上面写文章 学习笔记 图片等 300M的空间 也应该够了</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;  今天把博客弄到github上,计划以后再github上面写文章 学习笔记 图片等 300M的空间 也应该够了&lt;/p&gt;
+
+    
+    </summary>
+    
+    
+      <category term="我" scheme="https://kobezone.github.io/tags/%E6%88%91/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>小知识</title>
+    <link href="https://kobezone.github.io/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
+    <id>https://kobezone.github.io/2017/06/14/小知识/</id>
+    <published>2017-06-14T09:50:28.000Z</published>
+    <updated>2017-06-14T09:52:05.986Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html"><a href="#vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html" class="headerlink" title="vue spa 滚动行为的保存 需要启用history模式 参看https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html"></a>vue spa 滚动行为的保存 需要启用history模式 参看<a href="https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html" target="_blank" rel="external">https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html</a></h4><h4 id="flex布局-flex布局的兼容性-部分需要添加-webkit前缀"><a href="#flex布局-flex布局的兼容性-部分需要添加-webkit前缀" class="headerlink" title="flex布局 flex布局的兼容性 部分需要添加 -webkit前缀"></a>flex布局 flex布局的兼容性 部分需要添加 <code>-webkit</code>前缀</h4><blockquote>
+<p>理清 主轴 侧轴(和主轴垂直的)  <code>justify-content</code> 设置主轴的分布 <code>align-items</code>设置侧轴的分布</p>
+</blockquote>
+<h4 id="JSON-对象最后一个属性列-结尾-别用"><a href="#JSON-对象最后一个属性列-结尾-别用" class="headerlink" title="JSON 对象最后一个属性列 结尾 别用,"></a>JSON 对象最后一个属性列 结尾 别用<code>,</code></h4><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> json = &#123;</div><div class="line">    <span class="string">"name"</span>:<span class="string">'张三'</span>,</div><div class="line">    <span class="string">"age"</span> : <span class="number">24</span>    <span class="comment">// ', 这里别打逗号或分号 养成好的习惯</span></div><div class="line">    </div><div class="line">&#125;</div><div class="line">最好启用 eslint来规范书写习惯</div></pre></td></tr></table></figure>
+<h4 id="array-splice-slice"><a href="#array-splice-slice" class="headerlink" title="array splice slice"></a>array splice slice</h4><ul>
+<li>slice 浅复制数组 slice(index, end);</li>
+<li>splice 删除和添加数组元素 splice(index, count. [….add-item]);</li>
+</ul>
+<h4 id="国内公开API-可用来写demo-测试数据"><a href="#国内公开API-可用来写demo-测试数据" class="headerlink" title="国内公开API 可用来写demo 测试数据"></a>国内公开API 可用来写demo 测试数据</h4><p><a href="https://github.com/jokermonn/-Api/blob/master/DoubanMovie.md" target="_blank" rel="external">https://github.com/jokermonn/-Api/blob/master/DoubanMovie.md</a> </p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html&quot;&gt;&lt;a href=&quot;#vue-spa-滚动行为的保存-需要启用history模式-
+    
+    </summary>
+    
+    
+      <category term="技术文章" scheme="https://kobezone.github.io/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>美图</title>
+    <link href="https://kobezone.github.io/2017/06/14/%E7%BE%8E%E5%9B%BE/"/>
+    <id>https://kobezone.github.io/2017/06/14/美图/</id>
+    <published>2017-06-14T08:36:54.000Z</published>
+    <updated>2017-06-15T03:00:08.896Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="分享几张手机桌面"><a href="#分享几张手机桌面" class="headerlink" title="分享几张手机桌面"></a>分享几张手机桌面</h4><p><img src="/assets/img/001.jpg" alt="001.jpg"><br><img src="/assets/img/002.jpg" alt="002.jpg"><br><img src="/assets/img/003.jpg" alt="003.jpg"></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;分享几张手机桌面&quot;&gt;&lt;a href=&quot;#分享几张手机桌面&quot; class=&quot;headerlink&quot; title=&quot;分享几张手机桌面&quot;&gt;&lt;/a&gt;分享几张手机桌面&lt;/h4&gt;&lt;p&gt;&lt;img src=&quot;/assets/img/001.jpg&quot; alt=&quot;001.jpg&quot;&gt;&lt;
+    
+    </summary>
+    
+    
+      <category term="美图分享" scheme="https://kobezone.github.io/tags/%E7%BE%8E%E5%9B%BE%E5%88%86%E4%BA%AB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>nginx学习笔记</title>
+    <link href="https://kobezone.github.io/2017/06/14/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>https://kobezone.github.io/2017/06/14/nginx学习笔记/</id>
+    <published>2017-06-14T05:24:15.000Z</published>
+    <updated>2017-06-14T05:25:15.240Z</updated>
+    
+    <content type="html"><![CDATA[<h4 id="nginx能做什么"><a href="#nginx能做什么" class="headerlink" title="nginx能做什么"></a>nginx能做什么</h4><blockquote>
+<p><a href="http://www.raye.wang/2017/02/24/quan-mian-liao-jie-nginxdao-di-neng-zuo-shi-yao/?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="external">全面了解Nginx主要应用场景</a></p>
+<ul>
+<li>反向代理</li>
+<li>负载均衡 RR(默认) 权重 ip_hash  fair url_hash</li>
+<li>http服务器</li>
+<li>正向代理</li>
+</ul>
+</blockquote>
+<h3 id="反向代理（ReverseProxy）就是通过代理服务器来-接受internet的连接请求-然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端"><a href="#反向代理（ReverseProxy）就是通过代理服务器来-接受internet的连接请求-然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端" class="headerlink" title="反向代理（ReverseProxy）就是通过代理服务器来 接受internet的连接请求 然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端"></a>反向代理（ReverseProxy）就是通过代理服务器来 接受internet的连接请求 然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">server&#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 10M;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        proxy_pass http://localhost:8080;</div><div class="line">        proxy_set_header Host $host:$server_port;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">保存配置文件后重启 nginx 这样当我们访问localhost 相当于访问localhost:8080了</div></pre></td></tr></table></figure>
+<p>常用实例 采用nginx反向代理来解决跨域问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">location /api &#123;</div><div class="line">rewrite  ^.+apis/?(.*)$ /$1 break;</div><div class="line">include  uwsgi_params;</div><div class="line">   proxy_pass   http://localhost:1894;</div><div class="line">&#125;&#125;</div></pre></td></tr></table></figure>
+<p>这样 更改请求地址为 <code>/api</code> 虚拟的路径和 访问的静态页面就处于同源了<br>可以使用这样的来处理跨域问题</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>默认按照请求顺序分配到不同的后端服务器 如果后端服务器down掉 能自己剔除<br>简单配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">upstream test&#123;</div><div class="line">  #  server localhost: 8081 weight=3; server localhost: 8081 weight=7; 权重</div><div class="line">  # ip_hast </div><div class="line">  # fair 按照响应时间来分配 分配时间短的优先分配 需要第三方拓展包</div><div class="line">    server localhost:8081;</div><div class="line">    server localhost:8080;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 81;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 1024M;</div><div class="line">    </div><div class="line">    localtion / &#123;</div><div class="line">        proxy_pass http://test;</div><div class="line">        proxy_set_header Host $host:$server_port;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    </div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>HTTP  服务器</p>
+<p>eg1: 静态资源服务器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 1024M;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        root e:\wwwrooot;</div><div class="line">        index index.html;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>动静分离<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">upstream test &#123;</div><div class="line">    server localhost:8080;</div><div class="line">    server localhost:8081;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">        index index.html;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    # 所有静态请求都有nginx处理 存放目录为html</div><div class="line">    location ~ \.(gif|jpg|jpeg|png|bmp|css|js)$ &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    # 动态请求 交由代理服务处理</div><div class="line">    location ~ \.(jsp|do|action)$ &#123;</div><div class="line">        proxy_pass http://test;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    error_page 500 502 503 504 /50x.html</div><div class="line">    location = /50x.html &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这样的话 我们可以把html 等静态资源放在文件目录下  动态的话可以 根据 localtion后面的正则 匹配到代理服务器上</p>
+<h3 id="linux"><a href="#linux" class="headerlink" title="linux"></a>linux</h3><p>nginx -s reload</p>
+<h3 id="window-热重启"><a href="#window-热重启" class="headerlink" title="window  热重启"></a>window  热重启</h3><p>nginx.exe -s reload</p>
+<h3 id="代码示例-12308-测试环境"><a href="#代码示例-12308-测试环境" class="headerlink" title="代码示例 12308 测试环境"></a>代码示例 12308 测试环境</h3><blockquote>
+<p>nginx.conf  base  通过载入  <code>/nginx_vhos/</code> 目录下的所有文件<br> <code>include /usr/local/nginx/conf/nginx_vhost/*.conf</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line">[dubbo@hd-node2 conf]$ vi nginx.conf</div><div class="line"></div><div class="line">    keepalive_timeout   65;</div><div class="line">    server_tokens       off;</div><div class="line">    tcp_nopush          on;</div><div class="line"></div><div class="line">    gzip                on;</div><div class="line">    gzip_comp_level     5;</div><div class="line">    gzip_min_length     1k;</div><div class="line">    gzip_buffers        4 16k;</div><div class="line">    gzip_disable        &quot;MSIE [1-6]\.(?!.*SV1)&quot;;</div><div class="line">    gzip_types          text/plain application/x-javascript text/css application/xml text/javascript application/javascript application/json;</div><div class="line">    gzip_http_version   1.0;</div><div class="line">    gzip_vary           on;</div><div class="line"></div><div class="line">    log_format main &apos;$remote_addr $http_x_forwarded_for [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$request_time&quot; $request_body &quot;$upstream_response_time&quot;&apos;;</div><div class="line">    access_log on;</div><div class="line">    server_names_hash_max_size    4096;</div><div class="line">&#125;</div><div class="line"></div><div class="line">http &#123;</div><div class="line">    include       /usr/local/nginx/conf/mime.types;</div><div class="line">    default_type  application/octet-stream;</div><div class="line"></div><div class="line">    sendfile            on;</div><div class="line">    output_buffers      1 128k;</div><div class="line">    log_not_found       off;</div><div class="line">    keepalive_timeout   65;</div><div class="line">    server_tokens       off;</div><div class="line">    tcp_nopush          on;</div><div class="line"></div><div class="line">    gzip                on;</div><div class="line">    gzip_comp_level     5;</div><div class="line">    gzip_min_length     1k;</div><div class="line">    gzip_buffers        4 16k;</div><div class="line">    gzip_disable        &quot;MSIE [1-6]\.(?!.*SV1)&quot;;</div><div class="line">    gzip_types          text/plain application/x-javascript text/css application/xml text/javascript application/javascript application/json;</div><div class="line">    gzip_http_version   1.0;</div><div class="line">    gzip_vary           on;</div><div class="line"></div><div class="line">    log_format main &apos;$remote_addr $http_x_forwarded_for [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$request_time&quot; $request_body &quot;$upstream_response_time&quot;&apos;;</div><div class="line">    access_log on;</div><div class="line">    server_names_hash_max_size    4096;</div><div class="line">    server_names_hash_bucket_size 128;</div><div class="line"></div><div class="line">    client_header_buffer_size     32k;</div><div class="line">    large_client_header_buffers   4 32k;</div><div class="line">    client_max_body_size          100m;</div><div class="line"></div><div class="line">    proxy_connect_timeout         5;</div><div class="line">    proxy_read_timeout            60;</div><div class="line">    proxy_send_timeout            5;</div><div class="line">    proxy_buffer_size             16k;</div><div class="line">    proxy_buffers                 4 64k;</div><div class="line">    proxy_busy_buffers_size       128k;</div><div class="line">    proxy_temp_file_write_size    128k;</div><div class="line">    proxy_hide_header             Vary;</div><div class="line">    proxy_set_header              Accept-Encoding ”;</div><div class="line">    proxy_set_header              Host    $host;</div><div class="line">    proxy_set_header              Referer $http_referer;</div><div class="line">    proxy_set_header              Cookie  $http_cookie;</div><div class="line">    proxy_set_header              X-Real-IP  $remote_addr;</div><div class="line">    proxy_set_header              X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">    include /usr/local/nginx/conf/nginx_vhost/*.conf;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+</blockquote>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h4 id=&quot;nginx能做什么&quot;&gt;&lt;a href=&quot;#nginx能做什么&quot; class=&quot;headerlink&quot; title=&quot;nginx能做什么&quot;&gt;&lt;/a&gt;nginx能做什么&lt;/h4&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;http://www.raye.wang
+    
+    </summary>
+    
+    
+      <category term="学习笔记" scheme="https://kobezone.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>yarn学习笔记</title>
+    <link href="https://kobezone.github.io/2017/06/14/yarn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>https://kobezone.github.io/2017/06/14/yarn学习笔记/</id>
+    <published>2017-06-14T02:03:38.000Z</published>
+    <updated>2017-06-14T04:10:19.510Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="关于yarn和npm"><a href="#关于yarn和npm" class="headerlink" title="关于yarn和npm "></a><a href="http://web.jobbole.com/88459/" target="_blank" rel="external">关于yarn和npm </a></h3><p>yarn是npm的升级版本 (新工具) yarn.lock</p>
+<ul>
+<li>yarn add (npm install  yarn install)</li>
+<li>yarn global</li>
+<li>yarn why </li>
+</ul>
+<p>yarn 更安全 速度更快 版本锁定 环境更统一</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;关于yarn和npm&quot;&gt;&lt;a href=&quot;#关于yarn和npm&quot; class=&quot;headerlink&quot; title=&quot;关于yarn和npm &quot;&gt;&lt;/a&gt;&lt;a href=&quot;http://web.jobbole.com/88459/&quot; target=&quot;_blank&quot;
+    
+    </summary>
+    
+    
+      <category term="学习笔记" scheme="https://kobezone.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sass学习笔记</title>
+    <link href="https://kobezone.github.io/2017/06/14/sass%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>https://kobezone.github.io/2017/06/14/sass学习笔记/</id>
+    <published>2017-06-14T02:01:23.000Z</published>
+    <updated>2017-06-14T04:17:17.921Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="sass学习笔记-sass官网"><a href="#sass学习笔记-sass官网" class="headerlink" title="sass学习笔记 sass官网"></a>sass学习笔记 <a href="https://www.sass.hk/guide/" target="_blank" rel="external">sass官网</a></h3><ul>
+<li>工具下载<a href="https://www.sass.hk/skill/koala-app.html" target="_blank" rel="external">下载地址</a> 工欲善其事必先利其器</li>
+<li>sass 定义css变量  <code>$t = &quot;100px&quot;</code>;</li>
+<li><p>sass 表示层级关系 <code>div.c1&gt;p&gt;a + h1</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">.c1 &#123;</div><div class="line">    ...</div><div class="line">    p&#123;</div><div class="line">        a&#123;</div><div class="line">           ... </div><div class="line">           &amp;:hover&#123;</div><div class="line">               ....</div><div class="line">           &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    h1&#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p><code>$</code>定义变量 <code>&amp;</code>伪类样式</p>
+</li>
+<li><code>@import(url)</code> 使用@import 直接导入对应文件 和css中@import 有所不同</li>
+<li><strong>混合器</strong> <code>@mixin</code> <code>@include</code> 调用混合器 目的:实现大段样式的重用。<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">// </div><div class="line">@mixin name-a&#123;</div><div class="line">    color:#212;</div><div class="line">    ....</div><div class="line">&#125;</div><div class="line"></div><div class="line">// 别的文件中复用样式</div><div class="line">.t1&#123;</div><div class="line">    ....</div><div class="line">    @include name-a;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p><strong>通过使用参数，你可以使用混合器把你样式中的通用样式抽离出来，然后轻松地在其他地方重用。</strong> 实际上，混合器太好用了，一不小心你可能会过度使用。大量的重用可能会导致生成的样式表过大，导致加载缓慢。所以，首先我们将讨论混合器的使用场景，避免滥用。</p>
+<p>混合器还可以传入参数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">@mixin link-colors($normal, $hover, $visited) &#123;</div><div class="line">  color: $normal;</div><div class="line">  &amp;:hover &#123; color: $hover; &#125;</div><div class="line">  &amp;:visited &#123; color: $visited; &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">a &#123;</div><div class="line">  @include link-colors(blue, red, green);</div><div class="line">&#125;</div><div class="line"></div><div class="line">//Sass最终生成的是：</div><div class="line"></div><div class="line">a &#123; color: blue; &#125;</div><div class="line">a:hover &#123; color: red; &#125;</div><div class="line">a:visited &#123; color: green; &#125;</div></pre></td></tr></table></figure>
+<p>为了在@include混合器时不必传入所有的参数，我们可以给参数指定一个默认值。参数默认值使用$name: default-value的声明形式，默认值可以是任何有效的css属性值，甚至是其他参数的引用，如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">@mixin link-colors(</div><div class="line">    $normal,</div><div class="line">    $hover: $normal, // 默认参数 $hover 没有传递第二个参数 采用第一个参数$normal</div><div class="line">    $visited: $normal</div><div class="line">  )</div><div class="line">&#123;</div><div class="line">  color: $normal;</div><div class="line">  &amp;:hover &#123; color: $hover; &#125;</div><div class="line">  &amp;:visited &#123; color: $visited; &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">//如果像下边这样调用：@include link-colors(red) </div><div class="line">// $hover和$visited也会被自动赋值为red。</div></pre></td></tr></table></figure></p>
+<ul>
+<li><strong>继承@extend</strong>  注意继承和混合之间的关系<br>混合器主要用于展示性样式的重用，而类名用于语义化样式的重用。   </li>
+<li>关于<code>@extend</code>有两个要点你应该知道<br>跟混合器相比，继承生成的css代码相对更少。因为继承仅仅是重复选择器，而不会重复属性，所以使用继承往往比混合器生成的css体积更小。如果你非常关心你站点的速度，请牢记这一点。<br>继承遵从css层叠的规则。当两个不同的css规则应用到同一个html元素上时，并且这两个不同的css规则对同一属性的修饰存在不同的值，css层叠规则会决定应用哪个样式。相当直观：通常权重更高的选择器胜出，如果权重相同，定义在后边的规则胜出。 </li>
+<li>但有一个前提就是，不要用后代选择器去继承。</li>
+</ul>
+<h3 id="sass-和-scss的区别"><a href="#sass-和-scss的区别" class="headerlink" title=".sass 和.scss的区别"></a>.sass 和.scss的区别</h3><p>区别是书写格式 .sass 采用无分号<code>;</code>和无<code>{}</code>使用缩进表示层级关系<br>.scss采用css中常用的来表示 更加容易接受 也更常用和推荐</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;sass学习笔记-sass官网&quot;&gt;&lt;a href=&quot;#sass学习笔记-sass官网&quot; class=&quot;headerlink&quot; title=&quot;sass学习笔记 sass官网&quot;&gt;&lt;/a&gt;sass学习笔记 &lt;a href=&quot;https://www.sass.hk/gui
+    
+    </summary>
+    
+    
+      <category term="学习笔记" scheme="https://kobezone.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>小知识点tips</title>
+    <link href="https://kobezone.github.io/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9tips/"/>
+    <id>https://kobezone.github.io/2017/06/14/小知识点tips/</id>
+    <published>2017-06-14T01:59:00.000Z</published>
+    <updated>2017-06-14T09:45:15.955Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="小知识点"><a href="#小知识点" class="headerlink" title="小知识点"></a>小知识点</h3><ul>
+<li><a href="https://github.com/Allenice/ohana#ch" target="_blank" rel="external">node接口模拟返回</a></li>
+<li><a href="http://www.cnblogs.com/zoumiaomiao/p/4913230.html" target="_blank" rel="external">js接口模拟数据</a></li>
+<li><a href="https://gold.xitu.io/entry/5828477fda2f600056dca3b6" target="_blank" rel="external">mockjs</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2015/12/a-mocha-tutorial-of-examples.html" target="_blank" rel="external">mocha js 测试框架–教程</a></li>
+<li><a href="http://gold.xitu.io/post/582bd0b4da2f600063d4f89e" target="_blank" rel="external">git 教程 全面理解Git</a><blockquote>
+<p><img src="http://ac-myg6wstv.clouddn.com/fea7461e85aee80bbe96.png" alt="git原理图"><br><a href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000" target="_blank" rel="external">git 教程</a></p>
+</blockquote>
+</li>
+<li><a href="http://www.moye.me/2016/11/19/nightmare/" target="_blank" rel="external">爬虫的终极形态：nightmare</a></li>
+<li><p><a href="https://github.com/amfe/article/issues/17" target="_blank" rel="external">移动端h5适配–flexible</a></p>
+</li>
+<li><p><a href="http://www.runoob.com/nodejs/nodejs-npm.html" target="_blank" rel="external">node npm等命令–初级教程</a></p>
+</li>
+</ul>
+<h4 id="1行代码创建服务器"><a href="#1行代码创建服务器" class="headerlink" title="1行代码创建服务器"></a>1行代码创建服务器</h4><p>先全局安装http-server</p>
+<ul>
+<li>npm install http-server -g</li>
+<li>cmd中切换到当前目录</li>
+<li>运行 http-server 即可<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">npm install http-server -g</div><div class="line">切换到当前静态网页的目录 </div><div class="line">采用http-server 运行即可</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="或使用express的static新建server"><a href="#或使用express的static新建server" class="headerlink" title="或使用express的static新建server"></a>或使用express的static新建server</h4><p><a href="http://www.expressjs.com.cn/starter/static-files.html" target="_blank" rel="external">express -static–参看</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">可以使用express 快速新建express路由项目[express 应用生成器--参看](http://www.expressjs.com.cn/starter/generator.html)</div><div class="line"></div><div class="line"></div><div class="line">app.use(&apos;/s&apos;, express.static(&apos;./sta&apos;));</div></pre></td></tr></table></figure></p>
+<h4 id="在浏览器-console-中执行"><a href="#在浏览器-console-中执行" class="headerlink" title="在浏览器 console 中执行"></a>在浏览器 console 中执行</h4><p><code>document.body.contentEditable=true</code>     或<br><code>document.designMode=&quot;on&quot;</code><br><strong>就可以直接修改页面上的任何文字了</strong></p>
+<h4 id="自建博客HEXO"><a href="#自建博客HEXO" class="headerlink" title="自建博客HEXO"></a>自建博客HEXO</h4><p>npm 安装  <code>npm install hexo -g</code></p>
+<p><a href="https://hexo.io/zh-cn/docs/commands.html" target="_blank" rel="external">hexo</a></p>
+<h3 id="北邮大地址"><a href="#北邮大地址" class="headerlink" title="北邮大地址"></a>北邮大地址</h3><p><a href="http://byr.wiki/" target="_blank" rel="external">http://byr.wiki/</a></p>
+<h3 id="压缩图片-图片压缩网站"><a href="#压缩图片-图片压缩网站" class="headerlink" title="压缩图片 图片压缩网站"></a>压缩图片 图片压缩网站</h3><p><a href="https://tinypng.com/" target="_blank" rel="external">https://tinypng.com/</a></p>
+<h3 id="个人备注地址"><a href="#个人备注地址" class="headerlink" title="个人备注地址"></a>个人备注地址</h3><p><a href="https://zhuanlan.zhihu.com/p/23340209" target="_blank" rel="external">西部世界 s08</a></p>
+<h4 id="下载youtube视频"><a href="#下载youtube视频" class="headerlink" title="下载youtube视频"></a>下载youtube视频</h4><p><a href="http://jingyan.baidu.com/article/39810a23d2deb2b637fda66c.html" target="_blank" rel="external">下载youtube</a></p>
+<ul>
+<li>进入 <a href="en.savefrom.net">en.savefrom.net</a> 粘贴youtube播放地址即可</li>
+<li>进入<a href="http://www.clipconverter.cc/" target="_blank" rel="external">http://www.clipconverter.cc/</a></li>
+</ul>
+<h4 id="git-解决冲突"><a href="#git-解决冲突" class="headerlink" title="git 解决冲突"></a>git 解决冲突</h4><p>#　下载冲突到缓存区</p>
+<ul>
+<li>git fetch 　远程到　本地仓库</li>
+<li>git rebase  本地仓库　和本地合并　　（）</li>
+</ul>
+<p>查找head 手动 合并 代码 </p>
+<p>开始</p>
+<ul>
+<li>git add  add文件</li>
+<li>git commit 添加</li>
+<li>git pull 更新</li>
+<li>git push 提交</li>
+</ul>
+<p>处理流程 小乌龟</p>
+<ul>
+<li>commit </li>
+<li><ul>
+<li>fetch </li>
+</ul>
+</li>
+<li><ul>
+<li>rebase </li>
+</ul>
+</li>
+<li><ul>
+<li>stash  暂存 </li>
+</ul>
+</li>
+<li><ul>
+<li>push </li>
+</ul>
+</li>
+<li><ul>
+<li>stash pop  还原</li>
+</ul>
+</li>
+</ul>
+<h4 id="自制markdown文档-docute"><a href="#自制markdown文档-docute" class="headerlink" title="自制markdown文档 docute"></a>自制markdown文档 docute</h4><p><a href="https://docute.js.org/#/home?id=introduction" target="_blank" rel="external">docute</a> <a href="https://docute.js.org/#/home?id=introduction" target="_blank" rel="external">https://docute.js.org/#/home?id=introduction</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">// quick start</div><div class="line">npm i -g docute-cli</div><div class="line"></div><div class="line">docute init ./docs</div><div class="line">docute</div></pre></td></tr></table></figure></p>
+<h4 id="工具-趋势"><a href="#工具-趋势" class="headerlink" title="工具 趋势"></a>工具 趋势</h4><ul>
+<li><a href="https://www.awesomes.cn/" target="_blank" rel="external">web前端趋势</a></li>
+<li><a href="https://www.sdk.cn/site/index" target="_blank" rel="external">https://www.sdk.cn/site/index</a></li>
+<li><a href="http://www.javascript.fun/" target="_blank" rel="external">js 框架趋势</a></li>
+<li><a href="http://bestof.js.org/" target="_blank" rel="external">best of js</a></li>
+<li><a href="http://f2er.club/" target="_blank" rel="external">最牛前端</a></li>
+</ul>
+<h4 id="自动抢红包"><a href="#自动抢红包" class="headerlink" title="自动抢红包"></a>自动抢红包</h4><p><a href="https://github.com/geeeeeeeeek/WeChatLuckyMoney" target="_blank" rel="external">自动抢红包</a></p>
+<h4 id="微信小程序大全"><a href="#微信小程序大全" class="headerlink" title="微信小程序大全"></a>微信小程序大全</h4><p><a href="http://www.duba.com/wxapp/?f=mobile" target="_blank" rel="external">微信小程序导航</a><br><a href="https://minapp.com/miniapp/" target="_blank" rel="external">知晓– 微信小程序大全</a></p>
+<h4 id="文件命名小写-下划线-特殊的可以采用大写-如-README"><a href="#文件命名小写-下划线-特殊的可以采用大写-如-README" class="headerlink" title="文件命名小写+ 下划线  特殊的可以采用大写 如:README"></a>文件命名小写+ 下划线  特殊的可以采用大写 如:README</h4><p><a href="http://www.ruanyifeng.com/blog/2017/02/filename-should-be-lowercase.html" target="_blank" rel="external">链接地址</a></p>
+<h4 id="lt-map-id-quot-id-quot-gt-lt-img-usemap-quot-id-quot-gt-图像中的map定位"><a href="#lt-map-id-quot-id-quot-gt-lt-img-usemap-quot-id-quot-gt-图像中的map定位" class="headerlink" title="&lt;map id=&quot;id&quot;&gt; &lt;img usemap=&quot;#id&quot;&gt; 图像中的map定位"></a><code>&lt;map id=&quot;id&quot;&gt;</code> <code>&lt;img usemap=&quot;#id&quot;&gt;</code> 图像中的map定位</h4><p><img src="http://upload-images.jianshu.io/upload_images/2531512-bb3ed960f0b47a67.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Paste_Image.png"></p>
+<h4 id="查询浏览器bug的网站"><a href="#查询浏览器bug的网站" class="headerlink" title="查询浏览器bug的网站"></a>查询浏览器bug的网站</h4><p><a href="https://bugs.chromium.org/p/chromium/issues/list" target="_blank" rel="external">https://bugs.chromium.org/p/chromium/issues/list</a><br><a href="http://ued.ctrip.com/blog/crash-app-by-css.html" target="_blank" rel="external">css也能让浏览器崩溃</a></p>
+<h4 id="vue单页面应用打包和优化"><a href="#vue单页面应用打包和优化" class="headerlink" title="vue单页面应用打包和优化"></a>vue单页面应用打包和优化</h4><p><a href="https://shuirong.github.io/2017/05/07/Vue-SPA-%E5%8D%95%E9%A1%B5%E5%BA%94%E7%94%A8-%E9%A6%96%E5%B1%8F%E4%BC%98%E5%8C%96%E5%AE%9E%E8%B7%B5/" target="_blank" rel="external">vue单页面应用打包和优化</a></p>
+<h3 id="js-substring-start-end-substr-start-length"><a href="#js-substring-start-end-substr-start-length" class="headerlink" title="js substring(start, end)  substr(start[,length])"></a>js <code>substring(start, end)</code>  <code>substr(start[,length])</code></h3><ul>
+<li><code>substring</code>用于提取字符串中 介于两个指定下标的字符</li>
+<li><code>substr</code> 用于返回一个指定位置开始的指定长度的字符串<br>详见 <a href="http://www.cnblogs.com/wz327/archive/2010/04/11/1709433.html" target="_blank" rel="external">http://www.cnblogs.com/wz327/archive/2010/04/11/1709433.html</a></li>
+</ul>
+<h3 id="关于node的版本"><a href="#关于node的版本" class="headerlink" title="关于node的版本"></a>关于node的版本</h3><p>node的版本更新常常会弃用部分API和新增API 最好使用LTS版本 项目中<br>如果科研或技术预研的话 可以采用最新版本 </p>
+<h3 id="个人习惯"><a href="#个人习惯" class="headerlink" title="个人习惯"></a>个人习惯</h3><p>1.java tomcat eclise nodejs 安装到D盘<br>2.文档放在E盘<br>3.F盘是共享和备注</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;小知识点&quot;&gt;&lt;a href=&quot;#小知识点&quot; class=&quot;headerlink&quot; title=&quot;小知识点&quot;&gt;&lt;/a&gt;小知识点&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/Allenice/ohana#ch&quot; target=&quot;_
+    
+    </summary>
+    
+    
+      <category term="技术文章" scheme="https://kobezone.github.io/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+    
+  </entry>
+  
+</feed>
