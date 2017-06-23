@@ -4,7 +4,7 @@
     
     <entry>
       <title><![CDATA[小知识点集汇二]]></title>
-      <url>/2017/06/17/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E9%9B%86%E6%B1%87%E4%BA%8C/</url>
+      <url>/blog/2017/06/17/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E9%9B%86%E6%B1%87%E4%BA%8C/</url>
       <content type="html"><![CDATA[<h2 id="小知识点集汇二"><a href="#小知识点集汇二" class="headerlink" title="小知识点集汇二"></a>小知识点集汇二</h2><h3 id="短网址生成"><a href="#短网址生成" class="headerlink" title="短网址生成"></a>短网址生成</h3><p>微信等部分网址不支持中文路径的识别 可以采用短网址生成器来生成新的短网址坐map映射</p>
 <blockquote>
 <p><a href="http://dwz.cn/" target="_blank" rel="external">http://dwz.cn/</a> 百度短网址生成地址 还要对应api可以对接</p>
@@ -22,7 +22,7 @@
     
     <entry>
       <title><![CDATA[视频直播流web播放]]></title>
-      <url>/2017/06/17/%E8%A7%86%E9%A2%91%E7%9B%B4%E6%92%AD%E6%B5%81web%E6%92%AD%E6%94%BE/</url>
+      <url>/blog/2017/06/17/%E8%A7%86%E9%A2%91%E7%9B%B4%E6%92%AD%E6%B5%81web%E6%92%AD%E6%94%BE/</url>
       <content type="html"><![CDATA[<h1 id="视频直播放映解决方案"><a href="#视频直播放映解决方案" class="headerlink" title="视频直播放映解决方案"></a>视频直播放映解决方案</h1><h4 id="分为PC-web端和移动web端"><a href="#分为PC-web端和移动web端" class="headerlink" title="分为PC-web端和移动web端"></a>分为PC-web端和移动web端</h4><blockquote>
 <p>pc-web端采用<a href="http://www.ckplayer.com/" target="_blank" rel="external">Ckplay播放器</a> 通过RTMP协议 传输视频流<br>mobile-web端采用h5 <code>video</code>标签 通过HLS 传输视频流</p>
 </blockquote>
@@ -47,7 +47,7 @@
     
     <entry>
       <title><![CDATA[github个人博客]]></title>
-      <url>/2017/06/15/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
+      <url>/blog/2017/06/15/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
       <content type="html"><![CDATA[<p>  今天把博客弄到github上,计划以后再github上面写文章 学习笔记 图片等 300M的空间 也应该够了</p>
 ]]></content>
       
@@ -62,7 +62,7 @@
     
     <entry>
       <title><![CDATA[小知识]]></title>
-      <url>/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
+      <url>/blog/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
       <content type="html"><![CDATA[<h4 id="vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html"><a href="#vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html" class="headerlink" title="vue spa 滚动行为的保存 需要启用history模式 参看https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html"></a>vue spa 滚动行为的保存 需要启用history模式 参看<a href="https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html" target="_blank" rel="external">https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html</a></h4><h4 id="flex布局-flex布局的兼容性-部分需要添加-webkit前缀"><a href="#flex布局-flex布局的兼容性-部分需要添加-webkit前缀" class="headerlink" title="flex布局 flex布局的兼容性 部分需要添加 -webkit前缀"></a>flex布局 flex布局的兼容性 部分需要添加 <code>-webkit</code>前缀</h4><blockquote>
 <p>理清 主轴 侧轴(和主轴垂直的)  <code>justify-content</code> 设置主轴的分布 <code>align-items</code>设置侧轴的分布</p>
 </blockquote>
@@ -85,7 +85,7 @@
     
     <entry>
       <title><![CDATA[美图]]></title>
-      <url>/2017/06/14/%E7%BE%8E%E5%9B%BE/</url>
+      <url>/blog/2017/06/14/%E7%BE%8E%E5%9B%BE/</url>
       <content type="html"><![CDATA[<h4 id="分享几张手机桌面"><a href="#分享几张手机桌面" class="headerlink" title="分享几张手机桌面"></a>分享几张手机桌面</h4><p><img src="/assets/img/001.jpg" alt="001.jpg"><br><img src="/assets/img/002.jpg" alt="002.jpg"><br><img src="/assets/img/003.jpg" alt="003.jpg"></p>
 ]]></content>
       
@@ -100,7 +100,7 @@
     
     <entry>
       <title><![CDATA[nginx学习笔记]]></title>
-      <url>/2017/06/14/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
+      <url>/blog/2017/06/14/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
       <content type="html"><![CDATA[<h4 id="nginx能做什么"><a href="#nginx能做什么" class="headerlink" title="nginx能做什么"></a>nginx能做什么</h4><blockquote>
 <p><a href="http://www.raye.wang/2017/02/24/quan-mian-liao-jie-nginxdao-di-neng-zuo-shi-yao/?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="external">全面了解Nginx主要应用场景</a></p>
 <ul>
@@ -138,7 +138,7 @@
     
     <entry>
       <title><![CDATA[yarn学习笔记]]></title>
-      <url>/2017/06/14/yarn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
+      <url>/blog/2017/06/14/yarn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
       <content type="html"><![CDATA[<h3 id="关于yarn和npm"><a href="#关于yarn和npm" class="headerlink" title="关于yarn和npm "></a><a href="http://web.jobbole.com/88459/" target="_blank" rel="external">关于yarn和npm </a></h3><p>yarn是npm的升级版本 (新工具) yarn.lock</p>
 <ul>
 <li>yarn add (npm install  yarn install)</li>
@@ -159,7 +159,7 @@
     
     <entry>
       <title><![CDATA[sass学习笔记]]></title>
-      <url>/2017/06/14/sass%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
+      <url>/blog/2017/06/14/sass%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
       <content type="html"><![CDATA[<h3 id="sass学习笔记-sass官网"><a href="#sass学习笔记-sass官网" class="headerlink" title="sass学习笔记 sass官网"></a>sass学习笔记 <a href="https://www.sass.hk/guide/" target="_blank" rel="external">sass官网</a></h3><ul>
 <li>工具下载<a href="https://www.sass.hk/skill/koala-app.html" target="_blank" rel="external">下载地址</a> 工欲善其事必先利其器</li>
 <li>sass 定义css变量  <code>$t = &quot;100px&quot;</code>;</li>
@@ -195,7 +195,7 @@
     
     <entry>
       <title><![CDATA[小知识点tips]]></title>
-      <url>/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9tips/</url>
+      <url>/blog/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9tips/</url>
       <content type="html"><![CDATA[<h3 id="小知识点"><a href="#小知识点" class="headerlink" title="小知识点"></a>小知识点</h3><ul>
 <li><a href="https://github.com/Allenice/ohana#ch" target="_blank" rel="external">node接口模拟返回</a></li>
 <li><a href="http://www.cnblogs.com/zoumiaomiao/p/4913230.html" target="_blank" rel="external">js接口模拟数据</a></li>

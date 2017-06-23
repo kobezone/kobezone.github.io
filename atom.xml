@@ -2,11 +2,11 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>JUN的博客</title>
   <subtitle>文档整理和学习笔记记录</subtitle>
-  <link href="/atom.xml" rel="self"/>
+  <link href="/blog/atom.xml" rel="self"/>
   
-  <link href="https://kobezone.github.io/"/>
+  <link href="http://kisscode.oschina.io/blog/"/>
   <updated>2017-06-23T04:07:52.537Z</updated>
-  <id>https://kobezone.github.io/</id>
+  <id>http://kisscode.oschina.io/blog/</id>
   
   <author>
     <name>JUN</name>
@@ -17,8 +17,8 @@
   
   <entry>
     <title>小知识点集汇二</title>
-    <link href="https://kobezone.github.io/2017/06/17/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E9%9B%86%E6%B1%87%E4%BA%8C/"/>
-    <id>https://kobezone.github.io/2017/06/17/小知识点集汇二/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/17/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9%E9%9B%86%E6%B1%87%E4%BA%8C/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/17/小知识点集汇二/</id>
     <published>2017-06-17T09:35:59.000Z</published>
     <updated>2017-06-23T04:07:52.537Z</updated>
     
@@ -45,8 +45,8 @@
   
   <entry>
     <title>视频直播流web播放</title>
-    <link href="https://kobezone.github.io/2017/06/17/%E8%A7%86%E9%A2%91%E7%9B%B4%E6%92%AD%E6%B5%81web%E6%92%AD%E6%94%BE/"/>
-    <id>https://kobezone.github.io/2017/06/17/视频直播流web播放/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/17/%E8%A7%86%E9%A2%91%E7%9B%B4%E6%92%AD%E6%B5%81web%E6%92%AD%E6%94%BE/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/17/视频直播流web播放/</id>
     <published>2017-06-17T06:31:27.000Z</published>
     <updated>2017-06-17T06:32:26.216Z</updated>
     
@@ -70,14 +70,14 @@
     </summary>
     
     
-      <category term="技术文章" scheme="https://kobezone.github.io/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+      <category term="技术文章" scheme="http://kisscode.oschina.io/blog/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
     
   </entry>
   
   <entry>
     <title>github个人博客</title>
-    <link href="https://kobezone.github.io/2017/06/15/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/"/>
-    <id>https://kobezone.github.io/2017/06/15/github个人博客/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/15/github%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/15/github个人博客/</id>
     <published>2017-06-15T02:48:05.000Z</published>
     <updated>2017-06-15T02:49:42.937Z</updated>
     
@@ -92,14 +92,14 @@
     </summary>
     
     
-      <category term="我" scheme="https://kobezone.github.io/tags/%E6%88%91/"/>
+      <category term="我" scheme="http://kisscode.oschina.io/blog/tags/%E6%88%91/"/>
     
   </entry>
   
   <entry>
     <title>小知识</title>
-    <link href="https://kobezone.github.io/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
-    <id>https://kobezone.github.io/2017/06/14/小知识/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/14/小知识/</id>
     <published>2017-06-14T09:50:28.000Z</published>
     <updated>2017-06-14T09:52:05.986Z</updated>
     
@@ -121,14 +121,14 @@
     </summary>
     
     
-      <category term="技术文章" scheme="https://kobezone.github.io/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+      <category term="技术文章" scheme="http://kisscode.oschina.io/blog/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
     
   </entry>
   
   <entry>
     <title>美图</title>
-    <link href="https://kobezone.github.io/2017/06/14/%E7%BE%8E%E5%9B%BE/"/>
-    <id>https://kobezone.github.io/2017/06/14/美图/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/14/%E7%BE%8E%E5%9B%BE/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/14/美图/</id>
     <published>2017-06-14T08:36:54.000Z</published>
     <updated>2017-06-15T03:00:08.896Z</updated>
     
@@ -142,14 +142,14 @@
     </summary>
     
     
-      <category term="美图分享" scheme="https://kobezone.github.io/tags/%E7%BE%8E%E5%9B%BE%E5%88%86%E4%BA%AB/"/>
+      <category term="美图分享" scheme="http://kisscode.oschina.io/blog/tags/%E7%BE%8E%E5%9B%BE%E5%88%86%E4%BA%AB/"/>
     
   </entry>
   
   <entry>
     <title>nginx学习笔记</title>
-    <link href="https://kobezone.github.io/2017/06/14/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>https://kobezone.github.io/2017/06/14/nginx学习笔记/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/14/nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/14/nginx学习笔记/</id>
     <published>2017-06-14T05:24:15.000Z</published>
     <updated>2017-06-14T05:25:15.240Z</updated>
     
@@ -187,14 +187,14 @@
     </summary>
     
     
-      <category term="学习笔记" scheme="https://kobezone.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+      <category term="学习笔记" scheme="http://kisscode.oschina.io/blog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
   </entry>
   
   <entry>
     <title>yarn学习笔记</title>
-    <link href="https://kobezone.github.io/2017/06/14/yarn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>https://kobezone.github.io/2017/06/14/yarn学习笔记/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/14/yarn%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/14/yarn学习笔记/</id>
     <published>2017-06-14T02:03:38.000Z</published>
     <updated>2017-06-14T04:10:19.510Z</updated>
     
@@ -214,14 +214,14 @@
     </summary>
     
     
-      <category term="学习笔记" scheme="https://kobezone.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+      <category term="学习笔记" scheme="http://kisscode.oschina.io/blog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
   </entry>
   
   <entry>
     <title>sass学习笔记</title>
-    <link href="https://kobezone.github.io/2017/06/14/sass%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>https://kobezone.github.io/2017/06/14/sass学习笔记/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/14/sass%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/14/sass学习笔记/</id>
     <published>2017-06-14T02:01:23.000Z</published>
     <updated>2017-06-14T04:17:17.921Z</updated>
     
@@ -256,14 +256,14 @@
     </summary>
     
     
-      <category term="学习笔记" scheme="https://kobezone.github.io/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+      <category term="学习笔记" scheme="http://kisscode.oschina.io/blog/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     
   </entry>
   
   <entry>
     <title>小知识点tips</title>
-    <link href="https://kobezone.github.io/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9tips/"/>
-    <id>https://kobezone.github.io/2017/06/14/小知识点tips/</id>
+    <link href="http://kisscode.oschina.io/blog/2017/06/14/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9tips/"/>
+    <id>http://kisscode.oschina.io/blog/2017/06/14/小知识点tips/</id>
     <published>2017-06-14T01:59:00.000Z</published>
     <updated>2017-06-14T09:45:15.955Z</updated>
     
@@ -368,7 +368,7 @@
     </summary>
     
     
-      <category term="技术文章" scheme="https://kobezone.github.io/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
+      <category term="技术文章" scheme="http://kisscode.oschina.io/blog/tags/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/"/>
     
   </entry>
   
