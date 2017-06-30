@@ -6,17 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://kisscode.oschina.io/blog">
-  <title>Archives: 2017/6 | JUN的博客</title>
+  <title>跨域问题 | JUN的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前端工程师 目标全栈工程师">
-<meta property="og:type" content="website">
-<meta property="og:title" content="JUN的博客">
-<meta property="og:url" content="http://kisscode.oschina.io/blog/archives/2017/06/index.html">
+  <meta name="description" content="跨域问题跨域访问是前后端开发中常常遇到的问题 采用cors或部署的时候使用nginx反向代理都是可以解决跨域访问的问题的 node+express 解决跨域vue-resource代码(其实就是ajax技术)：123456this.$http.get(&amp;#123;url:&quot;http://localhost:3000/getdata&quot;&amp;#125;).then(function (data) &amp;#12">
+<meta name="keywords" content="技术文章">
+<meta property="og:type" content="article">
+<meta property="og:title" content="跨域问题">
+<meta property="og:url" content="http://kisscode.oschina.io/blog/2017/06/30/跨域问题/index.html">
 <meta property="og:site_name" content="JUN的博客">
-<meta property="og:description" content="前端工程师 目标全栈工程师">
+<meta property="og:description" content="跨域问题跨域访问是前后端开发中常常遇到的问题 采用cors或部署的时候使用nginx反向代理都是可以解决跨域访问的问题的 node+express 解决跨域vue-resource代码(其实就是ajax技术)：123456this.$http.get(&amp;#123;url:&quot;http://localhost:3000/getdata&quot;&amp;#125;).then(function (data) &amp;#12">
+<meta property="og:updated_time" content="2017-06-30T05:22:31.864Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JUN的博客">
-<meta name="twitter:description" content="前端工程师 目标全栈工程师">
+<meta name="twitter:title" content="跨域问题">
+<meta name="twitter:description" content="跨域问题跨域访问是前后端开发中常常遇到的问题 采用cors或部署的时候使用nginx反向代理都是可以解决跨域访问的问题的 node+express 解决跨域vue-resource代码(其实就是ajax技术)：123456this.$http.get(&amp;#123;url:&quot;http://localhost:3000/getdata&quot;&amp;#125;).then(function (data) &amp;#12">
   
     <link rel="alternative" href="/atom.xml" title="JUN的博客" type="application/atom+xml">
   
@@ -158,36 +160,68 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-跨域问题" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      跨域问题
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/blog/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/30/跨域问题/" class="archive-article-date">
+
+        
+        <a href="/blog/2017/06/30/跨域问题/" class="archive-article-date">
   	<time datetime="2017-06-30T05:20:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-30</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/30/跨域问题/">跨域问题</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><p>跨域访问是前后端开发中常常遇到的问题 采用cors或部署的时候使用nginx反向代理都是可以解决跨域访问的问题的</p>
+<h3 id="node-express-解决跨域"><a href="#node-express-解决跨域" class="headerlink" title="node+express 解决跨域"></a>node+express 解决跨域</h3><p>vue-resource代码(其实就是ajax技术)：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.$http.get(&#123;<span class="attr">url</span>:<span class="string">"http://localhost:3000/getdata"</span>&#125;)</div><div class="line">.then(<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(data)</div><div class="line">&#125;,<span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;&#125;);</div><div class="line"><span class="string">``</span><span class="string">`    </span></div><div class="line">nodejs部分：</div></pre></td></tr></table></figure></p>
+<p>var express = require(‘express’);<br>var app = express();<br>//设置跨域访问 控制好响应头<br>app.all(‘<em>‘, function(req, res, next) {<br>    res.header(“Access-Control-Allow-Origin”, “</em>“);<br>    res.header(“Access-Control-Allow-Headers”, “X-Requested-With”);<br>    res.header(“Access-Control-Allow-Methods”,”PUT,POST,GET,DELETE,OPTIONS”);<br>    res.header(“X-Powered-By”,’ 3.2.1’)<br>    res.header(“Content-Type”, “application/json;charset=utf-8”);<br>    next();<br>});</p>
+<p>app.get(‘/getdata’, function(req, res) {<br>    res.send({id:req.params.id, name: req.params.password});<br>});</p>
+<p>app.listen(3000);<br>console.log(‘Listening on port 3000…’);<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">### http-proxy-middleware 解决跨域问题 只能在开发环境中使用</div><div class="line"></div><div class="line">proxyTable: &#123;</div><div class="line">  &apos;/list&apos;: &#123;</div><div class="line">    target: &apos;http://api.xxxxxxxx.com&apos;,</div><div class="line">    changeOrigin: true,</div><div class="line">    pathRewrite: &#123;</div><div class="line">      &apos;^/list&apos;: &apos;&apos;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">vue-cli的这个设置来自于其使用的插件http-proxy-middleware</div><div class="line">github：https://github.com/chimurai/http-proxy-middleware</div><div class="line">深入了解的话可以看该插件配置说明，似乎还支持websocket，很强大的插件。</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">### webpack-dev-server 设置代理解决跨域问题 只能在开发环境中使用</div><div class="line"></div><div class="line">详解见webpack的配置 (webpack-dev-server配置)[https://doc.webpack-china.org/configuration/dev-server/]</div><div class="line">webpack-dev-server 设置代理 http://www.jianshu.com/p/3bdff821f859</div><div class="line">```js</div><div class="line">//webpack 中dev-server设置带来 解决跨域问题</div><div class="line">module.exports = &#123;</div><div class="line"> ...此处省略一万字</div><div class="line"></div><div class="line"> // webpack-dev-server的配置</div><div class="line"> devServer: &#123;</div><div class="line"> historyApiFallback: true,</div><div class="line"> hot: true,</div><div class="line"> inline: true,</div><div class="line"> progress: true,</div><div class="line"> port: 3000,</div><div class="line"> host: &apos;10.0.0.9&apos;,</div><div class="line"> proxy: &#123;</div><div class="line"> &apos;/test/*&apos;: &#123;</div><div class="line">     target: &apos;http://localhost&apos;,</div><div class="line">     changeOrigin: true,</div><div class="line">     secure: false</div><div class="line">    &#125;</div><div class="line"> &#125;</div><div class="line"> &#125;,</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
+<h3 id="nginx-设置代理-解决跨域问题"><a href="#nginx-设置代理-解决跨域问题" class="headerlink" title="nginx 设置代理 解决跨域问题"></a>nginx 设置代理 解决跨域问题</h3><p>常用实例 采用nginx反向代理来解决跨域问题<br><figure class="highlight nginx"><figcaption><span>js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">location</span> /api &#123;</div><div class="line">  <span class="attribute">rewrite</span> <span class="regexp"> ^.+apis/?(.*)$</span> /<span class="variable">$1</span> <span class="literal">break</span>;</div><div class="line">  <span class="attribute">include</span>  uwsgi_params;</div><div class="line">  <span class="attribute">proxy_pass</span>   http://localhost:1894;</div><div class="line"> &#125;</div></pre></td></tr></table></figure></p>
+<p>eg 开发中常用 </p>
+<p>配置<code>localhost</code><br>使用 localhost  127.0.0.1 本地IP都可以进行访问</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"> server &#123;</div><div class="line">        listen       80;</div><div class="line">        server_name  localhsot;</div><div class="line">        #charset koi8-r;</div><div class="line"></div><div class="line">        #access_log  logs/host.access.log  main;</div><div class="line"></div><div class="line">        location / &#123;</div><div class="line">          ### 配置成本地webpack打包生成的路径</div><div class="line">          root    D:/infore/infore-web/dist/;</div><div class="line">          index  index.html index.htm;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        location /api &#123;</div><div class="line">            ### 接口代理请求地址</div><div class="line">            proxy_pass http://192.168.31.52:8089/api;</div><div class="line">            proxy_redirect off;</div><div class="line">            proxy_set_header X-Real-IP $remote_addr;</div><div class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">            # proxy_cookie_path /disconf /api;</div><div class="line">            # proxy_set_header   Cookie $http_cookie;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">###</div></pre></td></tr></table></figure>
+      
 
-        <div class="article-info info-on-right">
-          
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢支持我,技术交流请加微信<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="./jun/jun_weixin.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -199,350 +233,100 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://kisscode.oschina.io/blog/2017/06/30/跨域问题/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/17/小知识点集汇二/" class="archive-article-date">
-  	<time datetime="2017-06-17T09:35:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-17</time>
-</a>
-        </div>
-    	 
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/17/小知识点集汇二/">小知识点集汇二</a>
-    </h1>
+  
+    <a href="/blog/2017/06/17/小知识点集汇二/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">小知识点集汇二</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+
+  
+  
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://kisscode.oschina.io/blog/blog/2017/06/30/跨域问题/", 
+    sourceId: "跨域问题",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/17/视频直播流web播放/" class="archive-article-date">
-  	<time datetime="2017-06-17T06:31:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/17/视频直播流web播放/">视频直播流web播放</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/15/github个人博客/" class="archive-article-date">
-  	<time datetime="2017-06-15T02:48:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/15/github个人博客/">github个人博客</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">我</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/14/小知识/" class="archive-article-date">
-  	<time datetime="2017-06-14T09:50:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/14/小知识/">小知识</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/14/美图/" class="archive-article-date">
-  	<time datetime="2017-06-14T08:36:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/14/美图/">美图</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">美图分享</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/14/nginx学习笔记/" class="archive-article-date">
-  	<time datetime="2017-06-14T05:24:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/14/nginx学习笔记/">nginx学习笔记</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/14/yarn学习笔记/" class="archive-article-date">
-  	<time datetime="2017-06-14T02:03:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/14/yarn学习笔记/">yarn学习笔记</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/14/sass学习笔记/" class="archive-article-date">
-  	<time datetime="2017-06-14T02:01:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/14/sass学习笔记/">sass学习笔记</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/blog/2017/06/14/小知识点tips/" class="archive-article-date">
-  	<time datetime="2017-06-14T01:59:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/blog/2017/06/14/小知识点tips/">小知识点tips</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -565,8 +349,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
