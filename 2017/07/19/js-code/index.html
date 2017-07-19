@@ -6,17 +6,19 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://kisscode.oschina.io/blog">
-  <title>JUN的博客</title>
+  <title>js-code | JUN的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前端工程师 目标全栈工程师">
-<meta property="og:type" content="website">
-<meta property="og:title" content="JUN的博客">
-<meta property="og:url" content="http://kisscode.oschina.io/blog/index.html">
+  <meta name="description" content="日期格式化 123456789101112131415Date.prototype.format = function (fmt) &amp;#123; //author: meizz       var o = &amp;#123;          &quot;M+&quot;: this.getMonth() + 1, //月份           &quot;d+&quot;: this.getDate(), //日           &quot;h">
+<meta name="keywords" content="技术文章">
+<meta property="og:type" content="article">
+<meta property="og:title" content="js-code">
+<meta property="og:url" content="http://kisscode.oschina.io/blog/2017/07/19/js-code/index.html">
 <meta property="og:site_name" content="JUN的博客">
-<meta property="og:description" content="前端工程师 目标全栈工程师">
+<meta property="og:description" content="日期格式化 123456789101112131415Date.prototype.format = function (fmt) &amp;#123; //author: meizz       var o = &amp;#123;          &quot;M+&quot;: this.getMonth() + 1, //月份           &quot;d+&quot;: this.getDate(), //日           &quot;h">
+<meta property="og:updated_time" content="2017-07-19T02:03:39.049Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JUN的博客">
-<meta name="twitter:description" content="前端工程师 目标全栈工程师">
+<meta name="twitter:title" content="js-code">
+<meta name="twitter:description" content="日期格式化 123456789101112131415Date.prototype.format = function (fmt) &amp;#123; //author: meizz       var o = &amp;#123;          &quot;M+&quot;: this.getMonth() + 1, //月份           &quot;d+&quot;: this.getDate(), //日           &quot;h">
   
     <link rel="alternative" href="/atom.xml" title="JUN的博客" type="application/atom+xml">
   
@@ -158,16 +160,14 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-js-code" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-js-code" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/07/19/js-code/">js-code</a>
+    <h1 class="article-title" itemprop="name">
+      js-code
     </h1>
   
 
@@ -261,72 +261,31 @@
       
 
       
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/07/19/js-code/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-vue组件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/07/17/vue组件/">vue组件</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/07/17/vue组件/" class="archive-article-date">
-  	<time datetime="2017-07-17T10:03:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>常常会使用到vue封装的各种组件 今天就推荐下</p>
-<ul>
-<li>NProgress 浏览器顶部加载进度条<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"> <span class="comment">//base</span></div><div class="line"> <span class="comment">// npm i nprogress -S</span></div><div class="line"><span class="keyword">import</span> NProgress <span class="keyword">from</span> <span class="string">'nprogress'</span> <span class="comment">// progress</span></div><div class="line"><span class="keyword">import</span> <span class="string">'nprogress/nprogress.css'</span>;<span class="comment">// Progress 进度条 样式</span></div><div class="line"><span class="keyword">import</span> router <span class="keyword">from</span> <span class="string">'./router/'</span></div><div class="line"></div><div class="line">Vue.use(ElementUI)</div><div class="line">Vue.use(router);</div><div class="line">router.beforeEach(<span class="function">(<span class="params">to, <span class="keyword">from</span>, next</span>) =&gt;</span> &#123;</div><div class="line">  NProgress.start(); </div><div class="line">  next();</div><div class="line">&#125;);</div><div class="line"></div><div class="line">router.afterEach(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</div><div class="line">  NProgress.done(); <span class="comment">// 结束Progress</span></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="favicon-webpack中的配置"><a href="#favicon-webpack中的配置" class="headerlink" title="favicon webpack中的配置"></a>favicon webpack中的配置</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> resolve = <span class="built_in">require</span>(<span class="string">'path'</span>).resolve;</div><div class="line"></div><div class="line"><span class="comment">// webpack.config.js</span></div><div class="line">    plugins: [</div><div class="line">        <span class="keyword">new</span> webpack.optimize.CommonsChunkPlugin(&#123;</div><div class="line">            <span class="attr">names</span>: [<span class="string">'vendor'</span>, <span class="string">'manifest'</span>],</div><div class="line">            <span class="attr">minChunks</span>: <span class="number">3</span>,</div><div class="line">        &#125;),</div><div class="line">        <span class="keyword">new</span> HtmlWebpackPlugin(&#123;</div><div class="line">            <span class="attr">template</span>: <span class="string">'src/index.html'</span>,</div><div class="line">            <span class="comment">// 关键代码</span></div><div class="line">            favicon: resolve(<span class="string">'./src/favicon.ico'</span>)</div><div class="line">        &#125;)</div><div class="line">    ],</div></pre></td></tr></table></figure>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// vue源码</span></div><div class="line"><span class="keyword">var</span> isIOS = UA &amp;&amp; <span class="regexp">/iphone|ipad|ipod|ios/</span>.test(UA);</div><div class="line"><span class="keyword">var</span> isChrome = UA &amp;&amp; <span class="regexp">/chrome\/\d+/</span>.test(UA) &amp;&amp; !isEdge;</div></pre></td></tr></table></figure>
-<h3 id="tree-shaking-尽量使用-import-as-XX-from-39-js-modules-39-来引入模块-配合webpack2-0-的tree-shaking-能实现代码有效体积减少"><a href="#tree-shaking-尽量使用-import-as-XX-from-39-js-modules-39-来引入模块-配合webpack2-0-的tree-shaking-能实现代码有效体积减少" class="headerlink" title="tree-shaking   尽量使用 import  * as  XX from &#39;js_modules&#39; 来引入模块 配合webpack2.0 的tree-shaking 能实现代码有效体积减少"></a>tree-shaking   尽量使用 <code>import  * as  XX from &#39;js_modules&#39;</code> 来引入模块 配合webpack2.0 的tree-shaking 能实现代码有效体积减少</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="number">1</span>）用<span class="keyword">import</span>/<span class="keyword">export</span>来改造代码，这是tree-shaking的基础，ES6的模块支持继承，可以正确执行tree-shaking。</div><div class="line"></div><div class="line"><span class="number">2</span>）webpack的打包非压缩的情况下会保留unused <span class="function"><span class="keyword">function</span>，压缩版才会真正去掉。</span></div><div class="line"></div><div class="line">3）尽量使用<span class="title">import</span> * <span class="title">as</span> <span class="title">uu</span> <span class="title">from</span> './<span class="title">invoke</span>.<span class="title">js</span>'隐式语法而无须使用<span class="title">import</span> &#123;ddd&#125; <span class="keyword">from</span> <span class="string">'./invoke.js'</span>这种显式语法。</div><div class="line"></div><div class="line"><span class="number">4</span>）我们的业务接入tree-shaking特性后，代码体积有减少<span class="number">30</span>%。</div><div class="line"></div><div class="line">作者：码匠之心</div><div class="line">链接：http:<span class="comment">//www.jianshu.com/p/7bd8d5e87965</span></div><div class="line">來源：简书</div><div class="line">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</div></pre></td></tr></table></figure>
-<p>// .babelrc<br><a href="http://www.jianshu.com/p/7bd8d5e87965" target="_blank" rel="external">参考bable</a><br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// .babelrc的配置推荐使用babel-preset-env，这是目前最新的解决方案，会非常灵活的通过参数指定来兼容当前的环境。    </span></div><div class="line">&#123;</div><div class="line">  <span class="string">"presets"</span>: [</div><div class="line">    [<span class="string">"env"</span>, &#123;</div><div class="line">      <span class="string">"target"</span>: &#123;</div><div class="line">        <span class="string">"browsers"</span>: [<span class="string">"ios &gt; 7"</span>, <span class="string">"android &gt;= 4"</span>]</div><div class="line">      &#125;,</div><div class="line">      <span class="string">"modules"</span>: <span class="literal">false</span></div><div class="line">    &#125;]</div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-
-      
-
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢支持我,技术交流请加微信<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="./jun/jun_weixin.jpg">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -346,541 +305,74 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/07/17/vue组件/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://kisscode.oschina.io/blog/2017/07/19/js-code/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
 
-
-
-
-
   
-    <article id="post-跨域问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/30/跨域问题/">跨域问题</a>
-    </h1>
   
-
-        
-        <a href="/blog/2017/06/30/跨域问题/" class="archive-article-date">
-  	<time datetime="2017-06-30T05:20:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="跨域问题"><a href="#跨域问题" class="headerlink" title="跨域问题"></a>跨域问题</h2><p>跨域访问是前后端开发中常常遇到的问题 采用cors或部署的时候使用nginx反向代理都是可以解决跨域访问的问题的</p>
-<h3 id="node-express-解决跨域"><a href="#node-express-解决跨域" class="headerlink" title="node+express 解决跨域"></a>node+express 解决跨域</h3><p>vue-resource代码(其实就是ajax技术)：<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">this</span>.$http.get(&#123;<span class="attr">url</span>:<span class="string">"http://localhost:3000/getdata"</span>&#125;)</div><div class="line">.then(<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(data)</div><div class="line">&#125;,<span class="function"><span class="keyword">function</span> (<span class="params">error</span>) </span>&#123;&#125;);</div><div class="line"><span class="string">``</span><span class="string">`    </span></div><div class="line">nodejs部分：    </div><div class="line">`<span class="string">``</span>js</div><div class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</div><div class="line"><span class="keyword">var</span> app = express();</div><div class="line"><span class="comment">//设置跨域访问 控制好响应头</span></div><div class="line">app.all(<span class="string">'*'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res, next</span>) </span>&#123;</div><div class="line">    res.header(<span class="string">"Access-Control-Allow-Origin"</span>, <span class="string">"*"</span>);</div><div class="line">    res.header(<span class="string">"Access-Control-Allow-Headers"</span>, <span class="string">"X-Requested-With"</span>);</div><div class="line">    res.header(<span class="string">"Access-Control-Allow-Methods"</span>,<span class="string">"PUT,POST,GET,DELETE,OPTIONS"</span>);</div><div class="line">    res.header(<span class="string">"X-Powered-By"</span>,<span class="string">' 3.2.1'</span>)</div><div class="line">    res.header(<span class="string">"Content-Type"</span>, <span class="string">"application/json;charset=utf-8"</span>);</div><div class="line">    next();</div><div class="line">&#125;);</div><div class="line"></div><div class="line">app.get(<span class="string">'/getdata'</span>, <span class="function"><span class="keyword">function</span>(<span class="params">req, res</span>) </span>&#123;</div><div class="line">    res.send(&#123;<span class="attr">id</span>:req.params.id, <span class="attr">name</span>: req.params.password&#125;);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>);</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'Listening on port 3000...'</span>);</div></pre></td></tr></table></figure></p>
-<h3 id="http-proxy-middleware-解决跨域问题-只能在开发环境中使用"><a href="#http-proxy-middleware-解决跨域问题-只能在开发环境中使用" class="headerlink" title="http-proxy-middleware 解决跨域问题 只能在开发环境中使用"></a>http-proxy-middleware 解决跨域问题 只能在开发环境中使用</h3><p>proxyTable: {<br>  ‘/list’: {<br>    target: ‘<a href="http://api.xxxxxxxx.com" target="_blank" rel="external">http://api.xxxxxxxx.com</a>‘,<br>    changeOrigin: true,<br>    pathRewrite: {<br>      ‘^/list’: ‘’<br>    }<br>  }<br>}<br>vue-cli的这个设置来自于其使用的插件http-proxy-middleware<br>github：<a href="https://github.com/chimurai/http-proxy-middleware" target="_blank" rel="external">https://github.com/chimurai/http-proxy-middleware</a><br>深入了解的话可以看该插件配置说明，似乎还支持websocket，很强大的插件。</p>
-<h3 id="webpack-dev-server-设置代理解决跨域问题-只能在开发环境中使用"><a href="#webpack-dev-server-设置代理解决跨域问题-只能在开发环境中使用" class="headerlink" title="webpack-dev-server 设置代理解决跨域问题 只能在开发环境中使用"></a>webpack-dev-server 设置代理解决跨域问题 只能在开发环境中使用</h3><p>详解见webpack的配置 (webpack-dev-server配置)[<a href="https://doc.webpack-china.org/configuration/dev-server/" target="_blank" rel="external">https://doc.webpack-china.org/configuration/dev-server/</a>]<br>webpack-dev-server 设置代理 <a href="http://www.jianshu.com/p/3bdff821f859" target="_blank" rel="external">http://www.jianshu.com/p/3bdff821f859</a><br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//webpack 中dev-server设置带来 解决跨域问题</span></div><div class="line"><span class="built_in">module</span>.exports = &#123;</div><div class="line"> ...此处省略一万字</div><div class="line"></div><div class="line"> <span class="comment">// webpack-dev-server的配置</span></div><div class="line"> devServer: &#123;</div><div class="line"> <span class="attr">historyApiFallback</span>: <span class="literal">true</span>,</div><div class="line"> <span class="attr">hot</span>: <span class="literal">true</span>,</div><div class="line"> <span class="attr">inline</span>: <span class="literal">true</span>,</div><div class="line"> <span class="attr">progress</span>: <span class="literal">true</span>,</div><div class="line"> <span class="attr">port</span>: <span class="number">3000</span>,</div><div class="line"> <span class="attr">host</span>: <span class="string">'10.0.0.9'</span>,</div><div class="line"> <span class="attr">proxy</span>: &#123;</div><div class="line"> <span class="string">'/test/*'</span>: &#123;</div><div class="line">     <span class="attr">target</span>: <span class="string">'http://localhost'</span>,</div><div class="line">     <span class="attr">changeOrigin</span>: <span class="literal">true</span>,</div><div class="line">     <span class="attr">secure</span>: <span class="literal">false</span></div><div class="line">    &#125;</div><div class="line"> &#125;</div><div class="line"> &#125;,</div><div class="line">&#125;;</div></pre></td></tr></table></figure></p>
-<h3 id="nginx-设置代理-解决跨域问题"><a href="#nginx-设置代理-解决跨域问题" class="headerlink" title="nginx 设置代理 解决跨域问题"></a>nginx 设置代理 解决跨域问题</h3><p>常用实例 采用nginx反向代理来解决跨域问题<br><figure class="highlight nginx"><figcaption><span>js</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">location</span> /api &#123;</div><div class="line">  <span class="attribute">rewrite</span> <span class="regexp"> ^.+apis/?(.*)$</span> /<span class="variable">$1</span> <span class="literal">break</span>;</div><div class="line">  <span class="attribute">include</span>  uwsgi_params;</div><div class="line">  <span class="attribute">proxy_pass</span>   http://localhost:1894;</div><div class="line"> &#125;</div></pre></td></tr></table></figure></p>
-<p>eg 开发中常用 </p>
-<p>配置<code>localhost</code><br>使用 localhost  127.0.0.1 本地IP都可以进行访问</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"> server &#123;</div><div class="line">        listen       80;</div><div class="line">        server_name  localhsot;</div><div class="line">        #charset koi8-r;</div><div class="line"></div><div class="line">        #access_log  logs/host.access.log  main;</div><div class="line"></div><div class="line">        location / &#123;</div><div class="line">          ### 配置成本地webpack打包生成的路径</div><div class="line">          root    D:/infore/infore-web/dist/;</div><div class="line">          index  index.html index.htm;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        location /api &#123;</div><div class="line">            ### 接口代理请求地址</div><div class="line">            proxy_pass http://192.168.31.52:8089/api;</div><div class="line">            proxy_redirect off;</div><div class="line">            proxy_set_header X-Real-IP $remote_addr;</div><div class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">            # proxy_cookie_path /disconf /api;</div><div class="line">            # proxy_set_header   Cookie $http_cookie;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">###</div></pre></td></tr></table></figure>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/30/跨域问题/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
+    <a href="/blog/2017/07/17/vue组件/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">vue组件</div>
+      <i class="icon-circle-right"></i>
+    </a>
   
-    <article id="post-小知识点集汇二" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/17/小知识点集汇二/">小知识点集汇二</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/17/小知识点集汇二/" class="archive-article-date">
-  	<time datetime="2017-06-17T09:35:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="小知识点集汇二"><a href="#小知识点集汇二" class="headerlink" title="小知识点集汇二"></a>小知识点集汇二</h2><h3 id="短网址生成"><a href="#短网址生成" class="headerlink" title="短网址生成"></a>短网址生成</h3><p>微信等部分网址不支持中文路径的识别 可以采用短网址生成器来生成新的短网址坐map映射</p>
-<blockquote>
-<p><a href="http://dwz.cn/" target="_blank" rel="external">http://dwz.cn/</a> 百度短网址生成地址 还要对应api可以对接</p>
-</blockquote>
-<h3 id="地图慧-直接利用数据-结合地图-生成相对应的表格"><a href="#地图慧-直接利用数据-结合地图-生成相对应的表格" class="headerlink" title="地图慧  直接利用数据 结合地图 生成相对应的表格"></a>地图慧  直接利用数据 结合地图 生成相对应的表格</h3><p><a href="http://c.dituhui.com/" target="_blank" rel="external">http://c.dituhui.com/</a></p>
-<h3 id="TWaver-HTML5-3D-商用软件-3D立体展示解决方案"><a href="#TWaver-HTML5-3D-商用软件-3D立体展示解决方案" class="headerlink" title="TWaver HTML5 3D 商用软件 3D立体展示解决方案"></a>TWaver HTML5 3D 商用软件 3D立体展示解决方案</h3><p><a href="http://www.servasoft.com" target="_blank" rel="external">http://www.servasoft.com</a></p>
-<h3 id="YML-配置文件的书写"><a href="#YML-配置文件的书写" class="headerlink" title="YML 配置文件的书写"></a>YML 配置文件的书写</h3><p><a href="http://www.ruanyifeng.com/blog/2016/07/yaml.html?f=tt" target="_blank" rel="external">阮一峰YAML教程</a></p>
-<h3 id="for-in-遍历对象的属性"><a href="#for-in-遍历对象的属性" class="headerlink" title="for ... in 遍历对象的属性"></a><code>for ... in</code> 遍历对象的属性</h3><p><code>for ... of</code> 遍历数组<br><code>Array.forEach(value, index,orgDataArray)</code> 遍历</p>
-<h3 id="cdn网站推荐-https-cdnjs-com"><a href="#cdn网站推荐-https-cdnjs-com" class="headerlink" title="cdn网站推荐 https://cdnjs.com/"></a>cdn网站推荐 <a href="https://cdnjs.com/" target="_blank" rel="external">https://cdnjs.com/</a></h3><p>当然，用别人的 CDN 都是不保险的，所以建议在 CDN 读取失败的时候从自己服务器提供：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;script src=<span class="string">"//http://lib.sinaapp.com/js/jquery/1.7.2/jquery.min.js"</span>&gt;<span class="xml"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">   </span></span></div><div class="line"><span class="keyword">if</span> (!<span class="built_in">window</span>.jQuery) &#123;    </div><div class="line">  <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);    </div><div class="line">  script.src = <span class="string">"/js/jquery.min.js"</span>;    <span class="built_in">document</span>.body.appendChild(script);</div><div class="line">&#125;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"></div><div class="line">作者：顾轶灵</div><div class="line">链接：https:<span class="comment">//www.zhihu.com/question/20227463/answer/14403302</span></div><div class="line">来源：知乎</div><div class="line">著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</div></pre></td></tr></table></figure>
-<h3 id="关于路基-网页路径-最好是写成相对路径"><a href="#关于路基-网页路径-最好是写成相对路径" class="headerlink" title="关于路基 网页路径 最好是写成相对路径"></a>关于路基 网页路径 最好是写成相对路径</h3><p>资源加载 https 和 http  或其他默认协议<br><code>http://cdnjs.com/xxx.js</code> 错<br><code>//cdnjs.com/xxx.js</code>   对</p>
-<p><code>/assets/img/xxx.jpg</code>  绝对路径 采用/ 标识根路径 不推荐<br><code>./assets/img/xxx/jpg</code>  推荐 <code>./</code>当前同级目录  <code>../</code>上级目录 <code>./xxx/</code> 多级目录</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/17/小知识点集汇二/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-视频直播流web播放" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/17/视频直播流web播放/">视频直播流web播放</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/17/视频直播流web播放/" class="archive-article-date">
-  	<time datetime="2017-06-17T06:31:27.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="视频直播放映解决方案"><a href="#视频直播放映解决方案" class="headerlink" title="视频直播放映解决方案"></a>视频直播放映解决方案</h1><h4 id="分为PC-web端和移动web端"><a href="#分为PC-web端和移动web端" class="headerlink" title="分为PC-web端和移动web端"></a>分为PC-web端和移动web端</h4><blockquote>
-<p>pc-web端采用<a href="http://www.ckplayer.com/" target="_blank" rel="external">Ckplay播放器</a> 通过RTMP协议 传输视频流<br>mobile-web端采用h5 <code>video</code>标签 通过HLS 传输视频流</p>
-</blockquote>
-<h4 id="核心代码示例"><a href="#核心代码示例" class="headerlink" title="核心代码示例"></a>核心代码示例</h4><ul>
-<li>pc-web端 ckplayer</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">&lt;!--pc-web端 ckplayer--&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"a1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">src</span>=<span class="string">"ckplayer/ckplayer.js"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span>&gt;</span><span class="javascript"></span></div><div class="line">	<span class="keyword">var</span> flashvars=&#123;</div><div class="line">    <span class="comment">//配置视频地址</span></div><div class="line">		f:<span class="string">'rtmp://192.168.31.31:1935/live/stream'</span>,</div><div class="line">		<span class="attr">c</span>:<span class="number">0</span>,</div><div class="line">		<span class="attr">b</span>:<span class="number">1</span>,</div><div class="line">    <span class="comment">//配置封面</span></div><div class="line">		i:<span class="string">'http://www.ckplayer.com/static/images/cqdw.jpg'</span></div><div class="line">		&#125;;</div><div class="line">    <span class="comment">// 具体配置 参考和查看 [http://www.ckplayer.com/tool/flashvars.htm](http://www.ckplayer.com/tool/flashvars.htm)</span></div><div class="line">	<span class="keyword">var</span> params=&#123;<span class="attr">bgcolor</span>:<span class="string">'#FFF'</span>,<span class="attr">allowFullScreen</span>:<span class="literal">true</span>,<span class="attr">allowScriptAccess</span>:<span class="string">'always'</span>,<span class="attr">wmode</span>:<span class="string">'transparent'</span>&#125;;</div><div class="line">	CKobject.embedSWF(<span class="string">'ckplayer/ckplayer.swf'</span>,<span class="string">'a1'</span>,<span class="string">'ckplayer_a1'</span>,<span class="string">'600'</span>,<span class="string">'400'</span>,flashvars,params);</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
-<ul>
-<li>mobile-web 端[HTML5 player]<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">video</span> <span class="attr">controls</span> <span class="attr">autoplay</span> <span class="attr">webkit-playsinline</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">source</span> <span class="attr">src</span>=<span class="string">"http://192.168.31.31:9090/live/stream.m3u8"</span> <span class="attr">type</span>=<span class="string">"application/vnd.apple.mpegurl"</span>&gt;</span></div><div class="line">   <span class="tag">&lt;<span class="name">p</span> <span class="attr">class</span>=<span class="string">"warin"</span>&gt;</span>Your browser does not support HTML5 video<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">video</span>&gt;</span></div></pre></td></tr></table></figure>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/17/视频直播流web播放/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-github个人博客" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/15/github个人博客/">github个人博客</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/15/github个人博客/" class="archive-article-date">
-  	<time datetime="2017-06-15T02:48:05.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>  今天把博客弄到github上,计划以后再github上面写文章 学习笔记 图片等 300M的空间 也应该够了</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">我</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/15/github个人博客/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-小知识" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/14/小知识/">小知识</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/14/小知识/" class="archive-article-date">
-  	<time datetime="2017-06-14T09:50:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html"><a href="#vue-spa-滚动行为的保存-需要启用history模式-参看https-router-vuejs-org-zh-cn-advanced-scroll-behavior-html" class="headerlink" title="vue spa 滚动行为的保存 需要启用history模式 参看https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html"></a>vue spa 滚动行为的保存 需要启用history模式 参看<a href="https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html" target="_blank" rel="external">https://router.vuejs.org/zh-cn/advanced/scroll-behavior.html</a></h4><h4 id="flex布局-flex布局的兼容性-部分需要添加-webkit前缀"><a href="#flex布局-flex布局的兼容性-部分需要添加-webkit前缀" class="headerlink" title="flex布局 flex布局的兼容性 部分需要添加 -webkit前缀"></a>flex布局 flex布局的兼容性 部分需要添加 <code>-webkit</code>前缀</h4><blockquote>
-<p>理清 主轴 侧轴(和主轴垂直的)  <code>justify-content</code> 设置主轴的分布 <code>align-items</code>设置侧轴的分布</p>
-</blockquote>
-<h4 id="JSON-对象最后一个属性列-结尾-别用"><a href="#JSON-对象最后一个属性列-结尾-别用" class="headerlink" title="JSON 对象最后一个属性列 结尾 别用,"></a>JSON 对象最后一个属性列 结尾 别用<code>,</code></h4><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> json = &#123;</div><div class="line">    <span class="string">"name"</span>:<span class="string">'张三'</span>,</div><div class="line">    <span class="string">"age"</span> : <span class="number">24</span>    <span class="comment">// ', 这里别打逗号或分号 养成好的习惯</span></div><div class="line">    </div><div class="line">&#125;</div><div class="line">最好启用 eslint来规范书写习惯</div></pre></td></tr></table></figure>
-<h4 id="array-splice-slice"><a href="#array-splice-slice" class="headerlink" title="array splice slice"></a>array splice slice</h4><ul>
-<li>slice 浅复制数组 slice(index, end);</li>
-<li>splice 删除和添加数组元素 splice(index, count. [….add-item]);</li>
-</ul>
-<h4 id="国内公开API-可用来写demo-测试数据"><a href="#国内公开API-可用来写demo-测试数据" class="headerlink" title="国内公开API 可用来写demo 测试数据"></a>国内公开API 可用来写demo 测试数据</h4><p><a href="https://github.com/jokermonn/-Api/blob/master/DoubanMovie.md" target="_blank" rel="external">https://github.com/jokermonn/-Api/blob/master/DoubanMovie.md</a> </p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">技术文章</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/14/小知识/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-美图" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/14/美图/">美图</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/14/美图/" class="archive-article-date">
-  	<time datetime="2017-06-14T08:36:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="分享几张手机桌面"><a href="#分享几张手机桌面" class="headerlink" title="分享几张手机桌面"></a>分享几张手机桌面</h4><p><img src="./assets/img/001.jpg" alt="001.jpg"><br><img src="./assets/img/002.jpg" alt="002.jpg"><br><img src="./assets/img/003.jpg" alt="003.jpg"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">美图分享</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/14/美图/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-nginx学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/14/nginx学习笔记/">nginx学习笔记</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/14/nginx学习笔记/" class="archive-article-date">
-  	<time datetime="2017-06-14T05:24:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h4 id="nginx能做什么"><a href="#nginx能做什么" class="headerlink" title="nginx能做什么"></a>nginx能做什么</h4><blockquote>
-<p><a href="http://www.raye.wang/2017/02/24/quan-mian-liao-jie-nginxdao-di-neng-zuo-shi-yao/?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="external">全面了解Nginx主要应用场景</a></p>
-<ul>
-<li>反向代理</li>
-<li>负载均衡 RR(默认) 权重 ip_hash  fair url_hash</li>
-<li>http服务器</li>
-<li>正向代理</li>
-</ul>
-</blockquote>
-<h3 id="反向代理（ReverseProxy）就是通过代理服务器来-接受internet的连接请求-然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端"><a href="#反向代理（ReverseProxy）就是通过代理服务器来-接受internet的连接请求-然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端" class="headerlink" title="反向代理（ReverseProxy）就是通过代理服务器来 接受internet的连接请求 然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端"></a>反向代理（ReverseProxy）就是通过代理服务器来 接受internet的连接请求 然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">server&#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 10M;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        proxy_pass http://localhost:8080;</div><div class="line">        proxy_set_header Host $host:$server_port;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">保存配置文件后重启 nginx 这样当我们访问localhost 相当于访问localhost:8080了</div></pre></td></tr></table></figure>
-<p>常用实例 采用nginx反向代理来解决跨域问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">location /api &#123;</div><div class="line">rewrite  ^.+apis/?(.*)$ /$1 break;</div><div class="line">include  uwsgi_params;</div><div class="line">   proxy_pass   http://localhost:1894;</div><div class="line">&#125;&#125;</div></pre></td></tr></table></figure>
-<p>这样 更改请求地址为 <code>/api</code> 虚拟的路径和 访问的静态页面就处于同源了<br>可以使用这样的来处理跨域问题</p>
-<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>默认按照请求顺序分配到不同的后端服务器 如果后端服务器down掉 能自己剔除<br>简单配置如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">upstream test&#123;</div><div class="line">  #  server localhost: 8081 weight=3; server localhost: 8081 weight=7; 权重</div><div class="line">  # ip_hast </div><div class="line">  # fair 按照响应时间来分配 分配时间短的优先分配 需要第三方拓展包</div><div class="line">    server localhost:8081;</div><div class="line">    server localhost:8080;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 81;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 1024M;</div><div class="line">    </div><div class="line">    localtion / &#123;</div><div class="line">        proxy_pass http://test;</div><div class="line">        proxy_set_header Host $host:$server_port;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    </div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>HTTP  服务器</p>
-<p>eg1: 静态资源服务器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 1024M;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        root e:\wwwrooot;</div><div class="line">        index index.html;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>动静分离<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">upstream test &#123;</div><div class="line">    server localhost:8080;</div><div class="line">    server localhost:8081;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">        index index.html;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    # 所有静态请求都有nginx处理 存放目录为html</div><div class="line">    location ~ \.(gif|jpg|jpeg|png|bmp|css|js)$ &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    # 动态请求 交由代理服务处理</div><div class="line">    location ~ \.(jsp|do|action)$ &#123;</div><div class="line">        proxy_pass http://test;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    error_page 500 502 503 504 /50x.html</div><div class="line">    location = /50x.html &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>这样的话 我们可以把html 等静态资源放在文件目录下  动态的话可以 根据 localtion后面的正则 匹配到代理服务器上</p>
-<h3 id="linux"><a href="#linux" class="headerlink" title="linux"></a>linux</h3><p>nginx -s reload</p>
-<h3 id="window-热重启"><a href="#window-热重启" class="headerlink" title="window  热重启"></a>window  热重启</h3><p>nginx.exe -s reload</p>
-<h3 id="代码示例-12308-测试环境"><a href="#代码示例-12308-测试环境" class="headerlink" title="代码示例 12308 测试环境"></a>代码示例 12308 测试环境</h3><blockquote>
-<p>nginx.conf  base  通过载入  <code>/nginx_vhos/</code> 目录下的所有文件<br> <code>include /usr/local/nginx/conf/nginx_vhost/*.conf</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line">[dubbo@hd-node2 conf]$ vi nginx.conf</div><div class="line"></div><div class="line">    keepalive_timeout   65;</div><div class="line">    server_tokens       off;</div><div class="line">    tcp_nopush          on;</div><div class="line"></div><div class="line">    gzip                on;</div><div class="line">    gzip_comp_level     5;</div><div class="line">    gzip_min_length     1k;</div><div class="line">    gzip_buffers        4 16k;</div><div class="line">    gzip_disable        &quot;MSIE [1-6]\.(?!.*SV1)&quot;;</div><div class="line">    gzip_types          text/plain application/x-javascript text/css application/xml text/javascript application/javascript application/json;</div><div class="line">    gzip_http_version   1.0;</div><div class="line">    gzip_vary           on;</div><div class="line"></div><div class="line">    log_format main &apos;$remote_addr $http_x_forwarded_for [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$request_time&quot; $request_body &quot;$upstream_response_time&quot;&apos;;</div><div class="line">    access_log on;</div><div class="line">    server_names_hash_max_size    4096;</div><div class="line">&#125;</div><div class="line"></div><div class="line">http &#123;</div><div class="line">    include       /usr/local/nginx/conf/mime.types;</div><div class="line">    default_type  application/octet-stream;</div><div class="line"></div><div class="line">    sendfile            on;</div><div class="line">    output_buffers      1 128k;</div><div class="line">    log_not_found       off;</div><div class="line">    keepalive_timeout   65;</div><div class="line">    server_tokens       off;</div><div class="line">    tcp_nopush          on;</div><div class="line"></div><div class="line">    gzip                on;</div><div class="line">    gzip_comp_level     5;</div><div class="line">    gzip_min_length     1k;</div><div class="line">    gzip_buffers        4 16k;</div><div class="line">    gzip_disable        &quot;MSIE [1-6]\.(?!.*SV1)&quot;;</div><div class="line">    gzip_types          text/plain application/x-javascript text/css application/xml text/javascript application/javascript application/json;</div><div class="line">    gzip_http_version   1.0;</div><div class="line">    gzip_vary           on;</div><div class="line"></div><div class="line">    log_format main &apos;$remote_addr $http_x_forwarded_for [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$request_time&quot; $request_body &quot;$upstream_response_time&quot;&apos;;</div><div class="line">    access_log on;</div><div class="line">    server_names_hash_max_size    4096;</div><div class="line">    server_names_hash_bucket_size 128;</div><div class="line"></div><div class="line">    client_header_buffer_size     32k;</div><div class="line">    large_client_header_buffers   4 32k;</div><div class="line">    client_max_body_size          100m;</div><div class="line"></div><div class="line">    proxy_connect_timeout         5;</div><div class="line">    proxy_read_timeout            60;</div><div class="line">    proxy_send_timeout            5;</div><div class="line">    proxy_buffer_size             16k;</div><div class="line">    proxy_buffers                 4 64k;</div><div class="line">    proxy_busy_buffers_size       128k;</div><div class="line">    proxy_temp_file_write_size    128k;</div><div class="line">    proxy_hide_header             Vary;</div><div class="line">    proxy_set_header              Accept-Encoding ”;</div><div class="line">    proxy_set_header              Host    $host;</div><div class="line">    proxy_set_header              Referer $http_referer;</div><div class="line">    proxy_set_header              Cookie  $http_cookie;</div><div class="line">    proxy_set_header              X-Real-IP  $remote_addr;</div><div class="line">    proxy_set_header              X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">    include /usr/local/nginx/conf/nginx_vhost/*.conf;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-</blockquote>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/14/nginx学习笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-
-
-
-
-  
-    <article id="post-yarn学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/blog/2017/06/14/yarn学习笔记/">yarn学习笔记</a>
-    </h1>
-  
-
-        
-        <a href="/blog/2017/06/14/yarn学习笔记/" class="archive-article-date">
-  	<time datetime="2017-06-14T02:03:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="关于yarn和npm"><a href="#关于yarn和npm" class="headerlink" title="关于yarn和npm "></a><a href="http://web.jobbole.com/88459/" target="_blank" rel="external">关于yarn和npm </a></h3><p>yarn是npm的升级版本 (新工具) yarn.lock</p>
-<ul>
-<li>yarn add (npm install  yarn install)</li>
-<li>yarn global</li>
-<li>yarn why </li>
-</ul>
-<p>yarn 更安全 速度更快 版本锁定 环境更统一</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/blog/2017/06/14/yarn学习笔记/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
+</nav>
 
 
 
@@ -888,9 +380,21 @@
 
   
   
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><a class="extend next" rel="next" href="/blog/page/2/">Next &raquo;</a>
-    </nav>
+  
+  <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+<script>
+  var cloudTieConfig = {
+    url: "http://kisscode.oschina.io/blog/blog/2017/07/19/js-code/", 
+    sourceId: "js-code",
+    productKey: "true",
+    target: "cloud-tie-wrapper"
+  };
+</script>
+<script src="//img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+  
+
+  
+
   
 
 
@@ -913,8 +417,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
