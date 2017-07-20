@@ -160,6 +160,153 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-nginx学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2017/06/14/nginx学习笔记/">nginx学习笔记</a>
+    </h1>
+  
+
+        
+        <a href="/blog/2017/06/14/nginx学习笔记/" class="archive-article-date">
+  	<time datetime="2017-06-14T05:24:15.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h4 id="nginx能做什么"><a href="#nginx能做什么" class="headerlink" title="nginx能做什么"></a>nginx能做什么</h4><blockquote>
+<p><a href="http://www.raye.wang/2017/02/24/quan-mian-liao-jie-nginxdao-di-neng-zuo-shi-yao/?hmsr=toutiao.io&amp;utm_medium=toutiao.io&amp;utm_source=toutiao.io" target="_blank" rel="external">全面了解Nginx主要应用场景</a></p>
+<ul>
+<li>反向代理</li>
+<li>负载均衡 RR(默认) 权重 ip_hash  fair url_hash</li>
+<li>http服务器</li>
+<li>正向代理</li>
+</ul>
+</blockquote>
+<h3 id="反向代理（ReverseProxy）就是通过代理服务器来-接受internet的连接请求-然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端"><a href="#反向代理（ReverseProxy）就是通过代理服务器来-接受internet的连接请求-然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端" class="headerlink" title="反向代理（ReverseProxy）就是通过代理服务器来 接受internet的连接请求 然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端"></a>反向代理（ReverseProxy）就是通过代理服务器来 接受internet的连接请求 然后将请求转发给内部网络上的服务器，并将服务器上得到的结果返回给请求客户端</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">server&#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 10M;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        proxy_pass http://localhost:8080;</div><div class="line">        proxy_set_header Host $host:$server_port;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">保存配置文件后重启 nginx 这样当我们访问localhost 相当于访问localhost:8080了</div></pre></td></tr></table></figure>
+<p>常用实例 采用nginx反向代理来解决跨域问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">location /api &#123;</div><div class="line">rewrite  ^.+apis/?(.*)$ /$1 break;</div><div class="line">include  uwsgi_params;</div><div class="line">   proxy_pass   http://localhost:1894;</div><div class="line">&#125;&#125;</div></pre></td></tr></table></figure>
+<p>这样 更改请求地址为 <code>/api</code> 虚拟的路径和 访问的静态页面就处于同源了<br>可以使用这样的来处理跨域问题</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>默认按照请求顺序分配到不同的后端服务器 如果后端服务器down掉 能自己剔除<br>简单配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">upstream test&#123;</div><div class="line">  #  server localhost: 8081 weight=3; server localhost: 8081 weight=7; 权重</div><div class="line">  # ip_hast </div><div class="line">  # fair 按照响应时间来分配 分配时间短的优先分配 需要第三方拓展包</div><div class="line">    server localhost:8081;</div><div class="line">    server localhost:8080;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 81;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 1024M;</div><div class="line">    </div><div class="line">    localtion / &#123;</div><div class="line">        proxy_pass http://test;</div><div class="line">        proxy_set_header Host $host:$server_port;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    </div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>HTTP  服务器</p>
+<p>eg1: 静态资源服务器<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    client_max_body_size 1024M;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        root e:\wwwrooot;</div><div class="line">        index index.html;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>动静分离<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">upstream test &#123;</div><div class="line">    server localhost:8080;</div><div class="line">    server localhost:8081;</div><div class="line">&#125;</div><div class="line"></div><div class="line">server &#123;</div><div class="line">    listen 80;</div><div class="line">    server_name localhost;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">        index index.html;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    # 所有静态请求都有nginx处理 存放目录为html</div><div class="line">    location ~ \.(gif|jpg|jpeg|png|bmp|css|js)$ &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    # 动态请求 交由代理服务处理</div><div class="line">    location ~ \.(jsp|do|action)$ &#123;</div><div class="line">        proxy_pass http://test;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    error_page 500 502 503 504 /50x.html</div><div class="line">    location = /50x.html &#123;</div><div class="line">        root e:\wwwroot;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这样的话 我们可以把html 等静态资源放在文件目录下  动态的话可以 根据 localtion后面的正则 匹配到代理服务器上</p>
+<h3 id="linux"><a href="#linux" class="headerlink" title="linux"></a>linux</h3><p>nginx -s reload</p>
+<h3 id="window-热重启"><a href="#window-热重启" class="headerlink" title="window  热重启"></a>window  热重启</h3><p>nginx.exe -s reload</p>
+<h3 id="代码示例-12308-测试环境"><a href="#代码示例-12308-测试环境" class="headerlink" title="代码示例 12308 测试环境"></a>代码示例 12308 测试环境</h3><blockquote>
+<p>nginx.conf  base  通过载入  <code>/nginx_vhos/</code> 目录下的所有文件<br> <code>include /usr/local/nginx/conf/nginx_vhost/*.conf</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div></pre></td><td class="code"><pre><div class="line">[dubbo@hd-node2 conf]$ vi nginx.conf</div><div class="line"></div><div class="line">    keepalive_timeout   65;</div><div class="line">    server_tokens       off;</div><div class="line">    tcp_nopush          on;</div><div class="line"></div><div class="line">    gzip                on;</div><div class="line">    gzip_comp_level     5;</div><div class="line">    gzip_min_length     1k;</div><div class="line">    gzip_buffers        4 16k;</div><div class="line">    gzip_disable        &quot;MSIE [1-6]\.(?!.*SV1)&quot;;</div><div class="line">    gzip_types          text/plain application/x-javascript text/css application/xml text/javascript application/javascript application/json;</div><div class="line">    gzip_http_version   1.0;</div><div class="line">    gzip_vary           on;</div><div class="line"></div><div class="line">    log_format main &apos;$remote_addr $http_x_forwarded_for [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$request_time&quot; $request_body &quot;$upstream_response_time&quot;&apos;;</div><div class="line">    access_log on;</div><div class="line">    server_names_hash_max_size    4096;</div><div class="line">&#125;</div><div class="line"></div><div class="line">http &#123;</div><div class="line">    include       /usr/local/nginx/conf/mime.types;</div><div class="line">    default_type  application/octet-stream;</div><div class="line"></div><div class="line">    sendfile            on;</div><div class="line">    output_buffers      1 128k;</div><div class="line">    log_not_found       off;</div><div class="line">    keepalive_timeout   65;</div><div class="line">    server_tokens       off;</div><div class="line">    tcp_nopush          on;</div><div class="line"></div><div class="line">    gzip                on;</div><div class="line">    gzip_comp_level     5;</div><div class="line">    gzip_min_length     1k;</div><div class="line">    gzip_buffers        4 16k;</div><div class="line">    gzip_disable        &quot;MSIE [1-6]\.(?!.*SV1)&quot;;</div><div class="line">    gzip_types          text/plain application/x-javascript text/css application/xml text/javascript application/javascript application/json;</div><div class="line">    gzip_http_version   1.0;</div><div class="line">    gzip_vary           on;</div><div class="line"></div><div class="line">    log_format main &apos;$remote_addr $http_x_forwarded_for [$time_local] &quot;$request&quot; $status $body_bytes_sent &quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$request_time&quot; $request_body &quot;$upstream_response_time&quot;&apos;;</div><div class="line">    access_log on;</div><div class="line">    server_names_hash_max_size    4096;</div><div class="line">    server_names_hash_bucket_size 128;</div><div class="line"></div><div class="line">    client_header_buffer_size     32k;</div><div class="line">    large_client_header_buffers   4 32k;</div><div class="line">    client_max_body_size          100m;</div><div class="line"></div><div class="line">    proxy_connect_timeout         5;</div><div class="line">    proxy_read_timeout            60;</div><div class="line">    proxy_send_timeout            5;</div><div class="line">    proxy_buffer_size             16k;</div><div class="line">    proxy_buffers                 4 64k;</div><div class="line">    proxy_busy_buffers_size       128k;</div><div class="line">    proxy_temp_file_write_size    128k;</div><div class="line">    proxy_hide_header             Vary;</div><div class="line">    proxy_set_header              Accept-Encoding ”;</div><div class="line">    proxy_set_header              Host    $host;</div><div class="line">    proxy_set_header              Referer $http_referer;</div><div class="line">    proxy_set_header              Cookie  $http_cookie;</div><div class="line">    proxy_set_header              X-Real-IP  $remote_addr;</div><div class="line">    proxy_set_header              X-Forwarded-For $proxy_add_x_forwarded_for;</div><div class="line">    include /usr/local/nginx/conf/nginx_vhost/*.conf;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/blog/2017/06/14/nginx学习笔记/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
+    <article id="post-yarn学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/blog/2017/06/14/yarn学习笔记/">yarn学习笔记</a>
+    </h1>
+  
+
+        
+        <a href="/blog/2017/06/14/yarn学习笔记/" class="archive-article-date">
+  	<time datetime="2017-06-14T02:03:38.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-06-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="关于yarn和npm"><a href="#关于yarn和npm" class="headerlink" title="关于yarn和npm "></a><a href="http://web.jobbole.com/88459/" target="_blank" rel="external">关于yarn和npm </a></h3><p>yarn是npm的升级版本 (新工具) yarn.lock</p>
+<ul>
+<li>yarn add (npm install  yarn install)</li>
+<li>yarn global</li>
+<li>yarn why </li>
+</ul>
+<p>yarn 更安全 速度更快 版本锁定 环境更统一</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">学习笔记</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/blog/2017/06/14/yarn学习笔记/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+
+
+
+
+  
     <article id="post-sass学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -485,15 +632,15 @@ return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){v
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">技术文章</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">我</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">学习笔记</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">技术文章</a>
               </li>
              
               <li class="article-tag-list-item">
