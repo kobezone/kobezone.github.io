@@ -1,0 +1,58 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>五子棋 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>#box{position:relative;width:min(94vw,600px);margin:0 auto;border:3px solid #222;border-radius:12px;overflow:hidden}canvas{display:block;width:100%;aspect-ratio:1;background:#e9b96e;cursor:pointer}
+#turn{font-size:1.3rem;font-weight:800;text-align:center;margin:6px 0}.lv .btn.on{background:#e8590c;color:#fff}</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>⚫ 五子棋</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>你赢了</span><b id="w">0</b></div><div class="stat"><span>电脑赢</span><b id="l">0</b></div><div class="stat"><span>和棋</span><b id="d">0</b></div></div>
+<div class="controls lv"><button class="btn" data-lv="0">😊 电脑让着你</button><button class="btn" data-lv="1">🤔 电脑认真下</button></div>
+<div id="turn">你执黑先下</div>
+<div id="box"><canvas id="cv" width="600" height="600"></canvas><div class="overlay" id="ov"><div id="ovt"></div><button class="btn" id="again">再来一盘</button></div></div>
+<div class="controls"><button class="btn green" id="new">🔄 新一盘</button><button class="btn" id="undo">↩️ 悔棋</button><button class="btn blue" id="first">让电脑先下</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul><li>你执<b>黑棋</b>，电脑执<b>白棋</b>，轮流在交叉点上落子。</li><li>谁先把<b>五个</b>同色棋子连成一条线（横、竖、斜都行）谁就赢。</li><li>点棋盘落子；键盘也可以用<b>方向键</b>移动红框，按<b>回车/空格</b>落子。下错了可以悔棋。</li></ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const N=15,cv=document.getElementById('cv'),ctx=cv.getContext('2d'),P=cv.width/(N+1);
+let b,hist,over,human=1,ai=2,turn,cursor={x:7,y:7},lv=Number(localStorage.getItem('laotoule:gmLv')||0),lastMv=null,winLine=null;
+const stat=JSON.parse(localStorage.getItem('laotoule:gomokuStats')||'{"w":0,"l":0,"d":0}');
+function showStat(){['w','l','d'].forEach(k=>document.getElementById(k).textContent=stat[k])}showStat();
+document.querySelectorAll('[data-lv]').forEach(x=>{x.classList.toggle('on',Number(x.dataset.lv)===lv);x.onclick=()=>{lv=Number(x.dataset.lv);localStorage.setItem('laotoule:gmLv',lv);document.querySelectorAll('[data-lv]').forEach(y=>y.classList.toggle('on',y===x))}});
+function init(aiFirst){b=Array.from({length:N},()=>Array(N).fill(0));hist=[];over=false;lastMv=null;winLine=null;document.getElementById('ov').classList.remove('show');
+  if(aiFirst){human=2;ai=1}else{human=1;ai=2}turn=1;setTurn();draw();if(aiFirst)setTimeout(aiMove,300)}
+function setTurn(){document.getElementById('turn').textContent=over?'':(turn===human?'轮到你下（'+(human===1?'黑':'白')+'棋）':'电脑思考中…')}
+const DIRS=[[1,0],[0,1],[1,1],[1,-1]];
+function five(x,y,p){for(const[dx,dy]of DIRS){let line=[[x,y]];for(const s of[1,-1]){let i=1;while(true){const X=x+dx*i*s,Y=y+dy*i*s;if(X<0||Y<0||X>=N||Y>=N||b[Y][X]!==p)break;line.push([X,Y]);i++}}if(line.length>=5)return line}return null}
+function place(x,y,p){b[y][x]=p;hist.push([x,y]);lastMv=[x,y];LTL.beep(p===1?300:420,.06,'square',.04);const w=five(x,y,p);
+  if(w){over=true;winLine=w;draw();end(p===human?'win':'lose');return true}if(hist.length===N*N){over=true;end('draw');return true}turn=3-p;setTurn();draw();return false}
+function end(r){stat[r==='win'?'w':r==='lose'?'l':'d']++;localStorage.setItem('laotoule:gomokuStats',JSON.stringify(stat));showStat();
+  if(r==='win')[523,659,784,1046].forEach((f,k)=>setTimeout(()=>LTL.beep(f,.12,'triangle'),k*120));
+  setTimeout(()=>{document.getElementById('ovt').textContent=r==='win'?'🎉 你赢啦！真厉害！':r==='lose'?'😅 电脑赢了，再来一盘？':'🤝 和棋！';document.getElementById('ov').classList.add('show')},800);setTurn()}
+// 评估：对每个空位计算双方连子形势
+function lineScore(cnt,openEnds){if(cnt>=5)return 1e7;if(openEnds===0)return 0;const t={4:[0,5e4,1e6],3:[0,800,1.2e4],2:[0,60,600],1:[0,5,20]};return t[cnt][openEnds]}
+function pointScore(x,y,p){let s=0;for(const[dx,dy]of DIRS){let cnt=1,open=0;for(const sg of[1,-1]){let i=1;while(true){const X=x+dx*i*sg,Y=y+dy*i*sg;if(X<0||Y<0||X>=N||Y>=N)break;if(b[Y][X]===p){cnt++;i++;continue}if(b[Y][X]===0)open++;break}}s+=lineScore(Math.min(cnt,5),open)}return s}
+function aiMove(){if(over)return;let best=-1,cand=[];if(!hist.length){place(7,7,ai);return}
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++){if(b[y][x])continue;let near=false;for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<N&&Y<N&&b[Y][X]){near=true;break}}if(!near)continue;
+    const atk=pointScore(x,y,ai),def=pointScore(x,y,human);let s=lv===1?atk*1.1+def:atk+def*0.8;
+    if(lv===0)s=s*(0.6+Math.random()*0.8);s+=(7-Math.abs(7-x)+7-Math.abs(7-y))*0.5;
+    if(s>best){best=s;cand=[[x,y]]}else if(s===best)cand.push([x,y])}
+  // 简单模式：偶尔不堵三
+  const [x,y]=cand[Math.random()*cand.length|0];place(x,y,ai)}
+function draw(){ctx.fillStyle='#e9b96e';ctx.fillRect(0,0,cv.width,cv.height);ctx.strokeStyle='#5c3d1e';ctx.lineWidth=1.5;
+  for(let i=0;i<N;i++){ctx.beginPath();ctx.moveTo(P,P*(i+1));ctx.lineTo(P*N,P*(i+1));ctx.stroke();ctx.beginPath();ctx.moveTo(P*(i+1),P);ctx.lineTo(P*(i+1),P*N);ctx.stroke()}
+  ctx.fillStyle='#5c3d1e';[[3,3],[11,3],[7,7],[3,11],[11,11]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(P*(x+1),P*(y+1),4,0,7);ctx.fill()});
+  for(let y=0;y<N;y++)for(let x=0;x<N;x++)if(b[y][x]){const cx=P*(x+1),cy=P*(y+1),g=ctx.createRadialGradient(cx-6,cy-6,2,cx,cy,P*0.45);
+    if(b[y][x]===1){g.addColorStop(0,'#666');g.addColorStop(1,'#000')}else{g.addColorStop(0,'#fff');g.addColorStop(1,'#ccc')}ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,P*0.44,0,7);ctx.fill()}
+  if(lastMv){ctx.fillStyle='#e03131';ctx.beginPath();ctx.arc(P*(lastMv[0]+1),P*(lastMv[1]+1),5,0,7);ctx.fill()}
+  if(winLine){ctx.strokeStyle='#e03131';ctx.lineWidth=4;winLine.forEach(([x,y])=>{ctx.beginPath();ctx.arc(P*(x+1),P*(y+1),P*0.46,0,7);ctx.stroke()})}
+  if(!over&&kbd){ctx.strokeStyle='#e03131';ctx.lineWidth=3;ctx.strokeRect(P*(cursor.x+1)-P/2+3,P*(cursor.y+1)-P/2+3,P-6,P-6)}}
+let kbd=false;
+function humanAt(x,y){if(over||turn!==human||b[y][x])return;if(!place(x,y,human))setTimeout(aiMove,250)}
+cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),sx=(e.clientX-r.left)*cv.width/r.width,sy=(e.clientY-r.top)*cv.height/r.height;const x=Math.round(sx/P)-1,y=Math.round(sy/P)-1;if(x<0||y<0||x>=N||y>=N)return;kbd=false;humanAt(x,y)});
+addEventListener('keydown',e=>{const m={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};if(m[e.key]){e.preventDefault();kbd=true;cursor.x=Math.max(0,Math.min(N-1,cursor.x+m[e.key][0]));cursor.y=Math.max(0,Math.min(N-1,cursor.y+m[e.key][1]));draw()}
+  else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(kbd)humanAt(cursor.x,cursor.y)}});
+document.getElementById('new').onclick=()=>init(false);document.getElementById('again').onclick=()=>init(human===2);document.getElementById('first').onclick=()=>init(true);
+document.getElementById('undo').onclick=()=>{if(over||turn!==human){LTL.toast('现在不能悔棋');return}const k=hist.length>=2?2:0;if(!k||(human===2&&hist.length<3)){LTL.toast('还没下棋呢');return}
+  for(let i=0;i<2;i++){const[x,y]=hist.pop();b[y][x]=0}lastMv=hist.length?hist[hist.length-1]:null;draw()};
+init(false);
+</script></body></html>

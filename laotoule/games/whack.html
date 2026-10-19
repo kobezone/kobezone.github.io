@@ -1,0 +1,38 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>打地鼠 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#field{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:540px;margin:0 auto;background:#8ce99a;border:3px solid #222;border-radius:18px;padding:16px;touch-action:manipulation;user-select:none}
+.hole{position:relative;aspect-ratio:1;border-radius:50%;background:radial-gradient(ellipse at 50% 70%,#5c3d1e 0 45%,#8b5a2b 46% 60%,transparent 61%);overflow:hidden;cursor:pointer;border:none;padding:0}
+.mole{position:absolute;left:12%;width:76%;height:80%;bottom:-80%;transition:bottom .15s;font-size:clamp(2.6rem,14vw,4.6rem);display:flex;align-items:flex-start;justify-content:center;pointer-events:none}
+.hole.up .mole{bottom:8%}.hole.hit .mole{filter:grayscale(1) brightness(1.4);transform:scale(.9)}
+.key{position:absolute;left:50%;transform:translateX(-50%);bottom:3%;z-index:2;font-size:.8rem;font-weight:800;color:#2b8a3e;background:#fff;border-radius:6px;padding:0 5px}
+#bar{height:16px;max-width:540px;margin:0 auto 10px;border:3px solid #222;border-radius:10px;overflow:hidden;background:#fff}#bar div{height:100%;background:#fab005;width:100%}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🔨 打地鼠</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>得分</span><b id="score">0</b></div><div class="stat"><span>剩余时间</span><b id="time">30</b></div><div class="stat"><span>最高分</span><b id="best">0</b></div></div>
+<div id="bar"><div></div></div>
+<div style="position:relative"><div id="field"></div><div class="overlay show" id="ov" style="border-radius:18px"><div id="ovt">打地鼠 30 秒</div><button class="btn" id="go">▶ 开始</button></div></div>
+<div class="help"><h2>📖 怎么玩</h2><ul><li>地鼠 🐹 冒出来就<b>赶紧点它</b>，打中一只加 10 分！</li><li>小心别打到 💣 炸弹，会扣 20 分。金色 ⭐ 星星加 30 分。</li><li>键盘可以用数字键 <b>1-9</b>（对应九个洞，像手机拨号盘）。一共 30 秒，越往后越快。</li></ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const f=document.getElementById('field'),holes=[];let score,tl,playing=false,timers=[],endT;
+for(let i=0;i<9;i++){const h=document.createElement('button');h.className='hole';h.innerHTML=`<span class="key">${i+1}</span><div class="mole"></div>`;h.addEventListener('pointerdown',e=>{e.preventDefault();hit(i)});f.appendChild(h);holes.push({el:h,m:h.querySelector('.mole'),type:null,t:0})}
+document.getElementById('best').textContent=LTL.getBest('whack');
+function start(){score=0;playing=true;endT=Date.now()+30000;document.getElementById('ov').classList.remove('show');upd();holes.forEach(h=>{h.type=null;h.el.className='hole'});spawn();tick()}
+function tick(){if(!playing)return;const left=Math.max(0,endT-Date.now());document.getElementById('time').textContent=Math.ceil(left/1000);document.querySelector('#bar div').style.width=(left/300)+'%';if(left<=0)return end();requestAnimationFrame(tick)}
+function spawn(){if(!playing)return;const prog=1-(endT-Date.now())/30000;const free=holes.filter(h=>!h.type);if(free.length){const h=free[Math.random()*free.length|0];const r=Math.random();
+    h.type=r<.12?'bomb':r<.2?'star':'mole';h.m.textContent=h.type==='bomb'?'💣':h.type==='star'?'⭐':'🐹';h.el.className='hole up';const stay=Math.max(550,1300-prog*700);
+    h.t=setTimeout(()=>{h.type=null;h.el.className='hole'},stay)}
+  timers.push(setTimeout(spawn,Math.max(380,900-prog*550)*(.7+Math.random()*.6)))}
+function hit(i){const h=holes[i];if(!playing||!h.type||h.el.classList.contains('hit'))return;clearTimeout(h.t);
+  if(h.type==='mole'){score+=10;LTL.beep(700,.08,'square',.05)}else if(h.type==='star'){score+=30;LTL.beep(1200,.12,'triangle')}else{score=Math.max(0,score-20);LTL.beep(120,.25,'sawtooth',.07);if(navigator.vibrate)navigator.vibrate(80)}
+  h.el.classList.add('hit');upd();setTimeout(()=>{h.type=null;h.el.className='hole'},250)}
+function upd(){document.getElementById('score').textContent=score}
+function end(){playing=false;timers.forEach(clearTimeout);timers=[];holes.forEach(h=>{clearTimeout(h.t);h.type=null;h.el.className='hole'});const rec=LTL.record('whack',score);document.getElementById('best').textContent=LTL.getBest('whack');
+  document.getElementById('ovt').innerHTML=(rec&&score>0?'🏆 新纪录！':'⏰ 时间到！')+'<br>得分 '+score;document.getElementById('go').textContent='🔄 再来一局';document.getElementById('ov').classList.add('show')}
+const kmap={7:0,8:1,9:2,4:3,5:4,6:5,1:6,2:7,3:8};
+addEventListener('keydown',e=>{if(/^[1-9]$/.test(e.key)){const i=e.code&&e.code.startsWith('Numpad')?kmap[e.key]:Number(e.key)-1;hit(i)}else if((e.key===' '||e.key==='Enter')&&!playing){e.preventDefault();start()}});
+document.getElementById('go').onclick=start;
+</script></body></html>

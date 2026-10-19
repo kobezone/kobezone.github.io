@@ -1,0 +1,52 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>2048 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#board{position:relative;width:min(92vw,480px);aspect-ratio:1;margin:0 auto;background:#bbada0;border-radius:16px;padding:2.2%;display:grid;grid-template-columns:repeat(4,1fr);gap:2.2%;touch-action:none;border:3px solid #222}
+.cell{background:#cdc1b4;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:min(9vw,44px);color:#776e65;transition:background .1s}
+.cell.pop{animation:pop .15s}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.v2{background:#eee4da}.v4{background:#ede0c8}.v8{background:#f2b179;color:#fff}.v16{background:#f59563;color:#fff}.v32{background:#f67c5f;color:#fff}.v64{background:#f65e3b;color:#fff}
+.v128{background:#edcf72;color:#fff;font-size:min(8vw,38px)}.v256{background:#edcc61;color:#fff;font-size:min(8vw,38px)}.v512{background:#edc850;color:#fff;font-size:min(8vw,38px)}
+.v1024,.v2048,.vbig{background:#edc22e;color:#fff;font-size:min(6.5vw,30px)}.vbig{background:#3c3a32}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🔢 2048</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>当前分数</span><b id="score">0</b></div><div class="stat"><span>最高分</span><b id="best">0</b></div></div>
+<div id="board"><div class="overlay" id="ov"><div id="ovt">游戏结束</div><button class="btn" id="again">再来一局</button><button class="btn blue" id="cont" style="display:none">继续挑战</button></div></div>
+<div class="controls"><button class="btn green" id="new">🔄 新游戏</button><button class="btn" id="undo">↩️ 悔一步</button></div>
+<div class="dpad"><span></span><button class="btn blue" data-d="up">⬆</button><span></span><button class="btn blue" data-d="left">⬅</button><button class="btn blue" data-d="down">⬇</button><button class="btn blue" data-d="right">➡</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul><li>手指在棋盘上<b>上下左右滑动</b>，或按键盘<b>方向键</b>/WASD，也可以点下面的大按钮。</li><li>两个<b>相同数字</b>碰到一起会合并成它们的和。</li><li>凑出 <b>2048</b> 就赢啦！格子填满且不能再动就结束。</li></ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const N=4,boardEl=document.getElementById('board'),ov=document.getElementById('ov');
+let grid,score,won,keepGoing,history=[],cells=[];
+for(let i=0;i<N*N;i++){const c=document.createElement('div');c.className='cell';boardEl.appendChild(c);cells.push(c)}
+const bestEl=document.getElementById('best'),scoreEl=document.getElementById('score');
+bestEl.textContent=LTL.getBest('2048');
+function empty(){const e=[];for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(!grid[r][c])e.push([r,c]);return e}
+function addTile(){const e=empty();if(!e.length)return null;const [r,c]=e[Math.random()*e.length|0];grid[r][c]=Math.random()<.9?2:4;return r*N+c}
+function save(){localStorage.setItem('laotoule:2048state',JSON.stringify({grid,score,won,keepGoing}))}
+function start(){grid=Array.from({length:N},()=>Array(N).fill(0));score=0;won=false;keepGoing=false;history=[];addTile();addTile();ov.classList.remove('show');render();save()}
+function render(newIdx){for(let r=0;r<N;r++)for(let c=0;c<N;c++){const v=grid[r][c],el=cells[r*N+c];el.textContent=v||'';el.className='cell'+(v?(v>2048?' vbig':' v'+v):'')+(newIdx===r*N+c?' pop':'')}
+  scoreEl.textContent=score;if(LTL.record('2048',score))bestEl.textContent=score}
+function slideRow(row){const a=row.filter(x=>x);const out=[];let gain=0;for(let i=0;i<a.length;i++){if(a[i]===a[i+1]){out.push(a[i]*2);gain+=a[i]*2;i++}else out.push(a[i])}while(out.length<N)out.push(0);return [out,gain]}
+function move(dir){if(ov.classList.contains('show'))return;const before=JSON.stringify(grid);const prev={grid:grid.map(r=>r.slice()),score};let gain=0;
+  for(let i=0;i<N;i++){let line=[];for(let j=0;j<N;j++){line.push(dir==='left'?grid[i][j]:dir==='right'?grid[i][N-1-j]:dir==='up'?grid[j][i]:grid[N-1-j][i])}
+    const [o,g]=slideRow(line);gain+=g;for(let j=0;j<N;j++){if(dir==='left')grid[i][j]=o[j];else if(dir==='right')grid[i][N-1-j]=o[j];else if(dir==='up')grid[j][i]=o[j];else grid[N-1-j][i]=o[j]}}
+  if(JSON.stringify(grid)===before){LTL.beep(160,.05,'square',.03);return}
+  history.push(prev);if(history.length>20)history.shift();score+=gain;LTL.beep(gain?520+Math.min(gain,512):300,.07);
+  const ni=addTile();render(ni);save();
+  if(!won&&grid.flat().includes(2048)){won=true;showOv('🎉 恭喜！凑出 2048 啦！',true);return}
+  if(!canMove())showOv('游戏结束，得分 '+score)}
+function canMove(){if(empty().length)return true;for(let r=0;r<N;r++)for(let c=0;c<N;c++){if(c<N-1&&grid[r][c]===grid[r][c+1])return true;if(r<N-1&&grid[r][c]===grid[r+1][c])return true}return false}
+function showOv(t,canCont){document.getElementById('ovt').textContent=t;document.getElementById('cont').style.display=canCont?'':'none';ov.classList.add('show')}
+document.getElementById('cont').onclick=()=>{keepGoing=true;ov.classList.remove('show')};
+document.getElementById('again').onclick=start;document.getElementById('new').onclick=()=>{if(score<100||confirm('确定重新开始吗？'))start()};
+document.getElementById('undo').onclick=()=>{const p=history.pop();if(!p){LTL.toast('没有可以悔的步了');return}grid=p.grid;score=p.score;ov.classList.remove('show');render();save()};
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>move(b.dataset.d));
+const km={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right',W:'up',S:'down',A:'left',D:'right'};
+addEventListener('keydown',e=>{if(km[e.key]){e.preventDefault();move(km[e.key])}});
+LTL.onSwipe(boardEl,move);
+try{const s=JSON.parse(localStorage.getItem('laotoule:2048state'));if(s&&s.grid&&s.grid.length===N){grid=s.grid;score=s.score;won=s.won;keepGoing=s.keepGoing;render();if(!canMove())showOv('游戏结束，得分 '+score)}else start()}catch(e){start()}
+</script></body></html>

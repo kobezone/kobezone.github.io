@@ -1,0 +1,46 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>贪吃蛇 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>#box{position:relative;width:min(92vw,520px);margin:0 auto;border:3px solid #222;border-radius:14px;overflow:hidden;touch-action:none}canvas{display:block;width:100%;aspect-ratio:1;background:#d8f5a2}
+.speed{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.speed .btn.on{background:#e8590c;color:#fff}</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🐍 贪吃蛇</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>分数</span><b id="score">0</b></div><div class="stat"><span>最高分</span><b id="best">0</b></div></div>
+<div class="speed" id="speeds"><button class="btn" data-s="200">🐢 慢</button><button class="btn" data-s="140">🚶 中</button><button class="btn" data-s="90">🐇 快</button></div>
+<div style="height:10px"></div>
+<div id="box"><canvas id="cv" width="520" height="520"></canvas><div class="overlay show" id="ov"><div id="ovt">贪吃蛇</div><button class="btn" id="go">▶ 开始</button></div></div>
+<div class="dpad"><span></span><button class="btn blue" data-d="up">⬆</button><button class="btn" id="pause">⏸</button><button class="btn blue" data-d="left">⬅</button><button class="btn blue" data-d="down">⬇</button><button class="btn blue" data-d="right">➡</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul><li>用<b>方向键</b>/WASD、在画面上<b>滑动</b>、或点大箭头按钮控制小蛇。</li><li>吃到 🍎 苹果变长加分，撞到墙或自己就结束。</li><li>按<b>空格</b>或 ⏸ 暂停。速度可以选慢、中、快，慢速最适合慢慢玩。</li></ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),N=20,S=cv.width/N;
+let snake,dir,ndirs,food,score,timer,speed=Number(localStorage.getItem('laotoule:snakeSpeed')||200),paused=false,alive=false;
+const bestEl=document.getElementById('best');
+function bestKey(){return 'snake'}bestEl.textContent=LTL.getBest('snake');
+document.querySelectorAll('[data-s]').forEach(b=>{if(Number(b.dataset.s)===speed)b.classList.add('on');b.onclick=()=>{speed=Number(b.dataset.s);localStorage.setItem('laotoule:snakeSpeed',speed);document.querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',x===b));if(alive&&!paused){clearInterval(timer);timer=setInterval(tick,speed)}}});
+function place(){let p;do{p={x:Math.random()*N|0,y:Math.random()*N|0}}while(snake.some(s=>s.x===p.x&&s.y===p.y));food=p}
+function start(){snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];dir='right';ndirs=[];score=0;alive=true;paused=false;place();document.getElementById('ov').classList.remove('show');upd();clearInterval(timer);timer=setInterval(tick,speed);draw()}
+const V={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]},OPP={up:'down',down:'up',left:'right',right:'left'};
+function turn(d){if(!alive){return}if(paused)togglePause();const lastd=ndirs.length?ndirs[ndirs.length-1]:dir;if(d!==lastd&&d!==OPP[lastd]&&ndirs.length<3)ndirs.push(d)}
+function tick(){if(ndirs.length)dir=ndirs.shift();const h=snake[0],nh={x:h.x+V[dir][0],y:h.y+V[dir][1]};
+  if(nh.x<0||nh.y<0||nh.x>=N||nh.y>=N||snake.slice(0,-1).some(s=>s.x===nh.x&&s.y===nh.y)){return over()}
+  snake.unshift(nh);if(nh.x===food.x&&nh.y===food.y){score+=10;LTL.beep(700,.08,'triangle');if(snake.length>=N*N){return over(true)}place();upd()}else snake.pop();draw()}
+function over(win){alive=false;clearInterval(timer);LTL.beep(150,.35,'sawtooth',.06);const rec=LTL.record('snake',score);bestEl.textContent=LTL.getBest('snake');
+  document.getElementById('ovt').innerHTML=(win?'🎉 你赢了！':(rec&&score>0?'🏆 新纪录！':'游戏结束'))+'<br>得分 '+score;document.getElementById('go').textContent='🔄 再来一局';document.getElementById('ov').classList.add('show')}
+function upd(){document.getElementById('score').textContent=score}
+function draw(){ctx.fillStyle='#d8f5a2';ctx.fillRect(0,0,cv.width,cv.height);ctx.fillStyle='#c0eb75';for(let y=0;y<N;y++)for(let x=0;x<N;x++)if((x+y)%2)ctx.fillRect(x*S,y*S,S,S);
+  ctx.font=(S*0.9)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('🍎',food.x*S+S/2,food.y*S+S/2+2);
+  snake.forEach((s,i)=>{ctx.fillStyle=i===0?'#2b8a3e':(i%2?'#40c057':'#37b24d');const r=S*0.18;rr(s.x*S+1,s.y*S+1,S-2,S-2,r);});
+  const h=snake[0],[dx,dy]=V[dir];ctx.fillStyle='#fff';const ex=h.x*S+S/2+dx*S*0.18,ey=h.y*S+S/2+dy*S*0.18;
+  [[-dy,dx],[dy,-dx]].forEach(([ox,oy])=>{ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(ex+ox*S*0.22,ey+oy*S*0.22,S*0.14,0,7);ctx.fill();ctx.fillStyle='#000';ctx.beginPath();ctx.arc(ex+ox*S*0.22+dx*2,ey+oy*S*0.22+dy*2,S*0.07,0,7);ctx.fill()});
+  if(paused){ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(0,0,cv.width,cv.height);ctx.fillStyle='#fff';ctx.font='bold 48px sans-serif';ctx.fillText('暂停中',cv.width/2,cv.height/2)}}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,w,h,r):ctx.rect(x,y,w,h);ctx.fill()}
+function togglePause(){if(!alive)return;paused=!paused;clearInterval(timer);if(!paused)timer=setInterval(tick,speed);draw()}
+document.getElementById('go').onclick=start;document.getElementById('pause').onclick=togglePause;
+document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();turn(b.dataset.d)}));
+const km={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',s:'down',a:'left',d:'right'};
+addEventListener('keydown',e=>{const k=km[e.key]||km[e.key.toLowerCase()];if(k){e.preventDefault();turn(k)}else if(e.key===' '){e.preventDefault();alive?togglePause():start()}else if(e.key==='Enter'&&!alive)start()});
+LTL.onSwipe(document.getElementById('box'),turn,16);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&alive&&!paused)togglePause()});
+snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}];dir='right';food={x:14,y:10};draw();
+</script></body></html>

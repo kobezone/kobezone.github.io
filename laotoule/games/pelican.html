@@ -1,0 +1,146 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>鹈鹕骑自行车 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#stage{position:relative;width:100%;max-width:1000px;margin:0 auto;border:3px solid #222;border-radius:16px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+canvas{display:block;width:100%;height:min(62vh,520px);background:#8fd3ff}
+#hud{position:absolute;left:10px;top:8px;font-weight:900;font-size:1.2rem;color:#222;text-shadow:0 0 4px #fff,0 0 4px #fff;pointer-events:none}
+.pad{position:absolute;bottom:12px;display:flex;gap:12px;z-index:3}
+.pad .btn{min-height:76px;min-width:110px;font-size:1.3rem;opacity:.92}
+#pedalBtn{left:12px}#jumpBtn{right:12px}
+#ovt small{display:block;font-size:1rem;font-weight:600;margin-top:6px}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🚲 鹈鹕骑自行车</h1><button class="btn" id="mute">🔊</button></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>距离（米）</span><b id="dist">0</b></div><div class="stat"><span>小鱼 🐟</span><b id="fish">0</b></div><div class="stat"><span>最远纪录</span><b id="best">0</b></div></div>
+<div id="stage"><canvas id="cv"></canvas><div id="hud"></div>
+<div class="pad" style="left:12px"><button class="btn green" id="pedalBtn">🦶 按住蹬车</button></div>
+<div class="pad" style="right:12px"><button class="btn blue" id="jumpBtn">⬆ 跳</button></div>
+<div class="overlay show" id="ov"><div id="ovt">鹈鹕要出发啦！<small>按住「蹬车」前进，点「跳」越过石头</small></div><button class="btn" id="go">▶ 开始骑车</button></div>
+</div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li><b>按住</b>左下「蹬车」按钮（或键盘<b>空格 / →</b>）让鹈鹕使劲蹬车；松开就慢慢滑行。</li>
+<li>点右下「跳」按钮（或 <b>↑ / W</b>）跳起来，躲开<b>石头</b>和<b>路障</b>。</li>
+<li>飞在空中时<b>按住蹬车会往后仰</b>，松开会慢慢回正——落地时车身要和地面差不多平，不然会<b>翻车</b>！</li>
+<li>空中吃到 🐟 小鱼每条加 10 米；空中翻一整圈还能平稳落地，奖励 50 米！</li>
+<li>上坡太陡就先下坡冲一冲，借点速度。</li></ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W=800,H=450,DPR=1;
+function resize(){DPR=Math.min(window.devicePixelRatio||1,2);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener('resize',resize);resize();
+const G=800,PEDAL=450,JUMP=380,MAXS=760,PX_PER_M=40;
+function amp(x){const a=Math.max(0,Math.min(1,(x-350)/700));return a*(0.45+Math.min(x/16000,1)*0.65)}
+function Hf(x){return amp(x)*(70*Math.sin(x/260)+35*Math.sin(x/110+1.3)+8*Math.sin(x/60+0.7))}
+function slope(x){return Math.atan((Hf(x+1)-Hf(x-1))/2)}
+let st,pedal=false,jumpQ=false,running=false,last=0,muted=localStorage.getItem('laotoule:mute')==='1';
+const bestEl=document.getElementById('best');bestEl.textContent=LTL.getBest('pelican');
+function reset(){st={x:60,y:0,vx:0,vy:0,s:0,ang:0,av:0,ground:true,crank:0,wheel:0,obs:[],fishes:[],nextObs:1400,fish:0,bonus:0,rot:0,crashed:false,camX:0,camY:0,t:0,crashT:0,msg:'',msgT:0};st.y=Hf(st.x);genAhead()}
+function genAhead(){while(st.nextObs<st.x+2500){const x=st.nextObs;const r=Math.random();
+  if(r<0.55)st.obs.push({x,type:Math.random()<.6?'rock':'cone'});
+  if(Math.random()<0.65){const fx=x+(Math.random()*200-100);st.fishes.push({x:fx,h:110+Math.random()*80,got:false})}
+  const diff=Math.min(st.x/12000,1);st.nextObs+=520-diff*180+Math.random()*(600-diff*250)}
+  st.obs=st.obs.filter(o=>o.x>st.x-800);st.fishes=st.fishes.filter(f=>f.x>st.x-800)}
+const OBH={rock:20,cone:28};
+function norm(a){while(a>Math.PI)a-=2*Math.PI;while(a<-Math.PI)a+=2*Math.PI;return a}
+function crash(why){if(st.crashed)return;st.crashed=true;st.crashT=0;st.why=why;LTL.beep(180,.3,'sawtooth',.06);setTimeout(()=>LTL.beep(110,.4,'sawtooth',.06),150)}
+function step(dt){st.t+=dt;if(st.crashed){st.crashT+=dt;st.vy-=G*dt;st.x+=st.vx*dt*0.3;st.y=Math.max(st.y+st.vy*dt,Hf(st.x));st.ang+=3*dt;return}
+  if(st.ground){const th=slope(st.x);
+    if(jumpQ){jumpQ=false;st.ground=false;st.vx=st.s*Math.cos(th)-JUMP*Math.sin(th);st.vy=st.s*Math.sin(th)+JUMP*Math.cos(th);st.av=0;st.rot=0;LTL.beep(660,.1,'triangle');return}
+    let a=(pedal?PEDAL*(1-Math.max(0,st.s)/MAXS):0)-G*Math.sin(th)-st.s*0.18;st.s+=a*dt;st.s=Math.max(-MAXS,Math.min(MAXS,st.s));
+    const vy=st.s*Math.sin(th);st.x+=st.s*Math.cos(th)*dt;if(st.x<20){st.x=20;st.s=Math.max(0,st.s)}
+    const gy=Hf(st.x),yb=st.y+vy*dt-0.5*G*dt*dt;
+    if(yb>gy+0.6&&st.s>120){st.ground=false;st.vx=st.s*Math.cos(th);st.vy=vy;st.y=yb;st.av=0;st.rot=0}else{st.y=gy;st.ang=slope(st.x)}
+    st.crank+=st.s*dt/14*(pedal?1.4:0.25);st.wheel+=st.s*dt/18;
+  }else{jumpQ=false;st.vy-=G*dt;st.x+=st.vx*dt;st.y+=st.vy*dt;
+    const tgt=Math.atan2(st.vy,Math.max(st.vx,1))*0.6;
+    if(pedal){st.av+=4.2*dt;st.crank+=dt*14}else{st.av+=((tgt-st.ang)*5-st.av*2.5)*dt}
+    st.av=Math.max(-6,Math.min(7,st.av));st.ang+=st.av*dt;st.rot+=st.av*dt;st.wheel+=st.vx*dt/18;
+    const gy=Hf(st.x);
+    if(st.y<=gy){const th=slope(st.x);const d=norm(st.ang-th);
+      if(Math.abs(d)>0.95){st.y=gy;st.vx=st.vx;st.vy=150;crash('落地角度太歪，翻车啦！');return}
+      if(Math.abs(st.rot)>Math.PI*1.8){st.bonus+=50;showMsg('🤸 空中翻跟头！+50 米');LTL.beep(880,.15,'triangle');setTimeout(()=>LTL.beep(1100,.15,'triangle'),120)}
+      st.ground=true;st.y=gy;st.ang=th;st.s=Math.max(st.vx*Math.cos(th)+st.vy*Math.sin(th),0)*0.92;LTL.beep(140,.06,'square',.04)}}
+  // 障碍
+  const fx=st.x+Math.cos(st.ang)*24;
+  for(const o of st.obs){if(Math.abs(fx-o.x)<16&&st.y-Hf(o.x)<OBH[o.type]-2){crash(o.type==='rock'?'撞到石头，摔了个大跟头！':'撞上路障啦！');return}}
+  for(const f of st.fishes){if(!f.got&&Math.abs(st.x-f.x)<34&&Math.abs((st.y+60)-(Hf(f.x)+f.h))<46){f.got=true;st.fish++;st.bonus+=10;LTL.beep(1000,.08,'triangle');setTimeout(()=>LTL.beep(1300,.08,'triangle'),70)}}
+  genAhead()}
+function showMsg(m){st.msg=m;st.msgT=2}
+function score(){return Math.floor(st.x/PX_PER_M)+st.bonus}
+// ===== 绘图 =====
+const clouds=Array.from({length:8},(_,i)=>({x:i*260+Math.random()*120,y:30+Math.random()*90,s:.6+Math.random()*.6}));
+function toS(wx,wy){return [wx-st.camX,H*0.62-(wy-st.camY)]}
+function draw(){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#6cc7ff');g.addColorStop(1,'#d6f1ff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#ffd43b';ctx.beginPath();ctx.arc(W-70,60,32,0,7);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,.95)';for(const c of clouds){const x=((c.x-st.camX*0.15)%(W+300)+W+300)%(W+300)-150;cloud(x,c.y,c.s)}
+  // 远山
+  ctx.fillStyle='#9ad49a';ctx.beginPath();ctx.moveTo(0,H);for(let px=0;px<=W+10;px+=10){const wx=px+st.camX*0.35;ctx.lineTo(px,H*0.55-40*Math.sin(wx/170)-25*Math.sin(wx/77+2)+ (st.camY*0.15))}ctx.lineTo(W,H);ctx.fill();
+  // 地面
+  ctx.beginPath();ctx.moveTo(0,H);for(let px=-10;px<=W+10;px+=6){const [,sy]=toS(st.camX+px,Hf(st.camX+px));ctx.lineTo(px,sy)}ctx.lineTo(W+10,H);ctx.closePath();
+  ctx.fillStyle='#b9824e';ctx.fill();ctx.lineWidth=12;ctx.strokeStyle='#51cf66';ctx.beginPath();for(let px=-10;px<=W+10;px+=6){const [,sy]=toS(st.camX+px,Hf(st.camX+px));px<=-10?ctx.moveTo(px,sy+4):ctx.lineTo(px,sy+4)}ctx.stroke();
+  // 里程牌
+  ctx.font='bold 16px sans-serif';ctx.textAlign='center';for(let m=Math.ceil(st.camX/PX_PER_M/50)*50;m*PX_PER_M<st.camX+W;m+=50){if(m<=0)continue;const wx=m*PX_PER_M;const [sx,sy]=toS(wx,Hf(wx));ctx.fillStyle='#795548';ctx.fillRect(sx-2,sy-40,4,40);ctx.fillStyle='#fff';ctx.fillRect(sx-24,sy-62,48,24);ctx.strokeStyle='#222';ctx.lineWidth=2;ctx.strokeRect(sx-24,sy-62,48,24);ctx.fillStyle='#222';ctx.fillText(m+'米',sx,sy-44)}
+  for(const o of st.obs){const [sx,sy]=toS(o.x,Hf(o.x));if(sx<-40||sx>W+40)continue;if(o.type==='rock'){ctx.fillStyle='#868e96';ctx.strokeStyle='#343a40';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx-16,sy+4);ctx.lineTo(sx-12,sy-14);ctx.lineTo(sx-2,sy-22);ctx.lineTo(sx+11,sy-16);ctx.lineTo(sx+17,sy+4);ctx.closePath();ctx.fill();ctx.stroke()}
+    else{ctx.fillStyle='#ff6b00';ctx.strokeStyle='#222';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(sx-14,sy+3);ctx.lineTo(sx,sy-30);ctx.lineTo(sx+14,sy+3);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#fff';ctx.fillRect(sx-7,sy-16,14,5)}}
+  for(const f of st.fishes){if(f.got)continue;const [sx,sy]=toS(f.x,Hf(f.x)+f.h);if(sx<-40||sx>W+40)continue;fishDraw(sx,sy+Math.sin(st.t*4+f.x)*4)}
+  // 骑手
+  const [bx,by]=toS(st.x,st.y);ctx.save();ctx.translate(bx,by);ctx.rotate(-st.ang);if(st.crashed)ctx.translate(0,0);bikeDraw();ctx.restore();
+  if(st.msgT>0){ctx.font='bold 26px sans-serif';ctx.textAlign='center';ctx.lineWidth=5;ctx.strokeStyle='#fff';ctx.strokeText(st.msg,W/2,70);ctx.fillStyle='#e8590c';ctx.fillText(st.msg,W/2,70)}
+  if(running&&!st.crashed&&st.ground&&st.s<30&&st.t>1.5){ctx.font='bold 22px sans-serif';ctx.textAlign='center';ctx.fillStyle='#222';ctx.fillText('👇 按住「蹬车」前进',W/2,H*0.25)}}
+function cloud(x,y,s){ctx.beginPath();ctx.arc(x,y,20*s,0,7);ctx.arc(x+22*s,y-10*s,26*s,0,7);ctx.arc(x+48*s,y,20*s,0,7);ctx.fill()}
+function fishDraw(x,y){ctx.fillStyle='#4dabf7';ctx.strokeStyle='#1864ab';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(x,y,15,8,0,0,7);ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(x+13,y);ctx.lineTo(x+24,y-8);ctx.lineTo(x+24,y+8);ctx.closePath();ctx.fill();ctx.stroke();ctx.fillStyle='#222';ctx.beginPath();ctx.arc(x-8,y-2,2,0,7);ctx.fill()}
+function wheel(x,y){ctx.strokeStyle='#222';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,18,0,7);ctx.stroke();ctx.lineWidth=1.5;ctx.strokeStyle='#555';for(let i=0;i<6;i++){const a=st.wheel+i*Math.PI/3;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(a)*17,y+Math.sin(a)*17);ctx.stroke()}ctx.fillStyle='#222';ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill()}
+function bikeDraw(){const off=st.crashed?Math.min(st.crashT*60,40):0;
+  // 自行车
+  wheel(-28,-18);wheel(28,-18);
+  ctx.strokeStyle='#e03131';ctx.lineWidth=4;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.beginPath();ctx.moveTo(-28,-18);ctx.lineTo(0,-20);ctx.lineTo(-8,-46);ctx.closePath();ctx.moveTo(-8,-46);ctx.lineTo(20,-44);ctx.lineTo(0,-20);ctx.moveTo(20,-44);ctx.lineTo(28,-18);ctx.moveTo(20,-44);ctx.lineTo(22,-54);ctx.lineTo(16,-58);ctx.stroke();
+  ctx.fillStyle='#222';ctx.fillRect(-16,-51,16,5);
+  ctx.save();ctx.translate(-off*0.6,-off);ctx.rotate(st.crashed?st.crashT*4:0);
+  // 腿（蹬脚踏）
+  const c=st.crank,p1=[Math.cos(c)*9,-20+Math.sin(c)*9],p2=[Math.cos(c+Math.PI)*9,-20+Math.sin(c+Math.PI)*9],hip=[-6,-56];
+  function leg(p,col){const mx=(hip[0]+p[0])/2+9,my=(hip[1]+p[1])/2-3;ctx.strokeStyle=col;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(hip[0],hip[1]);ctx.lineTo(mx,my);ctx.lineTo(p[0],p[1]);ctx.stroke();ctx.fillStyle=col;ctx.beginPath();ctx.ellipse(p[0]+3,p[1],6,3,0,0,7);ctx.fill()}
+  if(!st.crashed)leg(p2,'#e8a03a');
+  // 身体
+  ctx.fillStyle='#fff';ctx.strokeStyle='#495057';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(-4,-68,24,17,-0.25,0,7);ctx.fill();ctx.stroke();
+  // 尾巴
+  ctx.beginPath();ctx.moveTo(-26,-62);ctx.lineTo(-38,-58);ctx.lineTo(-27,-70);ctx.fill();ctx.stroke();
+  // 脖子+头
+  ctx.lineWidth=9;ctx.strokeStyle='#495057';ctx.beginPath();ctx.moveTo(12,-78);ctx.quadraticCurveTo(10,-92,16,-100);ctx.stroke();ctx.lineWidth=6;ctx.strokeStyle='#fff';ctx.stroke();
+  ctx.fillStyle='#fff';ctx.strokeStyle='#495057';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(17,-104,10,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ffe066';ctx.beginPath();ctx.moveTo(10,-112);ctx.quadraticCurveTo(18,-120,24,-110);ctx.fill();
+  // 大嘴+喉囊
+  ctx.fillStyle='#ffa94d';ctx.strokeStyle='#d9480f';ctx.beginPath();ctx.moveTo(24,-108);ctx.lineTo(62,-100);ctx.lineTo(24,-101);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ffc078';ctx.beginPath();ctx.moveTo(24,-101);ctx.lineTo(60,-100);ctx.quadraticCurveTo(40,-82,24,-96);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#222';ctx.beginPath();ctx.arc(20,-106,2.2,0,7);ctx.fill();
+  // 翅膀扶把
+  ctx.fillStyle='#ced4da';ctx.strokeStyle='#495057';ctx.beginPath();ctx.ellipse(-4,-68,16,9,-0.15,0,7);ctx.fill();ctx.stroke();
+  if(!st.crashed){ctx.strokeStyle='#adb5bd';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(6,-68);ctx.lineTo(16,-58);ctx.stroke();leg(p1,'#f59f00')}
+  ctx.restore()}
+// ===== 循环 =====
+function updHud(){document.getElementById('dist').textContent=score();document.getElementById('fish').textContent=st.fish}
+function loop(t){const dt=Math.min(0.05,(t-last)/1000||0);last=t;
+  if(running){let n=Math.ceil(dt/(1/120));for(let i=0;i<n;i++)step(dt/n);st.msgT-=dt;
+    if(st.crashed&&st.crashT>1.2){running=false;const sc=score();const rec=LTL.record('pelican',sc);bestEl.textContent=LTL.getBest('pelican');
+      document.getElementById('ovt').innerHTML=(rec?'🏆 新纪录！':'哎呀！')+'<small>'+st.why+'<br>这次骑了 <b>'+sc+'</b> 米，吃了 '+st.fish+' 条鱼</small>';document.getElementById('go').textContent='🔄 再骑一次';document.getElementById('ov').classList.add('show')}
+    updHud()}
+  st.camX+=((st.x-W*0.3)-st.camX)*Math.min(1,dt*8);st.camY+=((st.y)-st.camY)*Math.min(1,dt*4);
+  draw();requestAnimationFrame(loop)}
+function begin(){reset();st.camX=st.x-W*0.3;st.camY=st.y;running=true;document.getElementById('ov').classList.remove('show');updHud()}
+reset();st.camX=st.x-W*0.3;st.camY=st.y;requestAnimationFrame(loop);
+document.getElementById('go').onclick=begin;
+const pb=document.getElementById('pedalBtn'),jb=document.getElementById('jumpBtn'),stage=document.getElementById('stage');
+function pDown(e){e.preventDefault();pedal=true}function pUp(){pedal=false}
+pb.addEventListener('pointerdown',pDown);pb.addEventListener('pointerup',pUp);pb.addEventListener('pointerleave',pUp);pb.addEventListener('pointercancel',pUp);
+jb.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();jumpQ=true});
+cv.addEventListener('pointerdown',e=>{e.preventDefault();if(e.clientX-cv.getBoundingClientRect().left>W*0.6)jumpQ=true;else pedal=true});
+cv.addEventListener('pointerup',pUp);cv.addEventListener('pointerleave',pUp);
+stage.addEventListener('contextmenu',e=>e.preventDefault());
+addEventListener('keydown',e=>{if([' ','ArrowRight','d','D'].includes(e.key)){e.preventDefault();if(!running&&e.key===' '&&!e.repeat){begin();return}pedal=true}
+  if(['ArrowUp','w','W'].includes(e.key)){e.preventDefault();if(!e.repeat)jumpQ=true}if(e.key==='Enter'&&!running)begin()});
+addEventListener('keyup',e=>{if([' ','ArrowRight','d','D'].includes(e.key))pedal=false});
+addEventListener('blur',()=>pedal=false);
+const mb=document.getElementById('mute');function setM(){mb.textContent=muted?'🔇':'🔊'}setM();mb.onclick=()=>{muted=!muted;localStorage.setItem('laotoule:mute',muted?'1':'0');setM()};
+</script></body></html>
