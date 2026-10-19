@@ -1,4 +1,4 @@
-const VERSION='laotoule-v1';
+const VERSION='laotoule-v2';
 const FILES=['./','index.html','style.css','common.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png',
 'games/2048.html','games/pelican.html','games/snake.html','games/minesweeper.html','games/tetris.html','games/gomoku.html','games/memory.html','games/whack.html'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
