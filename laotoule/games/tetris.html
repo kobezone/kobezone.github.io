@@ -1,0 +1,63 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>俄罗斯方块 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.game{display:flex;gap:14px;justify-content:center;align-items:flex-start}
+#box{position:relative;border:3px solid #222;border-radius:12px;overflow:hidden;touch-action:none}
+#cv{display:block;height:min(62vh,600px,calc((100vw - 150px)*2));aspect-ratio:1/2;background:#1b1b2f}
+.side{display:flex;flex-direction:column;gap:10px}.side canvas{display:block;margin:4px auto 0;background:#1b1b2f;border:3px solid #222;border-radius:10px;width:96px;height:96px}
+.side .btn{white-space:nowrap;padding:4px 10px}.tpad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:440px;margin:12px auto}.tpad .btn{min-height:64px;font-size:1.3rem;padding:0}
+@media (max-width:520px){.side .stat{min-width:80px}.side canvas{width:76px;height:76px}}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🧱 俄罗斯方块</h1></div>
+<div class="wrap">
+<div class="game"><div id="box"><canvas id="cv" width="300" height="600"></canvas><div class="overlay show" id="ov"><div id="ovt">俄罗斯方块</div><button class="btn" id="go">▶ 开始</button></div></div>
+<div class="side"><div class="stat"><span>下一个</span><canvas id="nx" width="96" height="96"></canvas></div><div class="stat"><span>分数</span><b id="score">0</b></div><div class="stat"><span>行数</span><b id="lines">0</b></div><div class="stat"><span>等级</span><b id="level">1</b></div><div class="stat"><span>最高分</span><b id="best">0</b></div><button class="btn" id="pause">⏸ 暂停</button></div></div>
+<div class="tpad"><button class="btn blue" data-a="left">⬅</button><button class="btn green" data-a="rot">🔄</button><button class="btn blue" data-a="right">➡</button><button class="btn" data-a="drop">⏬</button><button class="btn blue" data-a="down" style="grid-column:span 4">⬇ 加速下落</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul><li>键盘：<b>← →</b> 移动，<b>↑</b> 旋转，<b>↓</b> 加速，<b>空格</b> 直接落底，<b>P</b> 暂停。</li><li>手机：点下面的大按钮；或在画面上<b>左右滑</b>移动、<b>点一下</b>旋转、<b>往下滑</b>直接落底。</li><li>把一整行填满就会消掉得分，一次消越多分越高。方块堆到顶就结束。</li></ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const COLS=10,ROWS=20,cv=document.getElementById('cv'),ctx=cv.getContext('2d'),S=30,nx=document.getElementById('nx').getContext('2d');
+const SH={I:[[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],O:[[1,1],[1,1]],T:[[0,1,0],[1,1,1],[0,0,0]],S:[[0,1,1],[1,1,0],[0,0,0]],Z:[[1,1,0],[0,1,1],[0,0,0]],J:[[1,0,0],[1,1,1],[0,0,0]],L:[[0,0,1],[1,1,1],[0,0,0]]};
+const COL={I:'#22b8cf',O:'#fcc419',T:'#be4bdb',S:'#51cf66',Z:'#ff6b6b',J:'#4c6ef5',L:'#ff922b'};
+let board,cur,next,bag=[],score,lines,level,alive=false,paused=false,acc=0,last=0;
+const bestEl=document.getElementById('best');bestEl.textContent=LTL.getBest('tetris');
+function rnd(){if(!bag.length){bag=Object.keys(SH);for(let i=bag.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[bag[i],bag[j]]=[bag[j],bag[i]]}}return bag.pop()}
+function mk(t){const m=SH[t].map(r=>r.slice());return{t,m,x:Math.floor((COLS-m.length)/2),y:t==='I'?-1:0}}
+function fits(m,x,y){for(let r=0;r<m.length;r++)for(let c=0;c<m.length;c++)if(m[r][c]){const X=x+c,Y=y+r;if(X<0||X>=COLS||Y>=ROWS)return false;if(Y>=0&&board[Y][X])return false}return true}
+function rot(m){const n=m.length;return m.map((r,i)=>r.map((_,j)=>m[n-1-j][i]))}
+function start(){board=Array.from({length:ROWS},()=>Array(COLS).fill(null));score=0;lines=0;level=1;bag=[];cur=mk(rnd());next=mk(rnd());alive=true;paused=false;acc=0;document.getElementById('ov').classList.remove('show');upd();draw()}
+function interval(){return Math.max(90,800-(level-1)*70)}
+function lock(){for(let r=0;r<cur.m.length;r++)for(let c=0;c<cur.m.length;c++)if(cur.m[r][c]){const Y=cur.y+r;if(Y<0){return gameOver()}board[Y][cur.x+c]=cur.t}
+  let cl=0;for(let r=ROWS-1;r>=0;r--){if(board[r].every(Boolean)){board.splice(r,1);board.unshift(Array(COLS).fill(null));cl++;r++}}
+  if(cl){score+=[0,100,300,500,800][cl]*level;lines+=cl;level=1+Math.floor(lines/10);[600,750,900,1100].slice(0,cl).forEach((f,i)=>setTimeout(()=>LTL.beep(f,.09,'triangle'),i*70))}else LTL.beep(220,.04,'square',.03);
+  cur=next;next=mk(rnd());if(!fits(cur.m,cur.x,cur.y))return gameOver();upd()}
+function gameOver(){alive=false;LTL.beep(130,.5,'sawtooth',.06);const rec=LTL.record('tetris',score);bestEl.textContent=LTL.getBest('tetris');document.getElementById('ovt').innerHTML=(rec&&score>0?'🏆 新纪录！':'游戏结束')+'<br>得分 '+score;document.getElementById('go').textContent='🔄 再来一局';document.getElementById('ov').classList.add('show')}
+function act(a){if(!alive||paused)return;if(a==='left'&&fits(cur.m,cur.x-1,cur.y))cur.x--;else if(a==='right'&&fits(cur.m,cur.x+1,cur.y))cur.x++;
+  else if(a==='down'){if(fits(cur.m,cur.x,cur.y+1)){cur.y++;score+=1;acc=0}else lock()}
+  else if(a==='rot'){const m=rot(cur.m);for(const k of[0,-1,1,-2,2]){if(fits(m,cur.x+k,cur.y)){cur.m=m;cur.x+=k;LTL.beep(450,.03);break}}}
+  else if(a==='drop'){let d=0;while(fits(cur.m,cur.x,cur.y+1)){cur.y++;d++}score+=d*2;lock()}
+  upd();draw()}
+function upd(){document.getElementById('score').textContent=score;document.getElementById('lines').textContent=lines;document.getElementById('level').textContent=level}
+function cell(c,x,y,col,s=S){c.fillStyle=col;c.fillRect(x*s+1,y*s+1,s-2,s-2);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(x*s+1,y*s+1,s-2,4);c.fillStyle='rgba(0,0,0,.2)';c.fillRect(x*s+1,y*s+s-5,s-2,4)}
+function draw(){ctx.fillStyle='#1b1b2f';ctx.fillRect(0,0,300,600);ctx.strokeStyle='rgba(255,255,255,.05)';for(let i=1;i<COLS;i++){ctx.beginPath();ctx.moveTo(i*S,0);ctx.lineTo(i*S,600);ctx.stroke()}
+  if(!board)return;for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(board[r][c])cell(ctx,c,r,COL[board[r][c]]);
+  if(alive){let gy=cur.y;while(fits(cur.m,cur.x,gy+1))gy++;ctx.globalAlpha=.25;for(let r=0;r<cur.m.length;r++)for(let c=0;c<cur.m.length;c++)if(cur.m[r][c]&&gy+r>=0)cell(ctx,cur.x+c,gy+r,COL[cur.t]);ctx.globalAlpha=1;
+    for(let r=0;r<cur.m.length;r++)for(let c=0;c<cur.m.length;c++)if(cur.m[r][c]&&cur.y+r>=0)cell(ctx,cur.x+c,cur.y+r,COL[cur.t])}
+  nx.fillStyle='#1b1b2f';nx.fillRect(0,0,96,96);if(next){const m=next.m,s=22,o=(96-m.length*s)/2;for(let r=0;r<m.length;r++)for(let c=0;c<m.length;c++)if(m[r][c]){nx.save();nx.translate(o,o);cell(nx,c,r,COL[next.t],s);nx.restore()}}
+  if(paused){ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(0,0,300,600);ctx.fillStyle='#fff';ctx.font='bold 40px sans-serif';ctx.textAlign='center';ctx.fillText('暂停中',150,300)}}
+function loop(t){const dt=t-last;last=t;if(alive&&!paused){acc+=dt;if(acc>interval()){acc=0;if(fits(cur.m,cur.x,cur.y+1))cur.y++;else lock();draw()}}requestAnimationFrame(loop)}
+function togglePause(){if(!alive)return;paused=!paused;document.getElementById('pause').textContent=paused?'▶ 继续':'⏸ 暂停';draw()}
+document.getElementById('go').onclick=start;document.getElementById('pause').onclick=togglePause;
+// 按钮支持按住连发
+document.querySelectorAll('[data-a]').forEach(b=>{let h,h2;const a=b.dataset.a;b.addEventListener('pointerdown',e=>{e.preventDefault();act(a);if(a==='rot'||a==='drop')return;h=setTimeout(()=>h2=setInterval(()=>act(a),70),220)});
+  const stop=()=>{clearTimeout(h);clearInterval(h2)};b.addEventListener('pointerup',stop);b.addEventListener('pointerleave',stop);b.addEventListener('pointercancel',stop)});
+addEventListener('keydown',e=>{const m={ArrowLeft:'left',ArrowRight:'right',ArrowDown:'down',ArrowUp:'rot',' ':'drop',a:'left',d:'right',s:'down',w:'rot'};const k=m[e.key]||m[e.key.toLowerCase()];
+  if(k){e.preventDefault();if(!alive&&e.key===' '){start();return}act(k)}else if(e.key.toLowerCase()==='p')togglePause();else if(e.key==='Enter'&&!alive)start()});
+// 画面手势：点击旋转，左右滑移动，下滑落底
+(function(){const box=document.getElementById('box');let sx,sy,lx,moved,t0;box.addEventListener('touchstart',e=>{const t=e.touches[0];sx=lx=t.clientX;sy=t.clientY;moved=false;t0=Date.now()},{passive:true});
+  box.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];const step=cv.getBoundingClientRect().width/COLS;while(t.clientX-lx>step){act('right');lx+=step;moved=true}while(lx-t.clientX>step){act('left');lx-=step;moved=true}},{passive:false});
+  box.addEventListener('touchend',e=>{const t=e.changedTouches[0];const dy=t.clientY-sy;if(!moved&&dy>60&&Date.now()-t0<500)act('drop');else if(!moved&&Math.abs(dy)<15&&Math.abs(t.clientX-sx)<15)act('rot')})})();
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&alive&&!paused)togglePause()});
+draw();requestAnimationFrame(loop);
+</script></body></html>
