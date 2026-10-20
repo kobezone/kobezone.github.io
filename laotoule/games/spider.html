@@ -1,0 +1,404 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>蜘蛛纸牌 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#0b6b3a">
+<style>
+body{background:#08351f}
+.topbar{background:#0b6b3a}
+.wrap{max-width:980px}
+.stat{min-width:78px}
+.controls .btn,.diffs .btn{min-height:48px;padding:6px 12px}
+.diffs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 8px}
+.diffs .btn.on{background:#8ce99a}
+#felt{background:radial-gradient(circle at 50% 0,#1b8f4a,#0b5a32 55%,#084526);border:3px solid #052e16;border-radius:16px;padding:8px;box-shadow:0 6px 0 #052e16}
+.stockbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+#stock{min-width:108px;min-height:64px;font-size:1.15rem}
+#pips{display:flex;gap:4px;flex-wrap:wrap}
+#pips i{width:18px;height:26px;border-radius:3px;border:2px solid rgba(255,255,255,.75);background:transparent;display:block}
+#pips i.on{background:#ffd43b;border-color:#222}
+#cols{display:flex;align-items:flex-start;gap:2px;min-height:42vh;touch-action:pan-y}
+.col{flex:1;min-width:0;position:relative}
+.slot{border:2px dashed rgba(255,255,255,.75);border-radius:6px;box-sizing:border-box}
+.card{position:absolute;left:0;right:0;border-radius:5px;box-sizing:border-box;user-select:none;touch-action:none}
+.card.down{background:repeating-linear-gradient(45deg,#14532d 0 5px,#166534 5px 10px);border:2px solid #d8f5a2}
+.card.up{background:#fff;color:#111;border:2px solid #111;display:flex;flex-direction:column;align-items:flex-start;padding:0 1px;line-height:1;font-weight:900}
+.card.red{color:#c92a2a}
+.card b,.card i{font-style:normal;display:block}
+.card i{font-size:.78em}
+.card.hint{box-shadow:0 0 0 3px #ffd43b}
+.card.sel{box-shadow:0 0 0 3px #74c0fc}
+#ghost{position:fixed;z-index:40;pointer-events:none;filter:drop-shadow(0 6px 0 rgba(0,0,0,.35))}
+#ghost .card{position:relative;margin-top:-70%}
+#ghost .card:first-child{margin-top:0}
+#win{position:fixed;inset:0;border-radius:0;background:rgba(5,30,18,.78);z-index:30}
+#wincv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#win .txt,#win .btn{position:relative;z-index:1}
+#win .txt{color:#fff;font-size:2rem;text-shadow:0 3px 0 #052e16}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🕷️ 蜘蛛纸牌</h1></div>
+<div class="wrap">
+<div class="stats">
+  <div class="stat"><span>分数</span><b id="score">500</b></div>
+  <div class="stat"><span>步数</span><b id="moves">0</b></div>
+  <div class="stat"><span>时间</span><b id="time">0:00</b></div>
+  <div class="stat"><span>已收</span><b id="done">0/8</b></div>
+</div>
+<div class="controls">
+  <button class="btn green" id="new" type="button">新游戏</button>
+  <button class="btn" id="restart" type="button">重开本局</button>
+  <button class="btn blue" id="undo" type="button">撤销</button>
+  <button class="btn" id="hint" type="button">提示</button>
+</div>
+<div class="diffs">
+  <button class="btn on" data-diff="1" type="button">初级·单色</button>
+  <button class="btn" data-diff="2" type="button">中级·双色</button>
+  <button class="btn" data-diff="4" type="button">高级·四色</button>
+</div>
+<div id="felt">
+  <div class="stockbar">
+    <button class="btn" id="stock" type="button">发牌 ×5</button>
+    <div id="pips"></div>
+  </div>
+  <div id="cols"></div>
+</div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>两副牌共 104 张，排成 10 列。前 4 列 6 张，后 6 列 5 张，只有最下面一张翻开。</li>
+<li>把牌接到比它大 1 点的牌下面，花色不限。Q 可以放在 K 上。</li>
+<li><b>同花色并且连续递减</b>的一串，可以一起搬走。空列可以放任意一张或一整串。</li>
+<li>右上角牌堆还能发 <b>5 次</b>，每次每列一张。哪一列是空的，这次就不能发。</li>
+<li>从 K 到 A 凑成同花色的一组，会自动收走并 <b>加 100 分</b>。八组收齐就赢。开局 500 分，每走一步减 1 分。</li>
+<li>点一张牌会自动找地方放；也可以按住拖过去。撤销不限次数。初级全是黑桃，中级红黑两色，高级四种花色。</li>
+</ul></div>
+</div>
+<div class="overlay" id="win"><canvas id="wincv"></canvas><div class="txt" id="wintxt">收齐了</div><button class="btn green" id="again" type="button">再来一局</button></div>
+<script src="../common.js"></script>
+<script>
+const RANK=['','A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+const SUIT=['♠','♥','♣','♦'];
+const SAVEK='laotoule:spiderSave';
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296}}
+function makeDeck(diff){
+  const suits=diff===1?[0]:diff===2?[0,1]:[0,1,2,3];
+  const copies=8/suits.length, cards=[];
+  for(const s of suits) for(let r=1;r<=13;r++) for(let n=0;n<copies;n++) cards.push({r,s,up:false});
+  return cards;
+}
+function shuffle(cards,rand){
+  const a=cards.map(c=>({...c}));
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]}
+  return a;
+}
+function dealNew(diff,seed){
+  const deck=shuffle(makeDeck(diff), mulberry32(seed>>>0));
+  const cols=Array.from({length:10},()=>[]);
+  let k=0;
+  for(let row=0;row<6;row++) for(let c=0;c<10;c++){
+    if(row===5 && c>=4) continue;
+    cols[c].push({...deck[k++], up:false});
+  }
+  cols.forEach(col=>{col[col.length-1].up=true});
+  return {cols, stock:deck.slice(k).map(c=>({...c,up:false})), done:0, score:500, moves:0, seed, diff, seconds:0};
+}
+function movableTail(col,index){
+  if(index<0||index>=col.length||!col[index].up) return false;
+  for(let i=index;i<col.length-1;i++){
+    const a=col[i], b=col[i+1];
+    if(!b.up||a.s!==b.s||a.r!==b.r+1) return false;
+  }
+  return true;
+}
+function canPlace(col,card){
+  if(!col.length) return true;
+  return col[col.length-1].r===card.r+1;
+}
+function removeRuns(col){
+  let n=0;
+  while(col.length>=13){
+    const seq=col.slice(col.length-13);
+    if(!seq.every(c=>c.up && c.s===seq[0].s) || seq[0].r!==13) break;
+    let ok=true;
+    for(let i=1;i<13;i++) if(seq[i].r!==seq[i-1].r-1) ok=false;
+    if(!ok) break;
+    col.splice(col.length-13,13); n++;
+    if(col.length && !col[col.length-1].up) col[col.length-1].up=true;
+  }
+  return n;
+}
+function listMoves(state){
+  const out=[];
+  for(let c=0;c<10;c++){
+    const col=state.cols[c];
+    for(let i=0;i<col.length;i++){
+      if(!movableTail(col,i)) continue;
+      const built=i>0 && col[i-1].up && col[i-1].s===col[i].s && col[i-1].r===col[i].r+1;
+      for(let t=0;t<10;t++){
+        if(t===c || !canPlace(state.cols[t], col[i])) continue;
+        const same=state.cols[t].length && state.cols[t][state.cols[t].length-1].s===col[i].s;
+        if(built && !same) continue;
+        out.push({from:c,index:i,to:t,rank:same?0:state.cols[t].length?1:2});
+      }
+    }
+  }
+  out.sort((a,b)=>a.rank-b.rank||a.to-b.to||a.from-b.from);
+  return out;
+}
+function bestTarget(state,from,index){
+  const hits=listMoves(state).filter(m=>m.from===from && m.index===index);
+  return hits.length?hits[0].to:-1;
+}
+let state, undo=[], selected=null, hint=null, hintN=0, won=false, box={cw:34,ch:48};
+function clonePlay(s){const {seconds,...rest}=s; return JSON.parse(JSON.stringify(rest))}
+function pushUndo(){undo.push(clonePlay(state)); if(undo.length>400) undo.shift()}
+function applyScore(removed){
+  state.moves++; state.score+=-1+100*removed; state.done+=removed;
+  if(removed) LTL.record('spider', state.score);
+}
+function tryMove(from,index,to){
+  if(won||from===to) return false;
+  const col=state.cols[from];
+  if(!movableTail(col,index) || !canPlace(state.cols[to], col[index])) return false;
+  pushUndo();
+  const moved=col.splice(index);
+  if(col.length && !col[col.length-1].up) col[col.length-1].up=true;
+  state.cols[to].push(...moved);
+  const n=removeRuns(state.cols[to]);
+  applyScore(n);
+  selected=null; hint=null;
+  if(n) LTL.beep(640,.12,'triangle',.06); else LTL.beep(420,.04,'square',.03);
+  if(n) LTL.toast('收起一组');
+  afterAct();
+  return true;
+}
+function tryDeal(){
+  if(won) return false;
+  if(state.stock.length<10){LTL.toast('牌已经发完了'); return false}
+  if(state.cols.some(c=>!c.length)){LTL.toast('有空列，先放上牌再发'); return false}
+  pushUndo();
+  for(let i=0;i<10;i++){const card=state.stock.shift(); card.up=true; state.cols[i].push(card)}
+  let n=0; state.cols.forEach(c=>{n+=removeRuns(c)});
+  applyScore(n);
+  selected=null; hint=null;
+  LTL.beep(300,.05,'square',.04);
+  if(n) LTL.toast('收起一组');
+  afterAct();
+  return true;
+}
+function doUndo(){
+  if(!undo.length){LTL.toast('没有可以撤销的了'); return false}
+  const sec=state.seconds;
+  state=undo.pop(); state.seconds=sec;
+  selected=null; hint=null; won=false;
+  document.getElementById('win').classList.remove('show');
+  stopWin();
+  save(); render();
+  return true;
+}
+function afterAct(){
+  save(); render();
+  if(state.done>=8) showWin();
+}
+function fmt(s){s=Math.floor(s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function save(){
+  try{localStorage.setItem(SAVEK, JSON.stringify({state, undo}))}catch(e){}
+}
+function loadSave(){
+  try{
+    const data=JSON.parse(localStorage.getItem(SAVEK)||'');
+    if(!data||!data.state||!Array.isArray(data.state.cols)||data.state.cols.length!==10) return false;
+    state=data.state; undo=Array.isArray(data.undo)?data.undo:[];
+    return true;
+  }catch(e){return false}
+}
+function fresh(diff,seed){
+  state=dealNew(diff, seed>>>0);
+  undo=[]; selected=null; hint=null; won=false;
+  document.getElementById('win').classList.remove('show');
+  stopWin(); save(); render();
+}
+function metrics(){
+  const el=document.getElementById('cols');
+  const w=el.clientWidth||Math.min(360, innerWidth-24);
+  const cw=Math.max(26, Math.floor((w-18)/10));
+  const ch=Math.round(cw*1.42);
+  const top=el.getBoundingClientRect().top||220;
+  const avail=Math.max(ch+40, innerHeight-top-16);
+  return {cw,ch,avail};
+}
+function topsFor(col,ch,avail){
+  if(!col.length) return [];
+  const gaps=[];
+  for(let i=1;i<col.length;i++) gaps.push(col[i].up&&col[i-1].up?Math.round(ch*.42):Math.round(ch*.22));
+  let sum=gaps.reduce((a,b)=>a+b,0);
+  const room=Math.max(0, avail-ch);
+  const scale=sum>room&&sum?room/sum:1;
+  const tops=[0]; let y=0;
+  for(let i=0;i<gaps.length;i++){y+=Math.max(5, gaps[i]*scale); tops.push(y)}
+  return tops;
+}
+function render(){
+  box=metrics();
+  const root=document.getElementById('cols');
+  const tops=state.cols.map(col=>topsFor(col, box.ch, box.avail));
+  const rowH=Math.max(box.ch, ...tops.map((t,i)=>t.length?t[t.length-1]+box.ch:0));
+  root.innerHTML='';
+  state.cols.forEach((col,ci)=>{
+    const el=document.createElement('div');
+    el.className='col'; el.dataset.col=String(ci); el.style.height=rowH+'px';
+    if(!col.length){
+      const slot=document.createElement('div'); slot.className='slot'; slot.style.height=box.ch+'px'; el.appendChild(slot);
+    }
+    col.forEach((card,i)=>{
+      const d=document.createElement('div');
+      const red=card.s===1||card.s===3;
+      d.className='card '+(card.up?'up':'down')+(red?' red':'');
+      d.style.top=tops[ci][i]+'px'; d.style.height=box.ch+'px';
+      d.style.fontSize=Math.max(12, Math.round(box.cw*0.46))+'px';
+      if(card.up) d.innerHTML='<b>'+RANK[card.r]+'</b><i>'+SUIT[card.s]+'</i>';
+      if(hint && hint.from===ci && i>=hint.index) d.classList.add('hint');
+      if(selected && selected.from===ci && i>=selected.index) d.classList.add('sel');
+      d.addEventListener('pointerdown', e=>onDown(e,ci,i));
+      el.appendChild(d);
+    });
+    el.addEventListener('pointerdown', e=>{
+      if(e.target.closest('.card')) return;
+      if(selected){const s=selected; selected=null; if(!tryMove(s.from,s.index,ci)){selected=s; render()}}
+    });
+    root.appendChild(el);
+  });
+  const deals=Math.floor(state.stock.length/10);
+  const blocked=state.cols.some(c=>!c.length);
+  const stockBtn=document.getElementById('stock');
+  stockBtn.textContent=deals?(blocked?'有空列':'发牌 ×'+deals):'发完了';
+  stockBtn.classList.toggle('hint', !!(hint&&hint.stock));
+  document.getElementById('score').textContent=state.score;
+  document.getElementById('moves').textContent=state.moves;
+  document.getElementById('time').textContent=fmt(state.seconds||0);
+  document.getElementById('done').textContent=state.done+'/8';
+  const pips=document.getElementById('pips'); pips.innerHTML='';
+  for(let i=0;i<8;i++){const n=document.createElement('i'); if(i<state.done) n.className='on'; pips.appendChild(n)}
+  document.querySelectorAll('[data-diff]').forEach(b=>b.classList.toggle('on', +b.dataset.diff===state.diff));
+}
+function onTap(ci,i){
+  if(!movableTail(state.cols[ci], i)){LTL.toast('下面的牌不是同花色相连，不能一起拿'); selected=null; hint=null; render(); return}
+  if(selected && !(selected.from===ci && selected.index===i)){
+    const s=selected; selected=null;
+    if(tryMove(s.from,s.index,ci)) return;
+  }
+  const to=bestTarget(state,ci,i);
+  if(to>=0){tryMove(ci,i,to); return}
+  selected={from:ci,index:i}; hint=null;
+  LTL.toast('这张先拿着，再点要放的那一列');
+  render();
+}
+let ghost=null;
+function clearGhost(){if(ghost){ghost.remove(); ghost=null}}
+function onDown(e,ci,i){
+  if(won||!state.cols[ci][i].up) return;
+  e.preventDefault();
+  const pid=e.pointerId, sx=e.clientX, sy=e.clientY;
+  let moved=false;
+  const mm=ev=>{
+    if(ev.pointerId!==pid) return;
+    if(!moved && Math.hypot(ev.clientX-sx, ev.clientY-sy)>10){
+      if(!movableTail(state.cols[ci], i)) return;
+      moved=true;
+      ghost=document.createElement('div'); ghost.id='ghost'; ghost.style.width=box.cw+'px';
+      state.cols[ci].slice(i).forEach(card=>{
+        const d=document.createElement('div');
+        d.className='card up'+((card.s===1||card.s===3)?' red':'');
+        d.style.height=box.ch+'px'; d.style.fontSize=Math.max(12, Math.round(box.cw*0.46))+'px';
+        d.innerHTML='<b>'+RANK[card.r]+'</b><i>'+SUIT[card.s]+'</i>';
+        ghost.appendChild(d);
+      });
+      document.body.appendChild(ghost);
+    }
+    if(moved){ghost.style.left=(ev.clientX-box.cw/2)+'px'; ghost.style.top=(ev.clientY-16)+'px'}
+  };
+  const up=ev=>{
+    window.removeEventListener('pointermove', mm);
+    window.removeEventListener('pointerup', up);
+    window.removeEventListener('pointercancel', up);
+    if(moved){
+      const to=columnAt(ev.clientX, ev.clientY);
+      clearGhost();
+      if(to>=0) tryMove(ci,i,to); else render();
+    } else onTap(ci,i);
+  };
+  window.addEventListener('pointermove', mm, {passive:false});
+  window.addEventListener('pointerup', up);
+  window.addEventListener('pointercancel', up);
+}
+function columnAt(x,y){
+  const el=document.elementFromPoint(x,y);
+  const col=el&&el.closest('[data-col]');
+  return col?+col.dataset.col:-1;
+}
+function doHint(){
+  const list=listMoves(state);
+  if(!list.length){
+    if(state.stock.length>=10 && state.cols.some(c=>!c.length)) LTL.toast('有空列，先补上再发牌');
+    else if(state.stock.length>=10){hint={stock:true}; LTL.toast('可以发一轮牌'); render()}
+    else LTL.toast('现在没有能走的牌');
+    return;
+  }
+  hint=list[hintN%list.length]; hintN++;
+  LTL.toast('黄框可以移到第 '+(hint.to+1)+' 列');
+  render();
+}
+let winRAF=0, petals=[];
+function showWin(){
+  if(won) return;
+  won=true; LTL.record('spider', state.score);
+  document.getElementById('wintxt').textContent='八组收齐了！'+state.score+' 分';
+  document.getElementById('win').classList.add('show');
+  LTL.beep(523,.15,'triangle',.06);
+  const cv=document.getElementById('wincv'), ctx=cv.getContext('2d');
+  const fit=()=>{cv.width=innerWidth; cv.height=innerHeight};
+  fit();
+  petals=Array.from({length:36},(_,i)=>({x:Math.random()*cv.width,y:Math.random()*-cv.height,v:50+Math.random()*90,w:8+Math.random()*10,h:12+Math.random()*8,rot:Math.random()*6,vr:(Math.random()-.5)*2,c:i%2?'#ffd43b':'#fff',s:SUIT[i%4]}));
+  let last=performance.now();
+  const frame=now=>{
+    const dt=Math.min(.04,(now-last)/1000); last=now;
+    ctx.clearRect(0,0,cv.width,cv.height);
+    petals.forEach(p=>{
+      p.y+=p.v*dt; p.rot+=p.vr*dt; if(p.y>cv.height+20){p.y=-20; p.x=Math.random()*cv.width}
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      ctx.fillStyle=p.c; ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.fillStyle='#222'; ctx.font='12px sans-serif'; ctx.textAlign='center'; ctx.fillText(p.s,0,4);
+      ctx.restore();
+    });
+    if(won) winRAF=requestAnimationFrame(frame);
+  };
+  stopWin(); winRAF=requestAnimationFrame(frame);
+}
+function stopWin(){if(winRAF) cancelAnimationFrame(winRAF); winRAF=0}
+document.getElementById('stock').onclick=()=>tryDeal();
+document.getElementById('undo').onclick=()=>doUndo();
+document.getElementById('hint').onclick=()=>doHint();
+document.getElementById('new').onclick=()=>fresh(state.diff, (Math.random()*0x7fffffff)|0);
+document.getElementById('restart').onclick=()=>fresh(state.diff, state.seed);
+document.getElementById('again').onclick=()=>fresh(state.diff, (Math.random()*0x7fffffff)|0);
+document.querySelectorAll('[data-diff]').forEach(b=>b.onclick=()=>{
+  const d=+b.dataset.diff; if(state.diff===d && !won){LTL.toast('已经是这个难度'); return}
+  fresh(d, (Math.random()*0x7fffffff)|0);
+});
+addEventListener('keydown', e=>{
+  if(e.key==='z'||e.key==='Z'||(e.key==='Backspace'&&e.ctrlKey)){e.preventDefault(); doUndo()}
+  if(e.key==='h'||e.key==='H') doHint();
+});
+addEventListener('resize', ()=>render());
+if(!loadSave()) fresh(1, (Math.random()*0x7fffffff)|0);
+else { render(); if(state.done>=8) showWin(); }
+setInterval(()=>{
+  if(won||!state) return;
+  state.seconds=(state.seconds||0)+1;
+  const t=document.getElementById('time'); if(t) t.textContent=fmt(state.seconds);
+  if(state.seconds%5===0) save();
+},1000);
+window.__TEST={
+  newGame(diff,seed){fresh(diff,seed)},
+  setup(s){state={seconds:0,...JSON.parse(JSON.stringify(s))}; undo=[]; selected=null; hint=null; won=false; document.getElementById('win').classList.remove('show'); stopWin(); render()},
+  move:tryMove, deal:tryDeal, undo:doUndo,
+  state(){return JSON.parse(JSON.stringify({cols:state.cols,stock:state.stock,done:state.done,score:state.score,moves:state.moves,diff:state.diff,seed:state.seed}))},
+  hints(){return listMoves(state)},
+  movable(c,i){return movableTail(state.cols[c], i)}
+};
+</script></body></html>
