@@ -1,0 +1,149 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>连连看 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#board{width:min(96vw,520px);margin:0 auto;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;touch-action:manipulation}
+.tile{aspect-ratio:1;border:3px solid #222;border-radius:10px;font-size:clamp(18px,5vw,28px);background:#fff;padding:0}
+.tile.on{outline:4px solid #e8590c;background:#fff3bf}
+.tile.hint{background:#d3f9d8}
+.tile:disabled{visibility:hidden}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🍉 连连看</h1></div>
+<div class="wrap">
+<div class="stats">
+  <div class="stat"><span>分数</span><b id="score">0</b></div>
+  <div class="stat"><span>用时</span><b id="time">0:00</b></div>
+  <div class="stat"><span>最高分</span><b id="best">0</b></div>
+</div>
+<div id="board"></div>
+<div class="controls">
+  <button class="btn" id="hint" type="button">💡 提示</button>
+  <button class="btn" id="shuffle" type="button">🔀 重排</button>
+  <button class="btn green" id="new" type="button">🔄 新一局</button>
+</div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>点两个<b>一样</b>的图案。连线最多拐两个弯，中间只能穿过空格，也可以从棋盘外围绕过去。</li>
+<li>没有可消的配对时会自动重排。也可以自己按「重排」或「提示」。</li>
+<li>不限时，用时只是看你玩了多久。全部消完会记下分数。</li>
+</ul></div>
+<div class="overlay" id="ov"><div id="ovt">全部连完了</div><button class="btn" id="again">再来一局</button></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const COLS=8,ROWS=10,EM=['🍎','🍊','🍋','🍇','🍓','🍑','🍒','🥝','🍍','🍉'];
+const COLORS=['#ffe8cc','#fff3bf','#fff9db','#e5dbff','#ffc9c9','#ffdeeb','#ffe3e3','#d3f9d8','#fff3bf','#d0ebff'];
+let board,sel=null,score=0,sec=0,timer=0,hint=[];
+const el=document.getElementById('board');
+function idx(x,y){return y*COLS+x}
+function occExt(x,y){
+  if(x<=0||y<=0||x>=COLS+1||y>=ROWS+1) return false;
+  return board[idx(x-1,y-1)]!=null;
+}
+function canLink(ax,ay,bx,by){
+  if(ax===bx&&ay===by) return false;
+  if(board[idx(ax,ay)]==null||board[idx(ax,ay)]!==board[idx(bx,by)]) return false;
+  const A={x:ax+1,y:ay+1}, B={x:bx+1,y:by+1};
+  const q=[{x:A.x,y:A.y,dir:-1,turns:0}];
+  const seen=new Set();
+  while(q.length){
+    const cur=q.shift();
+    for(let d=0;d<4;d++){
+      const nx=cur.x+[0,1,0,-1][d], ny=cur.y+[-1,0,1,0][d];
+      if(nx<0||ny<0||nx>COLS+1||ny>ROWS+1) continue;
+      const turns=cur.dir===-1||cur.dir===d?cur.turns:cur.turns+1;
+      if(turns>2) continue;
+      if(nx===B.x&&ny===B.y) return true;
+      if(occExt(nx,ny)) continue;
+      const k=nx+','+ny+','+d+','+turns;
+      if(seen.has(k)) continue;
+      seen.add(k); q.push({x:nx,y:ny,dir:d,turns});
+    }
+  }
+  return false;
+}
+function findPair(){
+  const cells=[];
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++) if(board[idx(x,y)]!=null) cells.push({x,y});
+  for(let i=0;i<cells.length;i++)for(let j=i+1;j<cells.length;j++){
+    if(canLink(cells[i].x,cells[i].y,cells[j].x,cells[j].y)) return [cells[i],cells[j]];
+  }
+  return null;
+}
+function shuffle(depth){
+  const vals=[];
+  for(let i=0;i<board.length;i++) if(board[i]!=null) vals.push(board[i]);
+  for(let i=vals.length-1;i>0;i--){const j=Math.random()* (i+1)|0; [vals[i],vals[j]]=[vals[j],vals[i]]}
+  let k=0; for(let i=0;i<board.length;i++) if(board[i]!=null) board[i]=vals[k++];
+  sel=null; hint=[];
+  if(!findPair() && vals.length && (depth||0)<20){shuffle((depth||0)+1); return}
+  LTL.toast('重新排好了'); render();
+}
+function stuckCheck(){
+  const left=board.filter(v=>v!=null).length;
+  if(!left){finish(); return}
+  if(!findPair()){LTL.toast('没有可连的了，帮你重排'); shuffle()}
+}
+function select(x,y){
+  if(board[idx(x,y)]==null) return;
+  if(!sel){sel={x,y}; render(); return}
+  if(sel.x===x&&sel.y===y){sel=null; render(); return}
+  if(canLink(sel.x,sel.y,x,y)){
+    board[idx(sel.x,sel.y)]=null; board[idx(x,y)]=null; sel=null; hint=[];
+    score+=10; document.getElementById('score').textContent=score;
+    if(LTL.record('llk',score)) document.getElementById('best').textContent=score;
+    LTL.beep(560,.05,'triangle',.04); render(); stuckCheck(); return;
+  }
+  sel={x,y}; LTL.toast('这两张连不上'); render();
+}
+function finish(){
+  clearInterval(timer); timer=0;
+  const bonus=Math.max(0,300-sec);
+  score+=bonus; document.getElementById('score').textContent=score;
+  if(LTL.record('llk',score)) document.getElementById('best').textContent=score;
+  document.getElementById('ovt').textContent='全部连完了，用时 '+fmt(sec)+(bonus?'，奖励 '+bonus+' 分':'');
+  document.getElementById('ov').classList.add('show');
+}
+function fmt(s){return Math.floor(s/60)+':' + String(s%60).padStart(2,'0')}
+function render(){
+  el.innerHTML='';
+  for(let y=0;y<ROWS;y++)for(let x=0;x<COLS;x++){
+    const v=board[idx(x,y)], b=document.createElement('button');
+    b.className='tile'; b.type='button';
+    if(v==null) b.disabled=true;
+    else{
+      b.textContent=EM[v]; b.style.background=COLORS[v];
+      if(sel&&sel.x===x&&sel.y===y) b.classList.add('on');
+      if(hint.some(h=>h.x===x&&h.y===y)) b.classList.add('hint');
+      b.onclick=()=>select(x,y);
+    }
+    el.appendChild(b);
+  }
+}
+function deal(){
+  clearInterval(timer);
+  const bag=[];
+  for(let t=0;t<EM.length;t++) for(let n=0;n<8;n++) bag.push(t);
+  for(let i=bag.length-1;i>0;i--){const j=Math.random()*(i+1)|0; [bag[i],bag[j]]=[bag[j],bag[i]]}
+  board=bag; sel=null; hint=[]; score=0; sec=0;
+  document.getElementById('score').textContent=0;
+  document.getElementById('time').textContent='0:00';
+  document.getElementById('ov').classList.remove('show');
+  if(!findPair()) shuffle();
+  render();
+  timer=setInterval(()=>{sec++; document.getElementById('time').textContent=fmt(sec)},1000);
+}
+document.getElementById('hint').onclick=()=>{
+  const p=findPair(); if(!p){LTL.toast('没有可提示的'); return}
+  hint=p; sel=null; render(); LTL.toast('这两张可以连');
+};
+document.getElementById('shuffle').onclick=()=>{ if(board.some(v=>v!=null)) shuffle() };
+document.getElementById('new').onclick=deal;
+document.getElementById('again').onclick=deal;
+document.getElementById('best').textContent=LTL.getBest('llk');
+deal();
+window.__TEST={
+  pair:findPair,
+  select,
+  board:()=>board.slice(),
+  score:()=>score
+};
+</script></body></html>

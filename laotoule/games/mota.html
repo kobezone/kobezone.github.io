@@ -1,0 +1,232 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>迷你魔塔 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.bar2{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.bar2 .stat{min-width:0}
+#board{width:min(96vw,calc(100vh - 250px),520px);margin:0 auto;display:grid;grid-template-columns:repeat(11,1fr);gap:2px;background:#5c4a32;padding:4px;border:3px solid #222;border-radius:12px;touch-action:manipulation}
+.cell{aspect-ratio:1;border:0;border-radius:4px;font-size:clamp(11px,2.7vw,18px);font-weight:800;padding:0;line-height:1}
+.wall{background:#6b542c;color:transparent}
+.floor{background:#f3e6c8}
+.me{background:#ffd43b}
+.doorY{background:#ffd43b;color:#5c4a00}.doorB{background:#74c0fc;color:#1864ab}.doorR{background:#ff8787;color:#9b1c1c}
+.mon{background:#ffc9c9;color:#222}.item{background:#d3f9d8;color:#222}.stair{background:#e5dbff;color:#222}.npc{background:#fff3bf}
+#dlg .btn{margin:4px}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🏰 迷你魔塔</h1></div>
+<div class="wrap">
+<div class="bar2">
+  <div class="stat"><span>生命</span><b id="hp">500</b></div>
+  <div class="stat"><span>攻击</span><b id="atk">28</b></div>
+  <div class="stat"><span>防御</span><b id="def">12</b></div>
+  <div class="stat"><span>金币</span><b id="gold">0</b></div>
+  <div class="stat"><span>黄钥匙</span><b id="yk">0</b></div>
+  <div class="stat"><span>蓝钥匙</span><b id="bk">0</b></div>
+  <div class="stat"><span>红钥匙</span><b id="rk">0</b></div>
+  <div class="stat"><span>楼层</span><b id="fl">1</b></div>
+</div>
+<div id="board"></div>
+<div class="dpad">
+  <span></span><button class="btn blue" data-d="up" type="button">⬆</button><span></span>
+  <button class="btn blue" data-d="left" type="button">⬅</button><button class="btn blue" data-d="down" type="button">⬇</button><button class="btn blue" data-d="right" type="button">➡</button>
+</div>
+<div class="controls">
+  <button class="btn" id="save" type="button">💾 保存</button>
+  <button class="btn" id="load" type="button">📂 读取</button>
+  <button class="btn" id="reset" type="button">🔄 重开</button>
+</div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>方向键或大箭头走一格。撞上怪物会先<b>预告掉血</b>，觉得亏就按「先不打」。</li>
+<li>伤害＝max(0, 怪物攻击−你的防御)×回合数。回合数＝怪物生命÷(你的攻击−怪物防御)，除不尽就进一。</li>
+<li>黄蓝红钥匙开对应的门。绿格是药水、攻击宝石、防御宝石和金币。</li>
+<li>商店能买属性。进度可以保存，存在这台设备里。一共 12 层，都是新编的。</li>
+</ul></div>
+<div class="overlay" id="dlg"><div id="dlgt"></div><div id="dlgb"></div></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const FLOORS=[
+['###########','#@yY.U....#','#1..h.....#','#.........#','#....n....#','#.........#','#...a.....#','#.........#','#......d..#','#....g....#','###########'],
+['###########','#D..y..2..#','#.###Y###.#','#.#h....#.#','#.#.a...#.#','#.#.....#.#','#.###.###.#','#.........#','#....d....#','#........U#','###########'],
+['###########','#D...b....#','#B###..2..#','#a..h.....#','#......3..#','#..d......#','#.........#','#....H....#','#.........#','#U........#','###########'],
+['###########','#D..r.3...#','#.###R###.#','#.#a..4.#.#','#.#.....#.#','#.#h.d..#.#','#.##...##.#','#.........#','#....g....#','#......U..#','###########'],
+['###########','#D..y.4...#','#.###Y###.#','#.#..a..#.#','#.#.5...#.#','#.#..d..#.#','#.###.###.#','#..h......#','#.........#','#........U#','###########'],
+['###########','#D...b.5..#','#.###B###.#','#.#H....#.#','#.#.a.6.#.#','#.#.....#.#','#.###.###.#','#....d....#','#....g....#','#U........#','###########'],
+['###########','#D..r..6..#','#.###R###.#','#.#a....#.#','#.#..7..#.#','#.#.d.h.#.#','#.#.....#.#','#.#######.#','#....s....#','#......U..#','###########'],
+['###########','#D..y..7..#','#.###Y###.#','#.#..H..#.#','#.#.a.d.#.#','#.#.....#.#','#.###.###.#','#....g....#','#.........#','#........U#','###########'],
+['###########','#D...b....#','#B###..4..#','#..a..5...#','#......6..#','#..d..H...#','#.........#','#....s....#','#....g....#','#U........#','###########'],
+['###########','#D..r.6...#','#.###R###.#','#.#a....#.#','#.#.7...#.#','#.#.d.h.#.#','#.##...##.#','#.........#','#....g....#','#......U..#','###########'],
+['###########','#D..y.b.r.#','#Y#B#R#...#','#.#.#.#.7.#','#a#d#h#...#','#.#.#.#...#','#.#.#.#...#','#.........#','#....s....#','#........U#','###########'],
+['###########','#D..H.a.d.#','#.###.###.#','#.#.....#.#','#.#..8..#.#','#.#.....#.#','#.###F###.#','#.........#','#....g....#','#....s....#','###########']
+];
+const NAMES=['小院','黄门廊','蓝门道','红门厅','石像层','铁皮廊','披风间','补给层','旧识层','红门库','三门厅','塔顶'];
+const LINES=[
+'黄钥匙开黄门。打架前先看会掉多少血。',
+'螃蟹壳硬一点，宝石捡到了再打更稳。',
+'蓝钥匙开蓝门，大药水留着备用。',
+'红门要红钥匙。打不过可以下楼再准备。',
+'石像偶很沉，先把这层的宝石捡齐。',
+'铁皮兵壳厚，防御高了就几乎不掉血。',
+'商店能买攻击、防御和药水。',
+'快到顶了，药水和宝石别落下。',
+'这些是下面见过的家伙，血不够就去商店。',
+'红斗篷很凶，先把血加满。',
+'三扇门的钥匙都在门口这一排。',
+'塔顶小龙会先告诉你掉多少血。'
+];
+const MS={
+1:{n:'软软虫',hp:24,atk:14,def:2,g:2,c:'虫'},
+2:{n:'圆壳蟹',hp:48,atk:22,def:6,g:4,c:'蟹'},
+3:{n:'纸灯灵',hp:80,atk:34,def:10,g:7,c:'灯'},
+4:{n:'夜蝙蝠',hp:120,atk:48,def:16,g:11,c:'蝠'},
+5:{n:'石像偶',hp:170,atk:64,def:24,g:16,c:'偶'},
+6:{n:'铁皮兵',hp:230,atk:82,def:32,g:22,c:'兵'},
+7:{n:'红斗篷',hp:300,atk:100,def:40,g:30,c:'篷'},
+8:{n:'塔顶龙',hp:220,atk:90,def:36,g:80,c:'龙'}
+};
+const DIRS={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+let maps,floor,p,dlg;
+const SAVEK='laotoule:motaSave';
+function fresh(){
+  maps=FLOORS.map(f=>f.map(r=>r.split('')));
+  floor=0; p={hp:500,atk:28,def:12,gold:0,Y:0,B:0,R:0,x:1,y:1};
+  for(let y=0;y<11;y++)for(let x=0;x<11;x++) if(maps[0][y][x]==='@'){p.x=x;p.y=y; maps[0][y][x]='.'}
+  closeDlg(); render();
+}
+function preview(id){
+  const m=MS[id]; const dmg=p.atk-m.def;
+  if(dmg<=0) return {ok:false,cost:Infinity,turns:Infinity,m,text:m.n+' 的防御太高，现在打不动。'};
+  const turns=Math.ceil(m.hp/dmg);
+  const cost=Math.max(0,m.atk-p.def)*turns;
+  const ok=cost<p.hp;
+  return {ok,cost,turns,m,text:m.n+'　生命'+m.hp+' 攻击'+m.atk+' 防御'+m.def+'\n预计 '+turns+' 回合，损失 '+cost+' 点生命'+(ok?'。':'，血不够。')};
+}
+function openDlg(html,buttons){
+  document.getElementById('dlgt').innerText=html;
+  const box=document.getElementById('dlgb'); box.innerHTML='';
+  buttons.forEach(b=>{const el=document.createElement('button'); el.className='btn '+(b.cls||''); el.textContent=b.t; el.onclick=b.fn; box.appendChild(el)});
+  document.getElementById('dlg').classList.add('show'); dlg=true;
+}
+function closeDlg(){document.getElementById('dlg').classList.remove('show'); dlg=false}
+function land(ch){
+  for(let y=0;y<11;y++)for(let x=0;x<11;x++) if(maps[floor][y][x]===ch){p.x=x;p.y=y; return}
+}
+function setFloor(n,via){
+  floor=n; land(via==='up'?'D':'U');
+  if(LTL.record('mota',floor+1)){}
+  autosave(); render(); LTL.toast(NAMES[floor]);
+}
+function fight(id,x,y){
+  const pv=preview(id);
+  openDlg(pv.text,[
+    {t:'开战',cls:'green',fn(){if(!pv.ok){LTL.toast('还是先变强吧');return} p.hp-=pv.cost; p.gold+=pv.m.g; maps[floor][y][x]='.'; p.x=x; p.y=y; closeDlg(); LTL.beep(360,.08,'square',.04); autosave(); render()}},
+    {t:'先不打',fn(){closeDlg()}}
+  ]);
+}
+function shop(){
+  openDlg('小店：攻击 +8（25 金）\n防御 +8（25 金）\n药水 +160 生命（20 金）',[
+    {t:'买攻击',fn(){if(p.gold<25){LTL.toast('金币不够');return} p.gold-=25; p.atk+=8; LTL.toast('攻击提升'); render()}},
+    {t:'买防御',fn(){if(p.gold<25){LTL.toast('金币不够');return} p.gold-=25; p.def+=6+2; LTL.toast('防御提升'); render()}},
+    {t:'买药水',fn(){if(p.gold<20){LTL.toast('金币不够');return} p.gold-=20; p.hp+=160; LTL.toast('喝下了'); render()}},
+    {t:'离开',fn(){closeDlg(); autosave()}}
+  ]);
+}
+function tryMove(dir){
+  if(dlg) return;
+  const [dx,dy]=DIRS[dir]; const x=p.x+dx,y=p.y+dy;
+  if(x<0||y<0||x>10||y>10) return;
+  const t=maps[floor][y][x];
+  if(t==='#') return;
+  if(t==='Y'||t==='B'||t==='R'){
+    const k=t==='Y'?'Y':t==='B'?'B':'R';
+    if(p[k]<=0){LTL.toast('没有对应的钥匙');return}
+    p[k]--; maps[floor][y][x]='.'; p.x=x; p.y=y; LTL.beep(480,.05,'triangle',.04); autosave(); render(); return;
+  }
+  if(/[1-8]/.test(t)){fight(+t,x,y); return}
+  if(t==='s'){p.x=x;p.y=y; shop(); render(); return}
+  if(t==='y') p.Y++; else if(t==='b') p.B++; else if(t==='r') p.R++;
+  else if(t==='h') p.hp+=100; else if(t==='H') p.hp+=220;
+  else if(t==='a') p.atk+=6; else if(t==='d') p.def+=6; else if(t==='g') p.gold+=25;
+  else if(t==='n') LTL.toast(LINES[floor]);
+  if('yb rhabdgH'.includes(t)||t==='h'||t==='H'||t==='a'||t==='d'||t==='g'||t==='y'||t==='b'||t==='r') maps[floor][y][x]='.';
+  if(t==='y'||t==='b'||t==='r'||t==='h'||t==='H'||t==='a'||t==='d'||t==='g') maps[floor][y][x]='.';
+  p.x=x; p.y=y;
+  if(t==='U'&&floor<11){setFloor(floor+1,'up'); return}
+  if(t==='D'&&floor>0){setFloor(floor-1,'down'); return}
+  if(t==='F'){openDlg('小龙被劝退了，塔顶的风很凉快。\n你的生命还剩 '+p.hp,[{t:'好',fn(){closeDlg()}}]); LTL.record('mota',12)}
+  autosave(); render();
+}
+function cellInfo(t){
+  if(t==='#') return ['wall',''];
+  if(t==='Y') return ['doorY','黄门'];
+  if(t==='B') return ['doorB','蓝门'];
+  if(t==='R') return ['doorR','红门'];
+  if(/[1-8]/.test(t)) return ['mon',MS[+t].c];
+  if(t==='y'||t==='b'||t==='r') return ['item',t==='y'?'黄钥':t==='b'?'蓝钥':'红钥'];
+  if(t==='h'||t==='H') return ['item',t==='h'?'药':'大药'];
+  if(t==='a') return ['item','攻'];
+  if(t==='d') return ['item','防'];
+  if(t==='g') return ['item','金'];
+  if(t==='U') return ['stair','上'];
+  if(t==='D') return ['stair','下'];
+  if(t==='F') return ['stair','顶'];
+  if(t==='n') return ['npc','人'];
+  if(t==='s') return ['npc','店'];
+  return ['floor',''];
+}
+function render(){
+  document.getElementById('hp').textContent=p.hp;
+  document.getElementById('atk').textContent=p.atk;
+  document.getElementById('def').textContent=p.def;
+  document.getElementById('gold').textContent=p.gold;
+  document.getElementById('yk').textContent=p.Y;
+  document.getElementById('bk').textContent=p.B;
+  document.getElementById('rk').textContent=p.R;
+  document.getElementById('fl').textContent=(floor+1)+' '+NAMES[floor];
+  const board=document.getElementById('board'); board.innerHTML='';
+  for(let y=0;y<11;y++)for(let x=0;x<11;x++){
+    const b=document.createElement('button');
+    const here=x===p.x&&y===p.y;
+    const [cls,txt]=here?['me','我']:cellInfo(maps[floor][y][x]);
+    b.className='cell '+cls; b.textContent=txt; b.type='button';
+    b.onclick=()=>{
+      if(Math.abs(x-p.x)+Math.abs(y-p.y)!==1) return;
+      tryMove(x>p.x?'right':x<p.x?'left':y>p.y?'down':'up');
+    };
+    board.appendChild(b);
+  }
+}
+function snapshot(){return {floor,p:{...p},maps:maps.map(r=>r.map(c=>c.join?c:c).join?null:null)}}
+function save(){
+  const data={floor,p,maps:maps.map(rows=>rows.map(ch=>ch).join(''))};
+  // maps[y] is array of chars
+  data.maps=maps.map(rows=>rows.join(''));
+  localStorage.setItem(SAVEK,JSON.stringify(data));
+  LTL.toast('已保存');
+}
+function autosave(){const data={floor,p,maps:maps.map(rows=>rows.join(''))}; localStorage.setItem(SAVEK,JSON.stringify(data))}
+function loadSave(){
+  try{
+    const data=JSON.parse(localStorage.getItem(SAVEK)||'');
+    if(!data||!data.maps||data.maps.length!==12){LTL.toast('没有存档');return}
+    maps=data.maps.map(r=>r.split('')); floor=data.floor; p=data.p; closeDlg(); render(); LTL.toast('读取了存档');
+  }catch(e){LTL.toast('存档读不了')}
+}
+document.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>tryMove(b.dataset.d));
+addEventListener('keydown',e=>{
+  const km={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+  if(km[e.key]){e.preventDefault(); tryMove(km[e.key])}
+});
+document.getElementById('save').onclick=save;
+document.getElementById('load').onclick=loadSave;
+document.getElementById('reset').onclick=()=>openDlg('确定从头再爬一次？已保存的进度还在，除非你再点保存。',[{t:'重开',cls:'red',fn(){localStorage.removeItem(SAVEK); fresh()}},{t:'取消',fn(){closeDlg()}}]);
+if(localStorage.getItem(SAVEK)) loadSave(); else fresh();
+window.__TEST={
+  move:tryMove,
+  floor:()=>floor+1,
+  previewAt(x,y){const t=maps[floor][y][x]; return /[1-8]/.test(t)?preview(+t):null},
+  dialog:()=>dlg?document.getElementById('dlgt').innerText:'',
+  cancel(){const b=[...document.querySelectorAll('#dlgb .btn')].find(x=>x.textContent==='先不打'); if(b) b.click()},
+  pos:()=>({x:p.x,y:p.y,hp:p.hp,atk:p.atk,def:p.def}),
+  newGame:fresh
+};
+</script></body></html>
