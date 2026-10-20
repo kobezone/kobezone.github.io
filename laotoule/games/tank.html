@@ -66,7 +66,7 @@ function cloneMap(rows){
     if(ch==='E'){eagle={c,r};return 6}
     return {'.':0,B:1,S:2,W:3,G:4,I:5}[ch]||0;
   })), player=makeTank(ps.c,ps.r,'player',3.15);
-  player.lv=1; player.inv=2; player.lives=lives;
+  player.lv=1; player.inv=2; player.cool=0; player.lives=lives;
 }
 function makeTank(c,r,side,speed){return {c,r,tc:c,tr:r,dir:side==='player'?0:2,prog:0,moving:false,speed,side,cool:0.2,alive:true,inv:0,lv:1}}
 function tankPx(t){
