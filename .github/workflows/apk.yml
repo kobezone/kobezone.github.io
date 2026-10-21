@@ -41,21 +41,26 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          VER=$(tr -d '[:space:]' < laotoule/VERSION)
           cp _laotoule_apk/android/app/build/outputs/apk/release/app-release.apk laotoule-offline.apk
+          cp laotoule-offline.apk "laotoule-v${VER}.apk"
           printf '%s\n' \
-            '老头乐游戏厅的离线安卓安装包。' \
+            "老头乐游戏厅 v${VER} 的离线安卓安装包。" \
             '' \
             '全部游戏资源都打在 APK 里，安装后不需要网络。使用 debug 证书签名，可以直接侧载安装。' \
             '' \
-            '每次推送到 master 并构建成功后，这个 Release 里的 APK 会替换成最新版本。' \
+            "这一版的 Release 是 apk-v${VER}，以后会一直留着。" \
+            'apk-v1 和 Latest 下载地址始终指向当前最新的安装包。' \
             > /tmp/apk-notes.md
-          if gh release view apk-v1 >/dev/null 2>&1; then
-            gh release upload apk-v1 laotoule-offline.apk --clobber
-            gh release edit apk-v1 --target "$GITHUB_SHA" --notes-file /tmp/apk-notes.md
-          else
-            gh release create apk-v1 laotoule-offline.apk \
-              --target "$GITHUB_SHA" \
-              --title "老头乐游戏厅离线 APK" \
-              --notes-file /tmp/apk-notes.md \
-              --latest=false
-          fi
+          publish() {
+            local tag="$1" latest="$2"
+            shift 2
+            if gh release view "$tag" >/dev/null 2>&1; then
+              gh release upload "$tag" "$@" --clobber
+              gh release edit "$tag" --target "$GITHUB_SHA" --latest="$latest" --title "老头乐游戏厅 ${tag}" --notes-file /tmp/apk-notes.md
+            else
+              gh release create "$tag" "$@" --target "$GITHUB_SHA" --latest="$latest" --title "老头乐游戏厅 ${tag}" --notes-file /tmp/apk-notes.md
+            fi
+          }
+          publish "apk-v${VER}" true "laotoule-v${VER}.apk" laotoule-offline.apk
+          publish apk-v1 false laotoule-offline.apk

@@ -2,7 +2,7 @@
 <title>2048 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
 /* 棋盘按视口宽高取较小边，始终是正方形。minmax(0,1fr) 避免长数字把轨道撑开。 */
-#board{position:relative;width:min(92vw,68vh,520px);aspect-ratio:1/1;margin:8px auto;background:#bbada0;border-radius:16px;padding:2.2%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:2.2%;touch-action:none;border:3px solid #222}
+#board{position:relative;width:min(94vw,calc(100vh - var(--ltl-chrome, 0px) - 210px),620px);aspect-ratio:1/1;margin:8px auto;background:#bbada0;border-radius:16px;padding:2.2%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:2.2%;touch-action:none;border:3px solid #222}
 .cell{min-width:0;min-height:0;aspect-ratio:1/1;background:#cdc1b4;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#776e65;container-type:inline-size;overflow:hidden;line-height:1;transition:background .1s}
 .cell span{display:block;max-width:92%;white-space:nowrap;line-height:1;font-size:52cqw}
 .cell.pop{animation:pop .15s}

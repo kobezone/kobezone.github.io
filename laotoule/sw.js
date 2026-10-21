@@ -1,5 +1,5 @@
-const VERSION='laotoule-v6';
-const FILES=['./','index.html','style.css','common.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png',
+const VERSION='laotoule-v1.7';
+const FILES=['./','index.html','style.css','common.js','settings.html','changelog.html','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png',
 'games/2048.html','games/pelican.html','games/snake.html','games/minesweeper.html','games/tetris.html','games/gomoku.html','games/memory.html','games/whack.html','games/zodiac.html','games/tank.html','games/mota.html','games/ninja.html','games/sokoban.html','games/lianliankan.html','games/bloxblock.html','games/spider.html'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(VERSION).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==VERSION).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});

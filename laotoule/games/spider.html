@@ -14,7 +14,7 @@ body{background:#08351f}
 #pips{display:flex;gap:4px;flex-wrap:wrap}
 #pips i{width:18px;height:26px;border-radius:3px;border:2px solid rgba(255,255,255,.75);background:transparent;display:block}
 #pips i.on{background:#ffd43b;border-color:#222}
-#cols{display:flex;align-items:flex-start;gap:2px;min-height:42vh;touch-action:pan-y}
+#cols{display:flex;align-items:flex-start;gap:2px;min-height:calc(100vh - var(--ltl-chrome, 0px) - 230px);touch-action:pan-y}
 .col{flex:1;min-width:0;position:relative}
 .slot{border:2px dashed rgba(255,255,255,.75);border-radius:6px;box-sizing:border-box}
 .card{position:absolute;left:0;right:0;border-radius:5px;box-sizing:border-box;user-select:none;touch-action:none}

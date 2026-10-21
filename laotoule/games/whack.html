@@ -1,12 +1,12 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>打地鼠 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#field{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:540px;margin:0 auto;background:#8ce99a;border:3px solid #222;border-radius:18px;padding:16px;touch-action:manipulation;user-select:none}
+#field{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:min(96vw,calc(100vh - var(--ltl-chrome, 0px) - 160px),640px);margin:0 auto;background:#8ce99a;border:3px solid #222;border-radius:18px;padding:16px;touch-action:manipulation;user-select:none}
 .hole{position:relative;aspect-ratio:1;border-radius:50%;background:radial-gradient(ellipse at 50% 70%,#5c3d1e 0 45%,#8b5a2b 46% 60%,transparent 61%);overflow:hidden;cursor:pointer;border:none;padding:0}
 .mole{position:absolute;left:12%;width:76%;height:80%;bottom:-80%;transition:bottom .15s;font-size:clamp(2.6rem,14vw,4.6rem);display:flex;align-items:flex-start;justify-content:center;pointer-events:none}
 .hole.up .mole{bottom:8%}.hole.hit .mole{filter:grayscale(1) brightness(1.4);transform:scale(.9)}
 .key{position:absolute;left:50%;transform:translateX(-50%);bottom:3%;z-index:2;font-size:.8rem;font-weight:800;color:#2b8a3e;background:#fff;border-radius:6px;padding:0 5px}
-#bar{height:16px;max-width:540px;margin:0 auto 10px;border:3px solid #222;border-radius:10px;overflow:hidden;background:#fff}#bar div{height:100%;background:#fab005;width:100%}
+#bar{height:16px;max-width:min(96vw,calc(100vh - var(--ltl-chrome, 0px) - 160px),640px);margin:0 auto 10px;border:3px solid #222;border-radius:10px;overflow:hidden;background:#fff}#bar div{height:100%;background:#fab005;width:100%}
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🔨 打地鼠</h1></div>
 <div class="wrap">

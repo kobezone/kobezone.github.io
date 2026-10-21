@@ -1,0 +1,61 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>设置 - 老头乐游戏厅</title><link rel="stylesheet" href="style.css"><link rel="icon" href="icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.pagehead{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#e8590c;color:#fff}
+.pagehead h1{margin:0;font-size:1.4rem}
+.pagehead .btn{min-height:48px}
+.set{max-width:640px;margin:0 auto}
+.card{background:#fff;border:3px solid #222;border-radius:18px;padding:14px;margin:14px 0;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.card h2{margin:0 0 8px;font-size:1.25rem}
+.card p{margin:0 0 10px}
+.choice,.switch{width:100%;min-height:60px;margin-top:8px;background:#fff}
+.choice.on,.switch.on{background:#ffd43b}
+.note{font-size:1rem;color:#333}
+</style></head><body>
+<div class="pagehead"><a class="btn" href="index.html">← 游戏列表</a><h1>⚙ 设置</h1></div>
+<main class="wrap set">
+<p class="note">这些选项存在这台设备上，<b>所有游戏一起生效</b>。当前版本 <b id="ver">v1.7</b> · <a href="changelog.html">查看更新记录</a></p>
+<section class="card">
+<h2>返回方式</h2>
+<p>二选一。角落小按钮不占高度；顶部标题栏一直显示返回、名字和设置。</p>
+<button class="btn choice" type="button" data-nav="fab">⭕ 角落小按钮</button>
+<button class="btn choice" type="button" data-nav="bar">📌 顶部标题栏</button>
+</section>
+<section class="card">
+<h2>画面上显示哪些</h2>
+<p class="note">关掉的操作按钮会进游戏菜单。方向键关掉后不再占棋盘高度，贴在屏幕下边，菜单里也能点。选了顶部标题栏时角落按钮会收起；操作按钮或方向键被关掉时，角落菜单会留下来。</p>
+<button class="btn switch" type="button" data-k="help">📖 玩法说明</button>
+<button class="btn switch" type="button" data-k="stats">🏆 分数 / 统计</button>
+<button class="btn switch" type="button" data-k="controls">🎛 操作按钮（悔棋、提示、重开这一类）</button>
+<button class="btn switch" type="button" data-k="dpad">⬆ 屏幕方向键</button>
+</section>
+<div class="controls">
+<button class="btn red" id="reset" type="button">恢复默认</button>
+<a class="btn green" href="index.html">完成</a>
+</div>
+<div class="help"><h2>默认是什么</h2><ul>
+<li>返回用<b>角落小按钮</b>。</li>
+<li>玩法说明<b>收起</b>，点标题可以展开。</li>
+<li>分数、操作按钮、方向键都<b>显示</b>。</li>
+<li>蹬车、开火、跳跃这类必须按住的大按钮始终留在画面上，避免没法玩。</li>
+</ul></div>
+</main>
+<script src="common.js"></script>
+<script>
+const ver=document.getElementById('ver'); ver.textContent='v'+LTL.version;
+let s=LTL.getSettings();
+function paint(){
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('on', b.dataset.nav===s.nav));
+  document.querySelectorAll('[data-k]').forEach(b=>{
+    const on=!!s[b.dataset.k];
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on?'true':'false');
+    const name=b.textContent.replace(/ ：.+$/,'');
+    b.textContent=name+' ：'+(on?'开':'关');
+  });
+}
+document.querySelectorAll('[data-nav]').forEach(b=>b.onclick=()=>{s.nav=b.dataset.nav; LTL.saveSettings(s); paint()});
+document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{s[b.dataset.k]=!s[b.dataset.k]; LTL.saveSettings(s); paint()});
+document.getElementById('reset').onclick=()=>{s=Object.assign({}, LTL.defaults); LTL.saveSettings(s); paint(); LTL.toast('已恢复默认')};
+paint();
+</script></body></html>

@@ -3,7 +3,7 @@
 <style>
 .game{display:flex;gap:14px;justify-content:center;align-items:flex-start}
 #box{position:relative;border:3px solid #222;border-radius:12px;overflow:hidden;touch-action:none}
-#cv{display:block;height:min(62vh,600px,calc((100vw - 150px)*2));aspect-ratio:1/2;background:#1b1b2f}
+#cv{display:block;height:min(calc(100vh - var(--ltl-chrome, 0px) - 150px),680px,calc((100vw - 140px)*2));aspect-ratio:1/2;background:#1b1b2f}
 .side{display:flex;flex-direction:column;gap:10px}.side canvas{display:block;margin:4px auto 0;background:#1b1b2f;border:3px solid #222;border-radius:10px;width:96px;height:96px}
 .side .btn{white-space:nowrap;padding:4px 10px}.tpad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:440px;margin:12px auto}.tpad .btn{min-height:64px;font-size:1.3rem;padding:0}
 @media (max-width:520px){.side .stat{min-width:80px}.side canvas{width:76px;height:76px}}
