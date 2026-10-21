@@ -1,8 +1,8 @@
-:root{--bg:#fff7e6;--fg:#222;--card:#fff;--accent:#e8590c;--accent2:#1971c2;--ok:#2f9e44;--shadow:0 4px 0 rgba(0,0,0,.18);font-size:20px}
+:root{--bg:#fff7e6;--fg:#222;--card:#fff;--accent:#e8590c;--accent2:#1971c2;--ok:#2f9e44;--shadow:0 4px 0 rgba(0,0,0,.18);--ltl-chrome:0px;--ltl-tile:min(12vw,calc((100vh - var(--ltl-chrome) - 220px) / 10),56px);font-size:20px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC",system-ui,sans-serif;line-height:1.5}
 a{color:var(--accent2)}
-.topbar{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--accent);color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.topbar{display:flex;align-items:center;gap:12px;padding:10px 62px 10px 14px;background:var(--accent);color:#fff;position:sticky;top:0;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .topbar h1{font-size:1.3rem;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:52px;padding:8px 20px;font-size:1.05rem;font-weight:700;border:3px solid #222;border-radius:14px;background:#ffd43b;color:#222;cursor:pointer;box-shadow:var(--shadow);text-decoration:none;user-select:none;font-family:inherit}
 .btn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
@@ -26,3 +26,15 @@ a{color:var(--accent2)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:12px;font-size:1.05rem;z-index:99;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
 @media (max-width:520px){:root{font-size:18px}.stat{min-width:90px;padding:2px 10px}}
+/* 游戏页默认收起顶栏。common.js 给 body 加上 ltl-showbar 后才占高度。 */
+body:not(.ltl-showbar) .topbar{position:fixed;left:0;right:0;top:0;z-index:46;transform:translateY(-110%);visibility:hidden;pointer-events:none;transition:transform .18s ease}
+body.ltl-peek .topbar{transform:translateY(0);visibility:visible;pointer-events:auto}
+body.ltl-showbar .topbar{position:sticky;top:0;z-index:46;transform:none;visibility:visible;pointer-events:auto}
+.ltl-fab{position:fixed;z-index:70;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:48px;height:48px;border-radius:50%;border:3px solid #fff;background:rgba(20,20,20,.66);color:#fff;font:900 1.45rem/1 inherit;box-shadow:0 2px 0 #111,0 0 0 2px rgba(0,0,0,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.ltl-fab:focus-visible{outline:4px solid #ffd43b;outline-offset:2px}
+.ltl-backdrop{position:fixed;inset:0;z-index:72;background:rgba(0,0,0,.45)}
+.ltl-menu{position:fixed;z-index:73;top:64px;right:8px;width:min(300px,calc(100vw - 16px));display:flex;flex-direction:column;gap:10px;padding:12px;background:#fff;color:#111;border:3px solid #111;border-radius:18px;box-shadow:0 8px 0 rgba(0,0,0,.28)}
+.ltl-menu[hidden],.ltl-backdrop[hidden],.ltl-menu .btn[hidden]{display:none !important}
+.ltl-menu .btn{width:100%;min-height:56px;font-size:1.2rem}
+.ltl-pull{position:fixed;z-index:45;top:0;left:0;right:64px;height:18px;touch-action:none}
+body.ltl-showbar .ltl-pull{display:none}

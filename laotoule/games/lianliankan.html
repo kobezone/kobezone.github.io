@@ -1,7 +1,7 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>连连看 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#board{width:min(96vw,520px);margin:0 auto;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;touch-action:manipulation}
+#board{width:min(96vw,calc((100vh - var(--ltl-chrome, 0px) - 180px)*0.78),640px);margin:0 auto;display:grid;grid-template-columns:repeat(8,1fr);gap:4px;touch-action:manipulation}
 .tile{aspect-ratio:1;border:3px solid #222;border-radius:10px;font-size:clamp(18px,5vw,28px);background:#fff;padding:0}
 .tile.on{outline:4px solid #e8590c;background:#fff3bf}
 .tile.hint{background:#d3f9d8}

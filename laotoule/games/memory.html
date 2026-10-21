@@ -1,7 +1,7 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>记忆翻牌 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#cards{position:relative;display:grid;gap:10px;max-width:600px;margin:0 auto}
+#cards{position:relative;display:grid;gap:10px;max-width:min(720px,calc(100vh - var(--ltl-chrome, 0px) - 150px));margin:0 auto}
 .card{aspect-ratio:3/4;perspective:600px;cursor:pointer;border:none;background:none;padding:0}
 .in{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
 .card.f .in,.card.m .in{transform:rotateY(180deg)}

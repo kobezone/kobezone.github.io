@@ -2,7 +2,7 @@
 <title>推箱子 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
 #board{margin:0 auto;display:grid;gap:3px;touch-action:none;justify-content:center}
-.t{width:min(11vw,48px);height:min(11vw,48px);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:min(7vw,28px);font-weight:800}
+.t{width:var(--ltl-tile);height:var(--ltl-tile);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:min(7vw,28px);font-weight:800}
 .wall{background:#5c4a32}.floor{background:#fff4e6}.goal{background:#ffd43b;color:#5c4a00}.box{background:#f08c00;color:#fff;border:2px solid #222}.boxon{background:#2f9e44;color:#fff;border:2px solid #222}.me{background:#74c0fc;border:2px solid #222}
 #levels{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
 #levels button{min-width:44px;min-height:44px;padding:4px 8px}
@@ -72,7 +72,7 @@ function load(i,keepHist){
   document.getElementById('lv').textContent=(i+1)+' / 20';
   document.getElementById('moves').textContent=0;
   document.getElementById('ov').classList.remove('show');
-  board.style.gridTemplateColumns=`repeat(${W},min(11vw,48px))`;
+  board.style.gridTemplateColumns=`repeat(${W},var(--ltl-tile))`;
   render();
 }
 function won(){for(const g of goals) if(!boxes.has(g)) return false; return goals.size>0}
