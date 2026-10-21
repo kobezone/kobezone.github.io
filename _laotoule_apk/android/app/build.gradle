@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+def ltlVersion = new File(rootProject.projectDir, "../../laotoule/VERSION").getText("UTF-8").trim()
+def ltlParts = ltlVersion.tokenize('.')
+def ltlCode = ltlParts[0].toInteger() * 100 + (ltlParts.size() > 1 ? ltlParts[1].toInteger() : 0)
+
 android {
     namespace = "io.github.kobezone.laotoule"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -7,8 +11,8 @@ android {
         applicationId "io.github.kobezone.laotoule"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode ltlCode
+        versionName ltlVersion
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

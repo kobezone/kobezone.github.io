@@ -15,6 +15,22 @@
       const o=C.createOscillator(),g=C.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;
       o.connect(g);g.connect(C.destination);o.start();g.gain.exponentialRampToValueAtTime(0.0001,C.currentTime+dur);o.stop(C.currentTime+dur+0.02)}catch(e){}},
     // 滑动手势
+    version:'1.7',
+    defaults:{nav:'fab',help:false,stats:true,controls:true,dpad:true},
+    getSettings(){
+      const s={nav:'fab',help:false,stats:true,controls:true,dpad:true};
+      try{
+        const raw=localStorage.getItem(KEY+'settings');
+        if(raw){const o=JSON.parse(raw);
+          if(o.nav==='bar'||o.nav==='fab')s.nav=o.nav;
+          ['help','stats','controls','dpad'].forEach(k=>{if(typeof o[k]==='boolean')s[k]=o[k]});
+          return s}
+        if(localStorage.getItem(KEY+'topbar')==='show')s.nav='bar';
+      }catch(e){}
+      return s},
+    saveSettings(s){try{localStorage.setItem(KEY+'settings',JSON.stringify({
+      nav:s.nav==='bar'?'bar':'fab', help:!!s.help, stats:!!s.stats, controls:!!s.controls, dpad:!!s.dpad
+    }))}catch(e){}},
     onSwipe(el,cb,min=24){let sx,sy,active=false;
       el.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;active=true},{passive:true});
       el.addEventListener('touchmove',e=>{if(active)e.preventDefault()},{passive:false});
@@ -33,9 +49,7 @@
   const bar=document.querySelector('.topbar');
   if(!bar) return;
   const listHref=new URL('../index.html', location.href).href;
-  const readShow=()=>{try{return localStorage.getItem(KEY+'topbar')==='show'}catch(e){return false}};
-  const saveShow=v=>{try{localStorage.setItem(KEY+'topbar', v?'show':'hide')}catch(e){}};
-  let show=readShow();
+  const settingsHref=new URL('../settings.html', location.href).href;
 
   const fab=document.createElement('button');
   fab.type='button'; fab.className='ltl-fab'; fab.textContent='☰';
@@ -47,9 +61,9 @@
   function item(label){const b=document.createElement('button'); b.type='button'; b.className='btn'; b.textContent=label; return b}
   const bList=item('回到游戏列表');
   const bRestart=item('重新开始');
-  const bBar=item('显示标题栏：关');
+  const bSet=item('设置');
   const bClose=item('关闭');
-  menu.append(bList,bRestart,bBar,bClose);
+  menu.append(bList,bRestart,bSet,bClose);
   document.body.append(pull,fab,backdrop,menu);
 
   function restartButton(){
@@ -59,22 +73,46 @@
     }
     return null;
   }
-  function paintBar(){
-    bBar.textContent='显示标题栏：'+(show?'开':'关');
-    bBar.setAttribute('aria-pressed', show?'true':'false');
-    bBar.classList.toggle('green', show);
+  function activate(btn){
+    btn.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:1,pointerType:'touch',isPrimary:true,button:0,buttons:1}));
+    btn.click();
+    setTimeout(()=>btn.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:1,pointerType:'touch',isPrimary:true,button:0,buttons:0})),80);
   }
-  function apply(on){
-    show=on;
-    document.body.classList.toggle('ltl-showbar', on);
-    if(!on) document.body.classList.remove('ltl-peek');
-    const h=on ? (Math.round(bar.getBoundingClientRect().height)||64) : 0;
+  function applySettings(s){
+    const barOn=s.nav==='bar';
+    document.body.classList.toggle('ltl-showbar', barOn);
+    document.body.classList.toggle('ltl-show-help', !!s.help);
+    document.body.classList.toggle('ltl-hide-stats', !s.stats);
+    document.body.classList.toggle('ltl-hide-controls', !s.controls);
+    document.body.classList.toggle('ltl-hide-dpad', !s.dpad);
+    if(!barOn) document.body.classList.remove('ltl-peek');
+    const h=barOn ? (Math.round(bar.getBoundingClientRect().height)||64) : 0;
     document.documentElement.style.setProperty('--ltl-chrome', h+'px');
     requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
   }
+  function refreshMirrors(){
+    menu.querySelectorAll('[data-mirror]').forEach(n=>n.remove());
+    const s=LTL.getSettings();
+    const nodes=[];
+    bar.querySelectorAll('button').forEach(b=>nodes.push(b));
+    if(!s.controls) document.querySelectorAll('.controls button').forEach(b=>nodes.push(b));
+    if(!s.dpad) document.querySelectorAll('.dpad button, .tpad button').forEach(b=>nodes.push(b));
+    const primary=restartButton();
+    const seen=new Set();
+    nodes.forEach(btn=>{
+      if(btn===primary || btn.closest('.overlay')) return;
+      const label=(btn.textContent||'').replace(/\s+/g,' ').trim();
+      if(!label || seen.has(label)) return;
+      seen.add(label);
+      const b=item(label);
+      b.dataset.mirror='1';
+      b.addEventListener('click',()=>{activate(btn); b.textContent=(btn.textContent||'').replace(/\s+/g,' ').trim()||label; closeMenu()});
+      menu.insertBefore(b, bClose);
+    });
+  }
   function openMenu(){
     bRestart.hidden=!restartButton();
-    paintBar();
+    refreshMirrors();
     menu.hidden=false; backdrop.hidden=false;
     fab.setAttribute('aria-expanded','true');
     bList.focus();
@@ -88,8 +126,13 @@
   bClose.addEventListener('click', closeMenu);
   bList.addEventListener('click',()=>{location.href=listHref});
   bRestart.addEventListener('click',()=>{const btn=restartButton(); closeMenu(); if(btn) btn.click()});
-  bBar.addEventListener('click',()=>{saveShow(!show); apply(!show); paintBar()});
+  bSet.addEventListener('click',()=>{location.href=settingsHref});
+  document.querySelectorAll('.help h2').forEach(h=>h.addEventListener('click',()=>{
+    const s=LTL.getSettings(); s.help=!s.help; LTL.saveSettings(s); applySettings(s);
+  }));
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!menu.hidden){e.preventDefault(); closeMenu(); fab.focus()}});
+  applySettings(LTL.getSettings());
+  window.addEventListener('pageshow',()=>applySettings(LTL.getSettings()));
 
   let px=0,py=0,pid=null;
   pull.addEventListener('pointerdown',e=>{pid=e.pointerId; px=e.clientX; py=e.clientY; pull.setPointerCapture(e.pointerId)});
@@ -111,8 +154,6 @@
     document.body.classList.remove('ltl-peek');
   }, true);
 
-  apply(show);
-  paintBar();
   history.pushState({ltlGame:1}, '');
   window.addEventListener('popstate',()=>{
     if(!menu.hidden){closeMenu(); history.pushState({ltlGame:1}, ''); return}

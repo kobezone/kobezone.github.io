@@ -33,8 +33,15 @@ body.ltl-showbar .topbar{position:sticky;top:0;z-index:46;transform:none;visibil
 .ltl-fab{position:fixed;z-index:70;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:48px;height:48px;border-radius:50%;border:3px solid #fff;background:rgba(20,20,20,.66);color:#fff;font:900 1.45rem/1 inherit;box-shadow:0 2px 0 #111,0 0 0 2px rgba(0,0,0,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
 .ltl-fab:focus-visible{outline:4px solid #ffd43b;outline-offset:2px}
 .ltl-backdrop{position:fixed;inset:0;z-index:72;background:rgba(0,0,0,.45)}
-.ltl-menu{position:fixed;z-index:73;top:64px;right:8px;width:min(300px,calc(100vw - 16px));display:flex;flex-direction:column;gap:10px;padding:12px;background:#fff;color:#111;border:3px solid #111;border-radius:18px;box-shadow:0 8px 0 rgba(0,0,0,.28)}
+.ltl-menu{position:fixed;z-index:73;top:64px;right:8px;width:min(300px,calc(100vw - 16px));max-height:calc(100vh - 80px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding:12px;background:#fff;color:#111;border:3px solid #111;border-radius:18px;box-shadow:0 8px 0 rgba(0,0,0,.28)}
 .ltl-menu[hidden],.ltl-backdrop[hidden],.ltl-menu .btn[hidden]{display:none !important}
 .ltl-menu .btn{width:100%;min-height:56px;font-size:1.2rem}
+body.ltl-hide-stats .stats,body.ltl-hide-stats .bar2,body.ltl-hide-stats .side>.stat{display:none !important}
+body.ltl-hide-controls .controls{display:none !important}
+body.ltl-hide-dpad .dpad,body.ltl-hide-dpad .tpad{position:fixed;z-index:40;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;background:rgba(255,247,230,.94);border:3px solid #222;border-radius:16px;padding:6px;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+body:not(.ltl-show-help) .topbar ~ .wrap .help > :not(h2){display:none !important}
+.topbar ~ .wrap .help h2{cursor:pointer}
+body:not(.ltl-show-help) .topbar ~ .wrap .help h2::after{content:" · 点此展开";font-size:.95rem}
+body.ltl-show-help .topbar ~ .wrap .help h2::after{content:" · 点此收起";font-size:.95rem}
 .ltl-pull{position:fixed;z-index:45;top:0;left:0;right:64px;height:18px;touch-action:none}
 body.ltl-showbar .ltl-pull{display:none}
