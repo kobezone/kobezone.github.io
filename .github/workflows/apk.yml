@@ -25,7 +25,8 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - uses: android-actions/setup-android@v3
+      # v3 默认去装已经下架的 tools 包，sdkmanager 报 Failed to find package 'tools' 后整步失败。
+      - uses: android-actions/setup-android@v4
 
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
