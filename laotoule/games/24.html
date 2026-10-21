@@ -1,0 +1,140 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>24点 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#turn{font-size:1.3rem;font-weight:800;text-align:center;margin:4px 0}
+#cards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:120px;margin:8px auto;max-width:640px}
+.card24{width:min(22vw,120px);min-height:108px;border:3px solid #222;border-radius:16px;background:#fff;box-shadow:0 4px 0 #222;font-weight:900;font-size:2rem;color:#c92a2a;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:inherit}
+.card24 small{font-size:.85rem;color:#333;font-weight:700;max-width:100%;padding:0 4px;word-break:break-all}
+.card24.on{background:#ffd43b}
+.ops{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:640px;margin:8px auto}
+.ops .btn{min-height:64px;font-size:1.8rem;padding:0}
+.ops .btn.on{background:#e8590c;color:#fff}
+#answer{font-size:1.15rem;text-align:center;min-height:1.4em;font-weight:800}
+.lv .btn.on{background:#e8590c;color:#fff}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🃏 24点</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>得分</span><b id="score">0</b></div><div class="stat"><span>连胜</span><b id="streak">0</b></div><div class="stat"><span>最高</span><b id="best">0</b></div></div>
+<div id="turn">点一张牌，再点加减乘除，再点另一张</div>
+<div id="cards"></div>
+<div class="ops" id="ops"></div>
+<div id="answer"></div>
+<div class="controls lv"><button class="btn" id="easy">😊 简单 1–10</button><button class="btn" id="faces">A J Q K</button></div>
+<div class="controls"><button class="btn" id="undo">↩️ 撤销</button><button class="btn" id="skip">⏭ 跳过</button><button class="btn blue" id="show">👀 看答案</button><button class="btn green" id="new">🔄 重开</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>用四张牌算出 24。每次选两张和一个运算，合成一张新牌，直到只剩 24。</li>
+<li>A 是 1，J 是 11，Q 是 12，K 是 13。可以改成直接显示数字。简单模式只有 1 到 10。</li>
+<li>每题都保证有解。算对加分，连胜加得更多。跳过或看答案会断掉连胜。最高分会记住。</li>
+</ul></div>
+</div>
+<script src="tf24.engine.js"></script>
+<script src="../common.js"></script>
+<script>
+let cards,sel,op,undoS,score,streak,best,easy,faces,expr,lock,uid,auto=0;
+const box=document.getElementById('cards');
+function loadMeta(){
+  score=Number(localStorage.getItem('laotoule:tfScore')||0);
+  streak=Number(localStorage.getItem('laotoule:tfStreak')||0);
+  best=Number(localStorage.getItem('laotoule:tf')||0);
+  easy=localStorage.getItem('laotoule:tfEasy')==='1';
+  faces=localStorage.getItem('laotoule:tfFace')!=='0';
+}
+function showMeta(){
+  document.getElementById('score').textContent=score;
+  document.getElementById('streak').textContent=streak;
+  document.getElementById('best').textContent=best;
+  document.getElementById('easy').classList.toggle('on',easy);
+  document.getElementById('easy').textContent=easy?'😊 简单 1–10：开':'😊 简单 1–10：关';
+  document.getElementById('faces').classList.toggle('on',faces);
+  document.getElementById('faces').textContent=faces?'🂡 牌面 A J Q K':'🔢 显示 1 11 12 13';
+}
+function labelOf(c){
+  if(c.d===1&&c.raw&&faces)return TF24.face(c.n,true);
+  if(c.d===1)return String(c.n);
+  return c.n+'/'+c.d;
+}
+function snapshot(){return cards.map(c=>({...c}))}
+function paint(){
+  box.innerHTML='';
+  cards.forEach(c=>{
+    const b=document.createElement('button');b.type='button';b.className='card24'+(sel===c.id?' on':'');
+    const strong=document.createElement('b');strong.textContent=labelOf(c);b.appendChild(strong);
+    if(c.expr&&c.expr!==labelOf(c)){const s=document.createElement('small');s.textContent=c.expr;b.appendChild(s)}
+    b.onclick=()=>tap(c.id);
+    box.appendChild(b);
+  });
+  document.querySelectorAll('#ops .btn').forEach(b=>b.classList.toggle('on',b.dataset.op===op));
+  showMeta();
+}
+function save(){
+  localStorage.setItem('laotoule:tfScore',String(score));
+  localStorage.setItem('laotoule:tfStreak',String(streak));
+  localStorage.setItem('laotoule:tf',String(best));
+  localStorage.setItem('laotoule:tfEasy',easy?'1':'0');
+  localStorage.setItem('laotoule:tfFace',faces?'1':'0');
+  localStorage.setItem('laotoule:tfState',JSON.stringify({cards,sel,op,score,streak,expr,lock,easy,faces}));
+}
+function deal(resetScore){
+  clearTimeout(auto);
+  if(resetScore){score=0;streak=0}
+  const d=TF24.deal(easy);
+  uid=1;expr=d.expr;lock=false;sel=null;op=null;undoS=[];
+  cards=d.nums.map(n=>({id:uid++,n:n,d:1,raw:true,expr:faces?TF24.face(n,true):String(n)}));
+  document.getElementById('answer').textContent='';
+  document.getElementById('turn').textContent='点一张牌，再点运算，再点另一张';
+  paint();save();
+}
+function tap(id){
+  if(lock)return;
+  if(sel==null){sel=id;paint();return}
+  if(sel===id){sel=null;op=null;paint();return}
+  if(!op){sel=id;paint();return}
+  const a=cards.find(c=>c.id===sel),b=cards.find(c=>c.id===id);
+  undoS.push(snapshot());
+  let n,d;
+  if(op==='+'){n=a.n*b.d+b.n*a.d;d=a.d*b.d}
+  else if(op==='-'){n=a.n*b.d-b.n*a.d;d=a.d*b.d}
+  else if(op==='×'){n=a.n*b.n;d=a.d*b.d}
+  else {if(b.n===0){LTL.toast('不能除以 0');undoS.pop();return}n=a.n*b.d;d=a.d*b.n}
+  const nd=TF24.norm(n,d);
+  const text='('+labelOf(a)+op+labelOf(b)+')';
+  const neu={id:uid++,n:nd[0],d:nd[1],raw:false,expr:text};
+  cards=cards.filter(c=>c.id!==a.id&&c.id!==b.id).concat(neu);
+  sel=neu.id;op=null;LTL.beep(480,.05,'square',.05);paint();save();
+  if(cards.length===1){
+    if(cards[0].d!==0&&cards[0].n===24*cards[0].d){
+      streak++;score+=10+Math.min(streak,10)*2;if(score>best)best=score;
+      document.getElementById('turn').textContent='🎉 正好 24！';
+      document.getElementById('answer').textContent='算法：'+expr.replaceAll('×','×');
+      LTL.toast('连胜 '+streak);
+      [523,659,784].forEach((f,k)=>setTimeout(()=>LTL.beep(f,.1,'triangle'),k*90));
+      lock=true;save();paint();
+      auto=setTimeout(()=>{if(lock)deal(false)},900);
+    }else{
+      document.getElementById('turn').textContent='现在是 '+labelOf(cards[0])+'，还不是 24，可以撤销';
+      LTL.toast('还不是 24');
+    }
+  }
+}
+document.getElementById('ops').innerHTML=['+','-','×','÷'].map(o=>'<button type="button" class="btn" data-op="'+o+'">'+o+'</button>').join('');
+document.querySelectorAll('#ops .btn').forEach(b=>b.onclick=()=>{if(lock)return;if(sel==null){LTL.toast('先点一张牌');return}op=b.dataset.op;paint()});
+document.getElementById('undo').onclick=()=>{
+  const p=undoS.pop();if(!p){LTL.toast('没有可撤销的');return}
+  cards=p;sel=null;op=null;lock=false;document.getElementById('answer').textContent='';paint();save();
+};
+document.getElementById('skip').onclick=()=>{streak=0;LTL.toast('换一题');deal(false)};
+document.getElementById('show').onclick=()=>{
+  streak=0;lock=true;document.getElementById('answer').textContent='一种算法：'+expr;document.getElementById('turn').textContent='看完可以点跳过或重开';save();paint();
+};
+document.getElementById('new').onclick=()=>{deal(true);LTL.toast('分数已重新计算')};
+document.getElementById('easy').onclick=()=>{easy=!easy;localStorage.setItem('laotoule:tfEasy',easy?'1':'0');deal(false)};
+document.getElementById('faces').onclick=()=>{faces=!faces;localStorage.setItem('laotoule:tfFace',faces?'1':'0');cards.forEach(c=>{if(c.raw&&c.d===1)c.expr=faces?TF24.face(c.n,true):String(c.n)});paint();save()};
+loadMeta();
+try{
+  const s=JSON.parse(localStorage.getItem('laotoule:tfState')||'null');
+  if(!s||!s.cards)throw 0;
+  cards=s.cards;sel=s.sel;op=s.op;expr=s.expr;lock=!!s.lock;undoS=[];uid=10+cards.reduce((m,c)=>Math.max(m,c.id),0);
+  showMeta();paint();
+  if(lock&&cards.length===1&&cards[0].n===24*cards[0].d)document.getElementById('turn').textContent='上一题已经算对';
+}catch(e){deal(false)}
+</script></body></html>

@@ -1,0 +1,170 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>数独 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#turn{font-size:1.25rem;font-weight:800;text-align:center;margin:2px 0 6px}
+#grid{display:grid;grid-template-columns:repeat(9,1fr);width:min(96vw,calc(100vh - var(--ltl-chrome, 0px) - 250px),520px);margin:0 auto;background:#222;border:3px solid #222;gap:1px}
+.cell{aspect-ratio:1;border:0;background:#fff;font-weight:800;font-size:clamp(1rem,4.6vw,1.55rem);padding:0;color:#1971c2;position:relative;font-family:inherit}
+.cell.fix{color:#1a1a1a;background:#fff8ee}
+.cell.sel{background:#ffd43b;color:#222}
+.cell.same{box-shadow:inset 0 0 0 3px #e8590c}
+.cell.bad{background:#ffc9c9;color:#c92a2a}
+.cell.bR{border-right:3px solid #222}
+.cell.bB{border-bottom:3px solid #222}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);position:absolute;inset:1px;font-size:clamp(.55rem,2.1vw,.72rem);font-weight:700;color:#1c4e89;line-height:1;pointer-events:none}
+.notes i{font-style:normal}
+.numpad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:min(96vw,520px);margin:10px auto}
+.numpad .btn{min-height:58px;font-size:1.45rem;padding:0}
+.lv .btn.on,.sw.on{background:#e8590c;color:#fff}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🔢 数独</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>用时</span><b id="time">0:00</b></div><div class="stat"><span>空格</span><b id="left">0</b></div><div class="stat"><span>最好</span><b id="best">--</b></div></div>
+<div id="turn">选一格，再点下面的数字</div>
+<div id="grid"></div>
+<div class="numpad" id="pad"></div>
+<div class="controls lv"><button class="btn" data-lv="easy">😊 简单</button><button class="btn" data-lv="medium">🤔 中等</button><button class="btn" data-lv="hard">😤 困难</button><button class="btn" data-lv="expert">🧠 专家</button></div>
+<div class="controls"><button class="btn" id="pencil">✏️ 铅笔：关</button><button class="btn" id="err">🚦 错误高亮：开</button><button class="btn" id="undo">↩️ 撤销</button><button class="btn blue" id="hint">💡 提示</button><button class="btn green" id="new">🔄 新题</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>每一行、每一列、每一个粗线小九宫，都要正好有 1 到 9，不能重复。</li>
+<li>先点格子，再点大数字。铅笔用来记可能的数，再点一次就擦掉。</li>
+<li>错误高亮打开时，重复的数字会变红。提示会填对一格。做完会停表，最好成绩会记住。</li>
+</ul></div>
+</div>
+<script src="sudoku.engine.js"></script>
+<script src="../common.js"></script>
+<script>
+const LVN={easy:'简单',medium:'中等',hard:'困难',expert:'专家'};
+let level='easy',puzzle,solution,user,notes,given,sel,hist,showErr,pencil,base,t0,running,timer,won;
+const grid=document.getElementById('grid');
+function bestMap(){try{return JSON.parse(localStorage.getItem('laotoule:sdBest')||'{}')}catch(e){return {}}}
+function fmt(ms){const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60)}
+function elapsed(){return base+(running?Date.now()-t0:0)}
+function paintTime(){document.getElementById('time').textContent=fmt(elapsed())}
+function startClock(){if(running||won)return;running=true;t0=Date.now();timer=setInterval(paintTime,250)}
+function stopClock(){if(running){base=elapsed();running=false;clearInterval(timer)}paintTime()}
+function save(){
+  localStorage.setItem('laotoule:sdState',JSON.stringify({level,puzzle,solution,user,notes,sel,showErr,pencil,base:elapsed(),won}));
+  const b=bestMap()[level];
+  document.getElementById('best').textContent=b?fmt(b*1000):'--';
+}
+function leftCount(){let n=0;for(let i=0;i<81;i++)if(!user[i])n++;document.getElementById('left').textContent=n;return n}
+function paint(){
+  const bad=showErr?SUDOKU.conflicts(user):[];
+  const d=sel>=0?user[sel]:0;
+  [...grid.children].forEach((el,i)=>{
+    el.className='cell'+(given[i]?' fix':'')+(i===sel?' sel':'')+(d&&user[i]===d&&i!==sel?' same':'')+(bad[i]?' bad':'');
+    if((i%9)%3===2&&i%9!==8)el.classList.add('bR');
+    if(Math.floor(i/9)%3===2&&i<72)el.classList.add('bB');
+    el.innerHTML='';
+    if(user[i])el.textContent=user[i];
+    else if(notes[i]){
+      const box=document.createElement('span');box.className='notes';
+      for(let n=1;n<=9;n++){const s=document.createElement('i');s.textContent=(notes[i]&(1<<n))?n:'';box.appendChild(s)}
+      el.appendChild(box);
+    }
+  });
+  document.getElementById('pencil').textContent='✏️ 铅笔：'+(pencil?'开':'关');
+  document.getElementById('pencil').classList.toggle('on',pencil);
+  document.getElementById('err').textContent='🚦 错误高亮：'+(showErr?'开':'关');
+  document.getElementById('err').classList.toggle('on',showErr);
+  document.querySelectorAll('[data-lv]').forEach(b=>b.classList.toggle('on',b.dataset.lv===level));
+  leftCount();
+}
+function checkWin(){
+  if(user.some((v,i)=>v!==solution[i]))return;
+  if(won)return;
+  won=true;stopClock();save();
+  const sec=Math.round(elapsed()/1000);
+  const map=bestMap();
+  if(!map[level]||sec<map[level]){map[level]=sec;localStorage.setItem('laotoule:sdBest',JSON.stringify(map));if(level==='easy')localStorage.setItem('laotoule:sdEasy',String(sec))}
+  document.getElementById('best').textContent=fmt((map[level])*1000);
+  document.getElementById('turn').textContent='🎉 做对了！用时 '+fmt(elapsed());
+  LTL.toast('数独完成');
+  [523,659,784,1046].forEach((f,k)=>setTimeout(()=>LTL.beep(f,.1,'triangle'),k*100));
+}
+function put(i,digit,isPencil){
+  if(given[i]||won){LTL.toast('这格是题目给的');return}
+  hist.push({i,u:user[i],n:notes[i]});
+  if(hist.length>200)hist.shift();
+  if(isPencil){
+    if(user[i]){user[i]=0}
+    notes[i]^=(1<<digit);
+  }else{
+    user[i]=user[i]===digit?0:digit;
+    notes[i]=0;
+    if(user[i])notes.forEach((m,k)=>{if(m&&SUDOKU.peers(i).has(k))notes[k]&=~(1<<digit)});
+  }
+  LTL.beep(520,.04,'square',.04);
+  startClock();paint();save();
+  if(!isPencil)checkWin();
+  if(!won)document.getElementById('turn').textContent=pencil?'铅笔模式：再点一次可擦掉':'选一格，再点数字';
+}
+function erase(){
+  if(sel<0||given[sel]||won)return;
+  hist.push({i:sel,u:user[sel],n:notes[sel]});
+  user[sel]=0;notes[sel]=0;paint();save();
+}
+function newGame(lv){
+  level=lv||level;
+  const p=SUDOKU.makePuzzle(level);
+  puzzle=p.puzzle;solution=p.solution;user=puzzle.slice();
+  given=puzzle.map(Boolean);notes=Array(81).fill(0);hist=[];sel=-1;won=false;
+  base=0;stopClock();running=false;base=0;
+  document.getElementById('turn').textContent=LVN[level]+' · 选一格，再点数字';
+  paint();save();
+}
+function boot(){
+  showErr=localStorage.getItem('laotoule:sdErr')!=='0';
+  pencil=localStorage.getItem('laotoule:sdPencil')==='1';
+  grid.innerHTML='';
+  for(let i=0;i<81;i++){
+    const b=document.createElement('button');b.type='button';b.className='cell';
+    b.onclick=()=>{sel=i;paint()};
+    grid.appendChild(b);
+  }
+  const pad=document.getElementById('pad');
+  for(let d=1;d<=9;d++){
+    const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=d;
+    b.onclick=()=>{if(sel<0){LTL.toast('先点一个格子');return}put(sel,d,pencil)};
+    pad.appendChild(b);
+  }
+  const er=document.createElement('button');er.type='button';er.className='btn red';er.textContent='擦除';er.onclick=erase;pad.appendChild(er);
+  try{
+    const s=JSON.parse(localStorage.getItem('laotoule:sdState')||'null');
+    if(!s||!s.puzzle)throw 0;
+    level=s.level;puzzle=s.puzzle;solution=s.solution;user=s.user;notes=s.notes;given=puzzle.map(Boolean);
+    sel=s.sel??-1;won=!!s.won;base=s.base||0;showErr=s.showErr!==false;pencil=!!s.pencil;hist=[];
+    if(!won)startClock(); else paintTime();
+    document.getElementById('turn').textContent=won?'这题已经做完了':'继续上一题';
+    paint();save();
+  }catch(e){newGame('easy')}
+}
+document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>newGame(b.dataset.lv));
+document.getElementById('pencil').onclick=()=>{pencil=!pencil;localStorage.setItem('laotoule:sdPencil',pencil?'1':'0');paint();save()};
+document.getElementById('err').onclick=()=>{showErr=!showErr;localStorage.setItem('laotoule:sdErr',showErr?'1':'0');paint();save()};
+document.getElementById('undo').onclick=()=>{
+  const h=hist.pop();if(!h){LTL.toast('没有可撤销的');return}
+  user[h.i]=h.u;notes[h.i]=h.n;sel=h.i;if(won){won=false;startClock()}paint();save();
+};
+document.getElementById('hint').onclick=()=>{
+  if(won)return;
+  const cand=[];
+  for(let i=0;i<81;i++)if(user[i]!==solution[i])cand.push(i);
+  if(!cand.length)return;
+  const i=cand[(Math.random()*cand.length)|0];
+  hist.push({i,u:user[i],n:notes[i]});
+  user[i]=solution[i];notes[i]=0;sel=i;startClock();paint();save();checkWin();
+};
+document.getElementById('new').onclick=()=>newGame(level);
+addEventListener('keydown',e=>{
+  if(e.key>='1'&&e.key<='9'){if(sel>=0)put(sel,Number(e.key),pencil||e.shiftKey)}
+  else if(e.key==='Backspace'||e.key==='Delete'){e.preventDefault();erase()}
+  else if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+    e.preventDefault();
+    const r=sel<0?0:(sel/9)|0,c=sel<0?0:sel%9;
+    const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
+    sel=(r+d[0]+9)%9*9+(c+d[1]+9)%9;paint();
+  }
+});
+boot();
+</script></body></html>
