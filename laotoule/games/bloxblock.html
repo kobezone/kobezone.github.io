@@ -1,0 +1,289 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>滚砖块 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#stage{position:relative;width:min(96vw,520px);height:min(48vh,420px);margin:0 auto;border:3px solid #222;border-radius:16px;overflow:hidden;background:#222;touch-action:none;box-shadow:0 6px 0 #222}
+#cv{width:100%;height:100%;display:block}
+#lname{text-align:center;font-size:1.35rem;font-weight:800;margin:0 0 8px}
+#levels{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+#levels button{min-width:48px;min-height:48px;padding:4px 8px}
+#levels button.on{background:#8ce99a}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🧱 滚砖块</h1></div>
+<div class="wrap">
+<div class="stats">
+  <div class="stat"><span>关卡</span><b id="lv">1</b></div>
+  <div class="stat"><span>步数</span><b id="moves">0</b></div>
+  <div class="stat"><span>最少</span><b id="best">—</b></div>
+  <div class="stat"><span>已过</span><b id="cleared">0</b></div>
+</div>
+<div id="lname">直路</div>
+<div id="stage"><canvas id="cv"></canvas>
+<div class="overlay" id="ov"><div id="ovt">准备好了</div><button class="btn" id="again">开始</button></div></div>
+<div class="dpad">
+  <span></span><button class="btn blue" data-d="0" type="button">⬆</button><span></span>
+  <button class="btn blue" data-d="3" type="button">⬅</button><button class="btn blue" data-d="2" type="button">⬇</button><button class="btn blue" data-d="1" type="button">➡</button>
+</div>
+<div class="controls">
+  <button class="btn" id="restart" type="button">🔄 重开本关</button>
+</div>
+<div id="levels"></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>蓝色砖是 <b>1×1×2</b> 的长条。方向键、大箭头，或在画面上<b>滑动</b>，它就朝那边滚。可以立着，也可以横躺、纵躺。</li>
+<li>滚出地面就掉下去。橙色格子比较脆，<b>躺着可以压，立上去会碎</b>。</li>
+<li>绿色「踏」随便压到就会变。红色「立」<b>必须立在上面</b>才变。变了之后，黑缺口会补上蓝桥，有的桥会收回去。</li>
+<li>黄格子中间是洞。砖要<b>立着</b>滚进洞里才算过关。一共 12 关，可以点下面的数字换关。</li>
+</ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const LEVELS=[
+{n:'直路',rows:['#X#','###','###','#G#']},
+{n:'绕洞',rows:['#####','##X##','# # #','##G##','#####']},
+{n:'拐弯',rows:['#X###','  ###','  #G#']},
+{n:'薄地',rows:['##X#','#o##','#G##','####']},
+{n:'轻踏板',rows:['#X###','#p###','##1##','  G  ']},
+{n:'侧踏板',rows:['##X##','###p#','  1  ','  G  ']},
+{n:'重踏板',rows:['##X##','##P##','  1  ','  G  ']},
+{n:'两道桥',rows:['##X##','###p#','  1  ','###q#','  #  ','  2  ','  G  ']},
+{n:'一开一合',rows:['##X##','#b#p#','#####','  1  ','  G  ']},
+{n:'薄地与桥',rows:['##X##o','###p##','  1   ','  G   ']},
+{n:'两处重踩',rows:['##X##','##P##','  1  ','##Q##','  #  ','  2  ','  G  ']},
+{n:'小心综合',rows:['###X##','##o###','##p###','##1###','##Q###','  2   ','  G   ']}
+];
+const SOFT={p:0,q:1,r:2,t:3}, HARD={P:0,Q:1,R:2,T:3};
+const BRC={'1':0,'2':1,'3':2,'4':3}, BRO={b:0,c:1,d:2,e:3};
+function roll(x,y,ori,dir){
+  if(ori===0){
+    if(dir===1) return {x:x+1,y,ori:1};
+    if(dir===3) return {x:x-2,y,ori:1};
+    if(dir===2) return {x,y:y+1,ori:2};
+    return {x,y:y-2,ori:2};
+  }
+  if(ori===1){
+    if(dir===1) return {x:x+2,y,ori:0};
+    if(dir===3) return {x:x-1,y,ori:0};
+    if(dir===2) return {x,y:y+1,ori:1};
+    return {x,y:y-1,ori:1};
+  }
+  if(dir===2) return {x,y:y+2,ori:0};
+  if(dir===0) return {x,y:y-1,ori:0};
+  if(dir===1) return {x:x+1,y,ori:2};
+  return {x:x-1,y,ori:2};
+}
+function cells(x,y,ori){
+  if(ori===0) return [[x,y]];
+  if(ori===1) return [[x,y],[x+1,y]];
+  return [[x,y],[x,y+1]];
+}
+function parse(rows){
+  const h=rows.length, w=Math.max(...rows.map(r=>r.length));
+  const grid=rows.map(r=>(r+' '.repeat(w)).slice(0,w).split(''));
+  const type=Array.from({length:h},()=>Array(w).fill(0));
+  const group=Array.from({length:h},()=>Array(w).fill(-1));
+  const startOpen=Array.from({length:h},()=>Array(w).fill(false));
+  const switches=[]; let start=null, goal=null;
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    const ch=grid[y][x];
+    if(ch==='#'||ch==='X') type[y][x]=1;
+    else if(ch==='o') type[y][x]=2;
+    else if(ch==='G'){type[y][x]=3; goal={x,y}}
+    else if(ch in BRC){type[y][x]=4; group[y][x]=BRC[ch]}
+    else if(ch in BRO){type[y][x]=4; group[y][x]=BRO[ch]; startOpen[y][x]=true}
+    else if(ch in SOFT){type[y][x]=1; switches.push({x,y,g:SOFT[ch],hard:false})}
+    else if(ch in HARD){type[y][x]=1; switches.push({x,y,g:HARD[ch],hard:true})}
+    if(ch==='X') start={x,y};
+  }
+  return {w,h,type,group,startOpen,switches,start,goal,grid};
+}
+function solid(lv,x,y,open){
+  if(x<0||y<0||x>=lv.w||y>=lv.h) return false;
+  const t=lv.type[y][x];
+  if(t===0) return false;
+  if(t===4){const on=(open&(1<<lv.group[y][x]))!==0; return lv.startOpen[y][x]? !on : on}
+  return true;
+}
+function pressed(lv,x,y,ori){
+  const occ=cells(x,y,ori), s=new Set();
+  for(const sw of lv.switches){
+    const on=sw.hard ? (ori===0 && occ[0][0]===sw.x && occ[0][1]===sw.y)
+      : occ.some(([cx,cy])=>cx===sw.x&&cy===sw.y);
+    if(on) s.add(sw.g);
+  }
+  return s;
+}
+function step(lv,st,dir){
+  const n=roll(st.x,st.y,st.ori,dir);
+  const occ=cells(n.x,n.y,n.ori);
+  for(const [cx,cy] of occ) if(!solid(lv,cx,cy,st.open)) return {fall:'void',...n,open:st.open};
+  if(n.ori===0 && lv.type[n.y][n.x]===2) return {fall:'fragile',...n,open:st.open};
+  if(n.ori===0 && lv.type[n.y][n.x]===3) return {win:true,...n,open:st.open};
+  const before=pressed(lv,st.x,st.y,st.ori), after=pressed(lv,n.x,n.y,n.ori);
+  let open=st.open;
+  for(const g of after) if(!before.has(g)) open^=1<<g;
+  for(const [cx,cy] of occ) if(!solid(lv,cx,cy,open)) return {fall:'void',...n,open};
+  return {x:n.x,y:n.y,ori:n.ori,open};
+}
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d'), stage=document.getElementById('stage');
+const SAVE='laotoule:bloxProg';
+let prog={cleared:[],best:[],last:0};
+try{const p=JSON.parse(localStorage.getItem(SAVE)||''); if(p&&Array.isArray(p.cleared)) prog=p}catch(e){}
+let li=0, lv, state, moves, busy=false, ended=false, anim=null;
+function load(i){
+  li=i; lv=parse(LEVELS[i].rows);
+  state={x:lv.start.x,y:lv.start.y,ori:0,open:0};
+  moves=0; busy=false; ended=false; anim=null;
+  document.getElementById('lv').textContent=(i+1)+' / 12';
+  document.getElementById('lname').textContent=LEVELS[i].n;
+  document.getElementById('moves').textContent='0';
+  const b=prog.best&&prog.best[i];
+  document.getElementById('best').textContent=b?b:'—';
+  document.getElementById('ov').classList.remove('show');
+  paintLevels();
+  prog.last=i; persist(false);
+}
+function persist(record){
+  localStorage.setItem(SAVE, JSON.stringify(prog));
+  const n=(prog.cleared||[]).filter(Boolean).length;
+  document.getElementById('cleared').textContent=n;
+  if(record) LTL.record('blox', n);
+}
+function paintLevels(){
+  [...document.querySelectorAll('#levels button')].forEach((b,i)=>{
+    b.classList.toggle('on', !!(prog.cleared&&prog.cleared[i]));
+    b.style.outline=i===li?'4px solid #1971c2':'';
+  });
+}
+function fail(kind){
+  ended=true;
+  document.getElementById('ovt').textContent=kind==='fragile'?'立在橙地上，地碎了':'悬空掉下去了';
+  document.getElementById('again').textContent='重开本关';
+  document.getElementById('ov').classList.add('show');
+  LTL.beep(140,.16,'sawtooth',.05);
+}
+function win(){
+  ended=true;
+  if(!prog.cleared) prog.cleared=[];
+  if(!prog.best) prog.best=[];
+  prog.cleared[li]=1;
+  if(!prog.best[li]||moves<prog.best[li]) prog.best[li]=moves;
+  document.getElementById('best').textContent=prog.best[li];
+  persist(true);
+  document.getElementById('ovt').textContent='立进洞里了！用了 '+moves+' 步';
+  document.getElementById('again').textContent=li>=11?'从第一关再来':'下一关';
+  document.getElementById('ov').classList.add('show');
+  LTL.beep(620,.12,'triangle',.06);
+}
+function go(dir){
+  if(busy||ended) return;
+  const prev={...state};
+  const n=step(lv,state,dir);
+  busy=true;
+  anim={from:prev,to:n,t0:performance.now(),fall:!!n.fall};
+  moves++;
+  document.getElementById('moves').textContent=moves;
+  const finish=()=>{
+    busy=false; anim=null;
+    if(n.fall){fail(n.fall); return}
+    if(n.win){state={x:n.x,y:n.y,ori:n.ori,open:n.open}; win(); return}
+    state={x:n.x,y:n.y,ori:n.ori,open:n.open};
+  };
+  setTimeout(finish, 170);
+}
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function draw(){
+  const dpr=cv.width/Math.max(1,stage.getBoundingClientRect().width);
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#222'; ctx.fillRect(0,0,cv.width,cv.height);
+  if(!lv) return;
+  const S=Math.min(cv.width/lv.w, cv.height/lv.h);
+  const ox=(cv.width-lv.w*S)/2, oy=(cv.height-lv.h*S)/2;
+  const show=anim?lerpState(anim):state;
+  for(let y=0;y<lv.h;y++) for(let x=0;x<lv.w;x++){
+    const t=lv.type[y][x]; if(!t && lv.grid[y][x]===' ') continue;
+    const px=ox+x*S, py=oy+y*S, open=show.open;
+    ctx.save();
+    if(t===4){
+      const on=solid(lv,x,y,open);
+      if(!on){ctx.setLineDash([Math.max(4,S*.12), Math.max(3,S*.08)]); ctx.strokeStyle='#868e96'; ctx.lineWidth=Math.max(2,S*.06); ctx.strokeRect(px+S*.18,py+S*.18,S*.64,S*.64); ctx.setLineDash([]); ctx.restore(); continue}
+      ctx.fillStyle='#74c0fc';
+    } else if(t===2) ctx.fillStyle='#ff922b';
+    else if(t===3) ctx.fillStyle='#ffd43b';
+    else if(lv.switches.some(sw=>sw.x===x&&sw.y===y&&sw.hard)) ctx.fillStyle='#ffa8a8';
+    else if(lv.switches.some(sw=>sw.x===x&&sw.y===y)) ctx.fillStyle='#8ce99a';
+    else ctx.fillStyle='#fff4e6';
+    roundRect(px+S*.06,py+S*.06,S*.88,S*.88,S*.12); ctx.fill();
+    ctx.strokeStyle='#222'; ctx.lineWidth=Math.max(2,S*.05); ctx.stroke();
+    if(t===2){ctx.strokeStyle='#7a3e00'; ctx.beginPath(); ctx.moveTo(px+S*.28,py+S*.4); ctx.lineTo(px+S*.48,py+S*.62); ctx.lineTo(px+S*.7,py+S*.36); ctx.stroke()}
+    if(t===3){ctx.fillStyle='#222'; ctx.beginPath(); ctx.arc(px+S/2,py+S*.58,S*.2,0,6.3); ctx.fill(); ctx.fillStyle='#222'; ctx.font=`800 ${Math.max(13,S*.3)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('洞', px+S/2, py+S*.26)}
+    const sw=lv.switches.find(s=>s.x===x&&s.y===y);
+    if(sw){ctx.fillStyle='#222'; ctx.font=`800 ${Math.max(14,S*.34)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(sw.hard?'立':'踏', px+S/2, py+S/2)}
+    ctx.restore();
+  }
+  drawBlock(show, ox, oy, S);
+  requestAnimationFrame(draw);
+}
+function lerpState(a){
+  const t=Math.min(1,(performance.now()-a.t0)/160);
+  const e=t*t*(3-2*t);
+  return {x:a.from.x+(a.to.x-a.from.x)*e, y:a.from.y+(a.to.y-a.from.y)*e, ori:t<0.45?a.from.ori:a.to.ori, open:t<0.5?a.from.open:a.to.open};
+}
+function drawBlock(st,ox,oy,S){
+  const tall=st.ori===0;
+  const occ=st.ori===0?[[st.x,st.y]]:st.ori===1?[[st.x,st.y],[st.x+1,st.y]]:[[st.x,st.y],[st.x,st.y+1]];
+  const xs=occ.map(c=>c[0]), ys=occ.map(c=>c[1]);
+  const x0=ox+Math.min(...xs)*S, y0=oy+Math.min(...ys)*S;
+  const w=(Math.max(...xs)-Math.min(...xs)+1)*S, h=(Math.max(...ys)-Math.min(...ys)+1)*S;
+  const lift=tall?S*.62:S*.18;
+  ctx.fillStyle='rgba(0,0,0,.35)';
+  roundRect(x0+S*.16, y0+S*.2, w-S*.28, h-S*.28, S*.1); ctx.fill();
+  ctx.fillStyle='#364fc7';
+  roundRect(x0+S*.14, y0+S*.14-lift*.35, w-S*.28, h-S*.22+lift*.2, S*.1); ctx.fill();
+  ctx.fillStyle=tall?'#748ffc':'#4c6ef5';
+  roundRect(x0+S*.14, y0+S*.08-lift, w-S*.28, h-S*.16, S*.12); ctx.fill();
+  ctx.strokeStyle='#fff'; ctx.lineWidth=Math.max(2,S*.06); ctx.stroke();
+}
+function resize(){
+  const r=stage.getBoundingClientRect();
+  const dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=Math.max(120,Math.round(r.width*dpr));
+  cv.height=Math.max(120,Math.round(r.height*dpr));
+}
+document.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>go(+b.dataset.d)));
+document.getElementById('restart').onclick=()=>load(li);
+document.getElementById('again').onclick=()=>{
+  if(!ended){document.getElementById('ov').classList.remove('show'); return}
+  if(document.getElementById('again').textContent==='下一关') load(Math.min(11,li+1));
+  else if(document.getElementById('again').textContent==='从第一关再来') load(0);
+  else load(li);
+};
+addEventListener('keydown',e=>{
+  const km={ArrowUp:0,ArrowRight:1,ArrowDown:2,ArrowLeft:3};
+  if(km[e.key]==null) return;
+  e.preventDefault();
+  if(!e.repeat) go(km[e.key]);
+});
+LTL.onSwipe(stage, dir=>{const m={up:0,right:1,down:2,left:3}; go(m[dir])});
+const box=document.getElementById('levels');
+LEVELS.forEach((L,i)=>{const b=document.createElement('button'); b.className='btn'; b.type='button'; b.textContent=i+1; b.onclick=()=>load(i); box.appendChild(b)});
+new ResizeObserver(resize).observe(stage);
+resize();
+const startAt=Math.max(0, Math.min(11, prog.last||0));
+load(startAt);
+persist(false);
+document.getElementById('ovt').textContent=LEVELS[li].n;
+document.getElementById('again').textContent='开始';
+document.getElementById('ov').classList.add('show');
+ended=true;
+requestAnimationFrame(draw);
+window.__TEST={
+  load, go,
+  step:(dir)=>step(lv,state,dir),
+  state:()=>({...state,moves,ended,li,solid:(x,y)=>solid(lv,x,y,state.open)}),
+  play(dirs){dirs.forEach(d=>go(d))}
+};
+</script></body></html>
