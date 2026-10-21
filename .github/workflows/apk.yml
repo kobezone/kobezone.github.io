@@ -1,0 +1,61 @@
+name: Build offline APK
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: _laotoule_apk/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Build signed release APK
+        working-directory: _laotoule_apk
+        run: |
+          npm ci
+          npm run build:apk
+
+      - name: Publish APK to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cp _laotoule_apk/android/app/build/outputs/apk/release/app-release.apk laotoule-offline.apk
+          printf '%s\n' \
+            '老头乐游戏厅的离线安卓安装包。' \
+            '' \
+            '全部游戏资源都打在 APK 里，安装后不需要网络。使用 debug 证书签名，可以直接侧载安装。' \
+            '' \
+            '每次推送到 master 并构建成功后，这个 Release 里的 APK 会替换成最新版本。' \
+            > /tmp/apk-notes.md
+          if gh release view apk-v1 >/dev/null 2>&1; then
+            gh release upload apk-v1 laotoule-offline.apk --clobber
+            gh release edit apk-v1 --target "$GITHUB_SHA" --notes-file /tmp/apk-notes.md
+          else
+            gh release create apk-v1 laotoule-offline.apk \
+              --target "$GITHUB_SHA" \
+              --title "老头乐游戏厅离线 APK" \
+              --notes-file /tmp/apk-notes.md \
+              --latest=false
+          fi

@@ -1,0 +1,20 @@
+{
+  "name": "laotoule-apk",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Offline Android wrapper for 老头乐游戏厅",
+  "scripts": {
+    "copy-www": "node scripts/copy-www.mjs",
+    "sync": "npm run copy-www && cap sync android",
+    "icons": "node scripts/icons.mjs",
+    "build:apk": "npm run sync && npm run icons && node scripts/debug-keystore.mjs && cd android && ./gradlew assembleRelease --no-daemon"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3",
+    "sharp": "0.34.4"
+  }
+}
