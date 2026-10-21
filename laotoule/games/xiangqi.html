@@ -171,7 +171,7 @@ function boot(){
   }catch(e){board=XQ.start();side=1;hist=[];last=null;over=null;counted=false}
   sel=-1;hintMove=-1;busy=false;
   if(over){document.getElementById('ovt').textContent=over==='win'?'你赢了，再来一盘？':'这盘输了，再来一盘？';document.getElementById('ov').classList.add('show')}
-  paintLv();showStats();setTurn();draw();
+  paintLv();showStats();setTurn();draw();save();
   if(!over&&side!==human)aiGo();
 }
 boot();
