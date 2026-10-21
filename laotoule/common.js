@@ -65,6 +65,12 @@
   const bClose=item('关闭');
   menu.append(bList,bRestart,bSet,bClose);
   document.body.append(pull,fab,backdrop,menu);
+  if(!bar.querySelector('.ltl-bar-set')){
+    const a=document.createElement('a');
+    a.className='btn ltl-bar-set'; a.href=settingsHref; a.textContent='设置';
+    a.setAttribute('aria-label','设置');
+    bar.appendChild(a);
+  }
 
   function restartButton(){
     for(const id of ['restart','reset','new','go']){
@@ -81,6 +87,7 @@
   function applySettings(s){
     const barOn=s.nav==='bar';
     document.body.classList.toggle('ltl-showbar', barOn);
+    document.body.classList.toggle('ltl-need-menu', !s.controls || !s.dpad);
     document.body.classList.toggle('ltl-show-help', !!s.help);
     document.body.classList.toggle('ltl-hide-stats', !s.stats);
     document.body.classList.toggle('ltl-hide-controls', !s.controls);

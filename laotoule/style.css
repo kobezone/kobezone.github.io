@@ -31,6 +31,10 @@ body:not(.ltl-showbar) .topbar{position:fixed;left:0;right:0;top:0;z-index:46;tr
 body.ltl-peek .topbar{transform:translateY(0);visibility:visible;pointer-events:auto}
 body.ltl-showbar .topbar{position:sticky;top:0;z-index:46;transform:none;visibility:visible;pointer-events:auto}
 .ltl-fab{position:fixed;z-index:70;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:48px;height:48px;border-radius:50%;border:3px solid #fff;background:rgba(20,20,20,.66);color:#fff;font:900 1.45rem/1 inherit;box-shadow:0 2px 0 #111,0 0 0 2px rgba(0,0,0,.4);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+body.ltl-showbar:not(.ltl-need-menu) .ltl-fab{display:none !important}
+body.ltl-showbar:not(.ltl-need-menu) .topbar{padding-right:14px}
+.ltl-bar-set{display:none !important}
+body.ltl-showbar:not(.ltl-need-menu) .ltl-bar-set{display:inline-flex !important}
 .ltl-fab:focus-visible{outline:4px solid #ffd43b;outline-offset:2px}
 .ltl-backdrop{position:fixed;inset:0;z-index:72;background:rgba(0,0,0,.45)}
 .ltl-menu{position:fixed;z-index:73;top:64px;right:8px;width:min(300px,calc(100vw - 16px));max-height:calc(100vh - 80px);overflow:auto;display:flex;flex-direction:column;gap:10px;padding:12px;background:#fff;color:#111;border:3px solid #111;border-radius:18px;box-shadow:0 8px 0 rgba(0,0,0,.28)}
