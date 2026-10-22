@@ -42,9 +42,10 @@ function fit(){
   const bar=document.querySelector('.ms-bar');
   const barH=(bar?bar.offsetHeight:72)+6;
   const top=Math.max(0,g.getBoundingClientRect().top);
-  const availW=(g.parentElement.clientWidth||Math.min(innerWidth,740))-2;
+  const wrap=document.querySelector('.wrap');
+  const availW=Math.max(160,(wrap?wrap.clientWidth:innerWidth)-2);
   const availH=Math.max(140,innerHeight-top-barH-4);
-  const gap=2,pad=8;
+  const gap=2,pad=14;
   const cs=Math.floor(Math.min((availW-pad-(C-1)*gap)/C,(availH-pad-(R-1)*gap)/R));
   const size=Math.max(22,Math.min(64,cs));
   g.style.setProperty('--cs',size+'px');

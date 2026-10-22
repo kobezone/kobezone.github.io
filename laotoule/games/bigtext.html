@@ -3,7 +3,28 @@
 <style>
 body{background:var(--poster,#fff7e6)}
 #stage{min-height:max(42vh,calc(100vw / 3.2));display:flex;align-items:center;justify-content:center;background:var(--poster,#e03131);color:var(--ink,#fff);border:3px solid #222;border-radius:18px;padding:2vw 1.5vw;text-align:center;position:relative;overflow:hidden}
-#poster{width:100%;font-size:calc(100vw / 3.5);font-weight:900;line-height:1.05;word-break:break-all;overflow-wrap:anywhere;text-align:center}
+#poster{width:100%;min-width:0;max-width:100%;font-size:calc(100vw / 3.5);font-weight:900;line-height:1.15;word-break:break-all;overflow-wrap:anywhere;text-align:center}
+#poster.fx-rainbow{background-image:linear-gradient(90deg,#ff4d6d,#ff922b,#ffd43b,#69db7c,#3bc9db,#4c6ef5,#be4bdb,#ff4d6d);background-size:200% 100%;background-position:0 50%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:bt-flow 4s linear infinite}
+@keyframes bt-flow{from{background-position:0 50%}to{background-position:100% 50%}}
+#poster.fx-neon{color:var(--neon-ink,#fff);text-shadow:0 0 .04em #fff,0 0 .1em var(--neon,#7cf),0 0 .18em var(--neon,#7cf),0 0 .32em var(--neon-2,#f6f),0 0 .48em var(--neon-2,#f6f);animation:bt-neon 1.7s ease-in-out infinite}
+@keyframes bt-neon{0%,100%{transform:scale(1);opacity:1}40%{transform:scale(1.035);opacity:1}48%{transform:scale(1.02);opacity:.7}56%{transform:scale(1.03);opacity:1}78%{transform:scale(1.025);opacity:.92}}
+#poster.fx-solid{text-shadow:.03em .03em 0 #5c2e00,.06em .06em 0 #7a3e00,.09em .09em 0 #9a4f12,.12em .12em 0 #6b3410,.16em .16em 0 #222,.22em .28em .08em rgba(0,0,0,.38)}
+#poster.fx-bounce{line-height:1.35}
+#poster.fx-bounce .ch{display:inline-block;animation:bt-hop .9s ease-in-out infinite}
+@keyframes bt-hop{0%,55%,100%{transform:translateY(0)}28%{transform:translateY(-.22em)}}
+#poster.fx-marquee{overflow:hidden;word-break:normal}
+#poster.fx-marquee .track{display:flex;width:max-content;animation:bt-run var(--marquee-dur,8s) linear infinite;will-change:transform}
+#poster.fx-marquee .track span{white-space:nowrap;padding-right:.75em}
+@keyframes bt-run{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){
+  #poster,#poster *{animation:none !important}
+  #poster.fx-marquee .track{width:100%;max-width:100%;justify-content:center;flex-wrap:wrap}
+  #poster.fx-marquee .track span:last-child{display:none}
+  #poster.fx-marquee .track span{white-space:normal;padding-right:0}
+}
+.fxs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.fxs .btn{min-height:58px;font-size:1.12rem;padding:6px 4px}
+.fxs .btn.on{background:#e8590c;color:#fff}
 #exitHint{display:none;position:absolute;left:50%;bottom:14px;transform:translateX(-50%);opacity:.28;font-size:1rem;font-weight:700;pointer-events:none;white-space:nowrap}
 body.ltl-bigfs .topbar,body.ltl-bigfs .ltl-fab,body.ltl-bigfs .ltl-menu,body.ltl-bigfs .ltl-backdrop,body.ltl-bigfs .ltl-pull,body.ltl-bigfs .toast{display:none !important}
 body.ltl-bigfs .wrap > :not(#stage){display:none !important}
@@ -41,12 +62,21 @@ label.pick{font-weight:800;display:flex;align-items:center;gap:6px}
 <input id="scale" type="range" min="45" max="180" value="100" aria-label="字体大小">
 <button class="btn" id="bigger" type="button" aria-label="放大">A+</button>
 </div>
+<div class="fxs" id="fxs">
+<button class="btn on" type="button" data-fx="plain">普通</button>
+<button class="btn" type="button" data-fx="rainbow">流光溢彩</button>
+<button class="btn" type="button" data-fx="neon">霓虹灯牌</button>
+<button class="btn" type="button" data-fx="solid">立体字</button>
+<button class="btn" type="button" data-fx="bounce">彩色跳动</button>
+<button class="btn" type="button" data-fx="marquee">跑马灯</button>
+</div>
 <div class="row"><button class="btn green" id="full" type="button">全屏显示</button></div>
 </div>
 <div class="help"><h2>📖 怎么用</h2><ul>
 <li>输入最多 <b>12 个字</b>。字会按屏幕宽度放得很大，多出来的自动换行、居中。</li>
 <li>点色块换背景。文字颜色默认自动对比，也可以改成黑字、白字或自己选。</li>
 <li>A− / A+ 或滑块调整大小。横竖屏切换时会跟着屏幕变。</li>
+<li>文字效果有<b>普通、流光溢彩、霓虹灯牌、立体字、彩色跳动、跑马灯</b>。全屏时一样有效。系统开了「减少动态效果」时，动画停住，字还在。</li>
 <li>「全屏显示」只留下文字和背景。点一下屏幕退出。尽量不让屏幕自己熄掉。</li>
 </ul></div>
 </div>
@@ -58,8 +88,11 @@ const stage=document.getElementById('stage'),poster=document.getElementById('pos
 const countEl=document.getElementById('count'),scaleEl=document.getElementById('scale');
 const bgCustom=document.getElementById('bgCustom'),fgCustom=document.getElementById('fgCustom');
 let wake=null;
-let state={text:'老头乐',bg:'#e03131',customBg:'#e03131',textMode:'auto',customFg:'#ffffff',scale:1};
+const FXS=['plain','rainbow','neon','solid','bounce','marquee'];
+const HOP=['#e03131','#f76707','#fab005','#2f9e44','#1971c2','#7048e8','#c2255c','#0c8599'];
+let state={text:'老头乐',bg:'#e03131',customBg:'#e03131',textMode:'auto',customFg:'#ffffff',scale:1,fx:'plain'};
 try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&typeof o==='object')state={...state,...o}}catch(e){}
+if(!FXS.includes(state.fx))state.fx='plain';
 function chars(s){return Array.from(String(s==null?'':s))}
 function clampText(s,toast){const a=chars(s);if(a.length>12){if(toast)LTL.toast('最多 12 个字');return a.slice(0,12).join('')}return a.join('')}
 function lum(hex){let h=String(hex||'#000').replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');
@@ -72,11 +105,13 @@ function paint(){
   state.scale=Math.max(0.45,Math.min(1.8,Number(state.scale)||1));
   state.text=clampText(state.text,false);
   const fg=ink();
+  const dark=lum(state.bg)<=0.4;
   document.documentElement.style.setProperty('--poster',state.bg);
   document.documentElement.style.setProperty('--ink',fg);
-  poster.style.fontSize='calc(100vw / 3.5 * '+state.scale+')';
-  poster.textContent=state.text||'字';
-  poster.style.opacity=state.text?1:.35;
+  document.documentElement.style.setProperty('--neon-ink',dark?'#ffffff':'#9c1848');
+  document.documentElement.style.setProperty('--neon',dark?'#5ce1ff':'#ff4dcf');
+  document.documentElement.style.setProperty('--neon-2',dark?'#ff4dff':'#4c6ef5');
+  renderPoster();
   textEl.value=state.text;
   countEl.textContent=chars(state.text).length+'/12';
   scaleEl.value=String(Math.round(state.scale*100));
@@ -84,7 +119,28 @@ function paint(){
   fgCustom.value=toColor(state.customFg||'#ffffff');
   document.querySelectorAll('.swatch').forEach(b=>b.classList.toggle('on',b.dataset.bg.toLowerCase()===String(state.bg).toLowerCase()));
   document.querySelectorAll('[data-fg]').forEach(b=>b.classList.toggle('on',b.dataset.fg===state.textMode));
+  document.querySelectorAll('[data-fx]').forEach(b=>{const on=b.dataset.fx===state.fx;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')});
   const meta=document.querySelector('meta[name=theme-color]');if(meta)meta.content=state.bg;
+}
+function renderPoster(){
+  const raw=state.text||'字';
+  poster.className='fx-'+state.fx;
+  poster.style.fontSize='calc(100vw / 3.5 * '+state.scale+')';
+  poster.style.opacity=state.text?1:.35;
+  poster.replaceChildren();
+  if(state.fx==='bounce'){
+    chars(raw).forEach((ch,i)=>{const s=document.createElement('span');s.className='ch';s.textContent=ch;s.style.color=HOP[i%HOP.length];s.style.animationDelay=(i*0.12)+'s';poster.appendChild(s)});
+    return;
+  }
+  if(state.fx==='marquee'){
+    const track=document.createElement('div');track.className='track';
+    let unit=raw;while(chars(unit).length<14)unit+='\u3000'+raw;
+    track.style.setProperty('--marquee-dur',(chars(unit).length*0.32)+'s');
+    for(let k=0;k<2;k++){const s=document.createElement('span');s.textContent=unit;track.appendChild(s)}
+    poster.appendChild(track);
+    return;
+  }
+  poster.textContent=raw;
 }
 function toColor(hex){let h=String(hex||'#000000');if(/^#[0-9a-fA-F]{3}$/.test(h))h='#'+h.slice(1).split('').map(x=>x+x).join('');if(!/^#[0-9a-fA-F]{6}$/.test(h))return '#000000';return h}
 const box=document.getElementById('swatches');
@@ -93,6 +149,7 @@ PRESETS.forEach(([name,c])=>{const b=document.createElement('button');b.type='bu
 textEl.addEventListener('input',()=>{const next=clampText(textEl.value,true);state.text=next;save();paint()});
 bgCustom.addEventListener('input',()=>{state.customBg=bgCustom.value;state.bg=bgCustom.value;save();paint()});
 document.querySelectorAll('[data-fg]').forEach(b=>b.onclick=()=>{state.textMode=b.dataset.fg;save();paint()});
+document.querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{state.fx=b.dataset.fx;save();paint()});
 fgCustom.addEventListener('input',()=>{state.customFg=fgCustom.value;state.textMode='custom';save();paint()});
 function setScale(v){state.scale=Math.max(0.45,Math.min(1.8,v));save();paint()}
 document.getElementById('smaller').onclick=()=>setScale(state.scale/1.15);
