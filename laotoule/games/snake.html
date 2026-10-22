@@ -5,16 +5,17 @@
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🐍 贪吃蛇</h1></div>
 <div class="wrap">
 <div class="stats"><div class="stat"><span>分数</span><b id="score">0</b></div><div class="stat"><span>最高分</span><b id="best">0</b></div></div>
-<div class="speed" id="speeds"><button class="btn" data-s="200">🐢 慢</button><button class="btn" data-s="140">🚶 中</button><button class="btn" data-s="90">🐇 快</button></div>
+<div class="speed" id="speeds"><button class="btn" data-s="300">🐢 慢</button><button class="btn" data-s="140">🚶 中</button><button class="btn" data-s="90">🐇 快</button></div>
 <div style="height:10px"></div>
 <div id="box"><canvas id="cv" width="520" height="520"></canvas><div class="overlay show" id="ov"><div id="ovt">贪吃蛇</div><button class="btn" id="go">▶ 开始</button></div></div>
 <div class="dpad"><span></span><button class="btn blue" data-d="up">⬆</button><button class="btn" id="pause">⏸</button><button class="btn blue" data-d="left">⬅</button><button class="btn blue" data-d="down">⬇</button><button class="btn blue" data-d="right">➡</button></div>
-<div class="help"><h2>📖 怎么玩</h2><ul><li>用<b>方向键</b>/WASD、在画面上<b>滑动</b>、或点大箭头按钮控制小蛇。</li><li>吃到 🍎 苹果变长加分，撞到墙或自己就结束。</li><li>按<b>空格</b>或 ⏸ 暂停。速度可以选慢、中、快，慢速最适合慢慢玩。</li></ul></div>
+<div class="help"><h2>📖 怎么玩</h2><ul><li>用<b>方向键</b>/WASD、在画面上<b>滑动</b>、或点大箭头按钮控制小蛇。</li><li>吃到 🍎 苹果变长加分，撞到墙或自己就结束。</li><li>按<b>空格</b>或 ⏸ 暂停。速度可以选慢、中、快。慢速比原来更从容，大约三秒走十格。</li></ul></div>
 </div>
 <script src="../common.js"></script>
 <script>
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),N=20,S=cv.width/N;
-let snake,dir,ndirs,food,score,timer,speed=Number(localStorage.getItem('laotoule:snakeSpeed')||200),paused=false,alive=false;
+let snake,dir,ndirs,food,score,timer,speed=Number(localStorage.getItem('laotoule:snakeSpeed')||300),paused=false,alive=false;
+if(speed===200){speed=300;localStorage.setItem('laotoule:snakeSpeed',300)}
 const bestEl=document.getElementById('best');
 function bestKey(){return 'snake'}bestEl.textContent=LTL.getBest('snake');
 document.querySelectorAll('[data-s]').forEach(b=>{if(Number(b.dataset.s)===speed)b.classList.add('on');b.onclick=()=>{speed=Number(b.dataset.s);localStorage.setItem('laotoule:snakeSpeed',speed);document.querySelectorAll('[data-s]').forEach(x=>x.classList.toggle('on',x===b));if(alive&&!paused){clearInterval(timer);timer=setInterval(tick,speed)}}});

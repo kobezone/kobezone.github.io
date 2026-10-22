@@ -1,0 +1,122 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>大字报 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e03131">
+<style>
+body{background:var(--poster,#fff7e6)}
+#stage{min-height:max(42vh,calc(100vw / 3.2));display:flex;align-items:center;justify-content:center;background:var(--poster,#e03131);color:var(--ink,#fff);border:3px solid #222;border-radius:18px;padding:2vw 1.5vw;text-align:center;position:relative;overflow:hidden}
+#poster{width:100%;font-size:calc(100vw / 3.5);font-weight:900;line-height:1.05;word-break:break-all;overflow-wrap:anywhere;text-align:center}
+#exitHint{display:none;position:absolute;left:50%;bottom:14px;transform:translateX(-50%);opacity:.28;font-size:1rem;font-weight:700;pointer-events:none;white-space:nowrap}
+body.ltl-bigfs .topbar,body.ltl-bigfs .ltl-fab,body.ltl-bigfs .ltl-menu,body.ltl-bigfs .ltl-backdrop,body.ltl-bigfs .ltl-pull,body.ltl-bigfs .toast{display:none !important}
+body.ltl-bigfs .wrap > :not(#stage){display:none !important}
+body.ltl-bigfs #stage{position:fixed;inset:0;z-index:90;border:0;border-radius:0;min-height:100%;padding:4vh 2vw}
+body.ltl-bigfs #exitHint{display:block}
+.panel{margin-top:12px}
+.row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;align-items:center;margin:8px 0}
+#text{width:min(100%,520px);font-size:1.45rem;font-weight:700;padding:10px 12px;border:3px solid #222;border-radius:14px;text-align:center;font-family:inherit}
+.count{font-weight:800}
+.swatches{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.swatch{width:68px;height:68px;border-radius:16px;border:3px solid #222;font-weight:900;font-size:1.15rem;cursor:pointer;box-shadow:var(--shadow)}
+.swatch.on,.fgbtn.on{outline:4px solid #ffd43b;outline-offset:2px}
+.fgbtn{min-width:72px}
+.sizebtns .btn{min-width:72px;min-height:64px;font-size:1.45rem;padding:0 12px}
+input[type=range]{width:min(46vw,220px);height:44px}
+input[type=color]{width:68px;height:56px;border:3px solid #222;border-radius:14px;padding:0;background:#fff;cursor:pointer}
+label.pick{font-weight:800;display:flex;align-items:center;gap:6px}
+#full{min-height:64px;font-size:1.25rem;width:min(100%,420px)}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>📣 大字报</h1></div>
+<div class="wrap">
+<div id="stage"><div id="poster">老头乐</div><div id="exitHint">点一下退出</div></div>
+<div class="panel">
+<div class="row"><input id="text" maxlength="24" autocomplete="off" enterkeyhint="done" value="老头乐" aria-label="要显示的文字"><span class="count" id="count">3/12</span></div>
+<div class="swatches" id="swatches"></div>
+<div class="row">
+<label class="pick">自定义背景 <input id="bgCustom" type="color" value="#e03131" aria-label="自定义背景颜色"></label>
+<button class="btn fgbtn on" type="button" data-fg="auto">自动</button>
+<button class="btn fgbtn" type="button" data-fg="black">黑字</button>
+<button class="btn fgbtn" type="button" data-fg="white">白字</button>
+<label class="pick">自选字色 <input id="fgCustom" type="color" value="#ffffff" aria-label="自定义文字颜色"></label>
+</div>
+<div class="row sizebtns">
+<button class="btn" id="smaller" type="button" aria-label="缩小">A−</button>
+<input id="scale" type="range" min="45" max="180" value="100" aria-label="字体大小">
+<button class="btn" id="bigger" type="button" aria-label="放大">A+</button>
+</div>
+<div class="row"><button class="btn green" id="full" type="button">全屏显示</button></div>
+</div>
+<div class="help"><h2>📖 怎么用</h2><ul>
+<li>输入最多 <b>12 个字</b>。字会按屏幕宽度放得很大，多出来的自动换行、居中。</li>
+<li>点色块换背景。文字颜色默认自动对比，也可以改成黑字、白字或自己选。</li>
+<li>A− / A+ 或滑块调整大小。横竖屏切换时会跟着屏幕变。</li>
+<li>「全屏显示」只留下文字和背景。点一下屏幕退出。尽量不让屏幕自己熄掉。</li>
+</ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const KEY='laotoule:bigtext';
+const PRESETS=[['红','#e03131'],['黑','#111111'],['蓝','#1971c2'],['黄','#ffd43b'],['绿','#2f9e44'],['白','#ffffff']];
+const stage=document.getElementById('stage'),poster=document.getElementById('poster'),textEl=document.getElementById('text');
+const countEl=document.getElementById('count'),scaleEl=document.getElementById('scale');
+const bgCustom=document.getElementById('bgCustom'),fgCustom=document.getElementById('fgCustom');
+let wake=null;
+let state={text:'老头乐',bg:'#e03131',customBg:'#e03131',textMode:'auto',customFg:'#ffffff',scale:1};
+try{const o=JSON.parse(localStorage.getItem(KEY)||'null');if(o&&typeof o==='object')state={...state,...o}}catch(e){}
+function chars(s){return Array.from(String(s==null?'':s))}
+function clampText(s,toast){const a=chars(s);if(a.length>12){if(toast)LTL.toast('最多 12 个字');return a.slice(0,12).join('')}return a.join('')}
+function lum(hex){let h=String(hex||'#000').replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');
+  const p=i=>{const v=parseInt(h.slice(i,i+2),16)/255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)};
+  return 0.2126*p(0)+0.7152*p(2)+0.0722*p(4)}
+function autoFg(bg){return lum(bg)>0.4?'#111111':'#ffffff'}
+function ink(){if(state.textMode==='black')return '#111111';if(state.textMode==='white')return '#ffffff';if(state.textMode==='custom')return state.customFg||'#ffffff';return autoFg(state.bg)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function paint(){
+  state.scale=Math.max(0.45,Math.min(1.8,Number(state.scale)||1));
+  state.text=clampText(state.text,false);
+  const fg=ink();
+  document.documentElement.style.setProperty('--poster',state.bg);
+  document.documentElement.style.setProperty('--ink',fg);
+  poster.style.fontSize='calc(100vw / 3.5 * '+state.scale+')';
+  poster.textContent=state.text||'字';
+  poster.style.opacity=state.text?1:.35;
+  textEl.value=state.text;
+  countEl.textContent=chars(state.text).length+'/12';
+  scaleEl.value=String(Math.round(state.scale*100));
+  bgCustom.value=toColor(state.customBg||state.bg);
+  fgCustom.value=toColor(state.customFg||'#ffffff');
+  document.querySelectorAll('.swatch').forEach(b=>b.classList.toggle('on',b.dataset.bg.toLowerCase()===String(state.bg).toLowerCase()));
+  document.querySelectorAll('[data-fg]').forEach(b=>b.classList.toggle('on',b.dataset.fg===state.textMode));
+  const meta=document.querySelector('meta[name=theme-color]');if(meta)meta.content=state.bg;
+}
+function toColor(hex){let h=String(hex||'#000000');if(/^#[0-9a-fA-F]{3}$/.test(h))h='#'+h.slice(1).split('').map(x=>x+x).join('');if(!/^#[0-9a-fA-F]{6}$/.test(h))return '#000000';return h}
+const box=document.getElementById('swatches');
+PRESETS.forEach(([name,c])=>{const b=document.createElement('button');b.type='button';b.className='swatch';b.dataset.bg=c;b.textContent=name;b.style.background=c;b.style.color=autoFg(c);
+  b.onclick=()=>{state.bg=c;state.customBg=c;save();paint()};box.appendChild(b)});
+textEl.addEventListener('input',()=>{const next=clampText(textEl.value,true);state.text=next;save();paint()});
+bgCustom.addEventListener('input',()=>{state.customBg=bgCustom.value;state.bg=bgCustom.value;save();paint()});
+document.querySelectorAll('[data-fg]').forEach(b=>b.onclick=()=>{state.textMode=b.dataset.fg;save();paint()});
+fgCustom.addEventListener('input',()=>{state.customFg=fgCustom.value;state.textMode='custom';save();paint()});
+function setScale(v){state.scale=Math.max(0.45,Math.min(1.8,v));save();paint()}
+document.getElementById('smaller').onclick=()=>setScale(state.scale/1.15);
+document.getElementById('bigger').onclick=()=>setScale(state.scale*1.15);
+scaleEl.addEventListener('input',()=>setScale(Number(scaleEl.value)/100));
+async function lockWake(){try{if(navigator.wakeLock)wake=await navigator.wakeLock.request('screen')}catch(e){}}
+function unlockWake(){if(wake){const w=wake;wake=null;w.release().catch(()=>{})}}
+async function enterFs(){
+  document.body.classList.add('ltl-bigfs');
+  const el=document.documentElement;
+  const req=el.requestFullscreen||el.webkitRequestFullscreen;
+  if(req){try{await req.call(el)}catch(e){}}
+  await lockWake();
+}
+function exitFs(){
+  document.body.classList.remove('ltl-bigfs');
+  const ex=document.exitFullscreen||document.webkitExitFullscreen;
+  if((document.fullscreenElement||document.webkitFullscreenElement)&&ex)ex.call(document).catch(()=>{});
+  unlockWake();
+}
+document.getElementById('full').onclick=enterFs;
+stage.addEventListener('click',()=>{if(document.body.classList.contains('ltl-bigfs'))exitFs()});
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&!document.webkitFullscreenElement){document.body.classList.remove('ltl-bigfs');unlockWake()}});
+document.addEventListener('webkitfullscreenchange',()=>{if(!document.webkitFullscreenElement&&!document.fullscreenElement){document.body.classList.remove('ltl-bigfs');unlockWake()}});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&document.body.classList.contains('ltl-bigfs'))lockWake()});
+paint();
+</script></body></html>

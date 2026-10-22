@@ -1,20 +1,35 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>扫雷 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#gridWrap{position:relative;margin:0 auto;width:fit-content;max-width:100%;overflow:auto;border:3px solid #222;border-radius:12px;background:#adb5bd}
-#grid{display:grid;gap:2px;padding:4px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
-.c{width:var(--cs);height:var(--cs);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:calc(var(--cs)*.6);background:#dee2e6;border-radius:6px;box-shadow:inset -3px -3px 0 #868e96,inset 3px 3px 0 #fff;cursor:pointer}
+html,body{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.wrap{padding:8px 8px 4px}
+.controls{margin:4px 0}
+.lv{flex-wrap:nowrap;gap:6px}
+.lv .btn{flex:1 1 0;min-width:0;padding:6px 4px;white-space:nowrap;font-size:.98rem}
+.stats{margin:4px 0 8px}
+#gridWrap{position:relative;margin:0 auto;width:fit-content;max-width:100%;overflow:auto;border:3px solid #222;border-radius:12px;background:#adb5bd;-webkit-touch-callout:none}
+#grid{display:grid;gap:2px;padding:4px;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.c{width:var(--cs);height:var(--cs);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:calc(var(--cs)*.58);background:#dee2e6;border-radius:6px;box-shadow:inset -3px -3px 0 #868e96,inset 3px 3px 0 #fff;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 .c.o{background:#f8f9fa;box-shadow:none;cursor:default}.c.boom{background:#ff6b6b}
 .n1{color:#1971c2}.n2{color:#2f9e44}.n3{color:#e03131}.n4{color:#5f3dc4}.n5{color:#a61e4d}.n6{color:#0c8599}.n7{color:#222}.n8{color:#868e96}
 .lv .btn.on,#flagMode.on{background:#e8590c;color:#fff}
+.ms-bar{position:sticky;bottom:0;z-index:6;display:flex;gap:8px;justify-content:center;padding:8px 4px;margin-top:8px;background:rgba(255,247,230,.96);border-top:3px solid #222}
+.ms-bar .btn{min-height:64px;font-size:1.35rem;flex:1}
+#flagMode{flex:2}
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>💣 扫雷</h1></div>
 <div class="wrap">
 <div class="controls lv"><button class="btn" data-lv="0">简单 9×9</button><button class="btn" data-lv="1">中等 12×12</button><button class="btn" data-lv="2">困难 16×16</button></div>
 <div class="stats"><div class="stat"><span>剩余地雷</span><b id="left">0</b></div><div class="stat"><span>用时（秒）</span><b id="time">0</b></div><div class="stat"><span>最快纪录</span><b id="best">-</b></div></div>
-<div class="controls"><button class="btn" id="flagMode">⛏️ 挖开模式</button><button class="btn green" id="new">🙂 新一局</button></div>
 <div id="gridWrap"><div id="grid"></div><div class="overlay" id="ov"><div id="ovt"></div><button class="btn" id="again">再来一局</button></div></div>
-<div class="help"><h2>📖 怎么玩</h2><ul><li><b>点一下</b>格子挖开；数字表示周围 8 格里有几颗雷。第一下一定安全。</li><li>插小旗 🚩：电脑上<b>点右键</b>；手机上<b>长按</b>格子，或者先点「挖开模式」切换成「插旗模式」再点。</li><li>点已挖开的数字，如果周围旗子数够了，会自动挖开其余格子。</li><li>把所有不是雷的格子都挖开就赢啦！</li></ul></div>
+<div class="ms-bar"><button class="btn" id="flagMode" type="button">挖开</button><button class="btn green" id="new" type="button">新一局</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>底下大按钮在<b>挖开</b>和<b>插旗</b>之间切换。点格子就按当前模式来。第一下一定安全。</li>
+<li><b>长按</b>大约半秒也可以插旗或取消旗，手机会轻轻震一下。长按<b>不会</b>把格子挖开。</li>
+<li>电脑上仍可以<b>点右键</b>插旗。</li>
+<li>点已经挖开的数字，周围旗子数对上了，会把其余格子一起挖开。</li>
+<li>数字表示周围 8 格里有几颗雷。把所有不是雷的格子都挖开就赢啦！</li>
+</ul></div>
 </div>
 <script src="../common.js"></script>
 <script>
@@ -23,11 +38,23 @@ let lv=Number(localStorage.getItem('laotoule:msLv')||0),R,C,M,mines,open,flag,cn
 const g=document.getElementById('grid'),ov=document.getElementById('ov');
 function setLv(l){lv=l;localStorage.setItem('laotoule:msLv',l);document.querySelectorAll('[data-lv]').forEach(b=>b.classList.toggle('on',Number(b.dataset.lv)===l));init()}
 document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>setLv(Number(b.dataset.lv)));
-function fit(){const top=g.getBoundingClientRect().top||160;const availW=Math.min(innerWidth,740)-28;const availH=Math.max(180,innerHeight-top-16);const cs=Math.max(28,Math.min(56,Math.floor(Math.min(availW/C,availH/R))-2));g.style.setProperty('--cs',cs+'px');g.style.gridTemplateColumns=`repeat(${C},${cs}px)`}
+function fit(){
+  const bar=document.querySelector('.ms-bar');
+  const barH=(bar?bar.offsetHeight:72)+6;
+  const top=Math.max(0,g.getBoundingClientRect().top);
+  const availW=(g.parentElement.clientWidth||Math.min(innerWidth,740))-2;
+  const availH=Math.max(140,innerHeight-top-barH-4);
+  const gap=2,pad=8;
+  const cs=Math.floor(Math.min((availW-pad-(C-1)*gap)/C,(availH-pad-(R-1)*gap)/R));
+  const size=Math.max(22,Math.min(64,cs));
+  g.style.setProperty('--cs',size+'px');
+  g.style.gridTemplateColumns=`repeat(${C},${size}px)`;
+}
 function init(){({r:R,c:C,m:M}=LV[lv]);mines=new Array(R*C).fill(false);open=new Array(R*C).fill(false);flag=new Array(R*C).fill(false);cnt=new Array(R*C).fill(0);started=false;over=false;clearInterval(tm);
   document.getElementById('time').textContent=0;const b=LTL.getBest('ms'+lv,-1);document.getElementById('best').textContent=b<0?'-':b;
-  fit();
-  g.innerHTML='';els=[];for(let i=0;i<R*C;i++){const d=document.createElement('div');d.className='c';d.dataset.i=i;g.appendChild(d);els.push(d)}ov.classList.remove('show');updLeft()}
+  g.innerHTML='';els=[];for(let i=0;i<R*C;i++){const d=document.createElement('div');d.className='c';d.dataset.i=i;g.appendChild(d);els.push(d)}ov.classList.remove('show');updLeft();
+  fit();requestAnimationFrame(()=>requestAnimationFrame(fit));
+}
 function nb(i){const r=i/C|0,c=i%C,o=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&cc>=0&&rr<R&&cc<C)o.push(rr*C+cc)}return o}
 function lay(safe){const ban=new Set([safe,...nb(safe)]);let k=0;while(k<M){const i=Math.random()*R*C|0;if(mines[i]||ban.has(i))continue;mines[i]=true;k++}for(let i=0;i<R*C;i++)cnt[i]=nb(i).filter(j=>mines[j]).length}
 function updLeft(){document.getElementById('left').textContent=M-flag.filter(Boolean).length}
@@ -43,12 +70,37 @@ function lose(){over=true;clearInterval(tm);LTL.beep(120,.5,'sawtooth',.07);for(
 function checkWin(){if(open.filter(Boolean).length===R*C-M){over=true;clearInterval(tm);const s=Math.max(1,Math.round((Date.now()-t0)/1000));document.getElementById('time').textContent=s;
   for(let i=0;i<R*C;i++)if(mines[i])els[i].textContent='🚩';updLeft();const rec=LTL.record('ms'+lv,s,false);document.getElementById('best').textContent=LTL.getBest('ms'+lv);
   [523,659,784,1046].forEach((f,k)=>setTimeout(()=>LTL.beep(f,.12,'triangle'),k*120));document.getElementById('ovt').textContent=(rec?'🏆 新纪录！':'🎉 胜利！')+' 用时 '+s+' 秒';setTimeout(()=>ov.classList.add('show'),400)}}
-let lp=null,lpFired=false;
-g.addEventListener('pointerdown',e=>{const t=e.target.closest('.c');if(!t||e.button===2)return;lpFired=false;clearTimeout(lp);lp=setTimeout(()=>{lpFired=true;toggleFlag(Number(t.dataset.i));if(navigator.vibrate)navigator.vibrate(30)},450)});
-g.addEventListener('pointerup',e=>{clearTimeout(lp);const t=e.target.closest('.c');if(!t||e.button===2||lpFired)return;const i=Number(t.dataset.i);flagMode&&!open[i]?toggleFlag(i):dig(i)});
-g.addEventListener('pointerleave',()=>clearTimeout(lp));g.addEventListener('pointercancel',()=>clearTimeout(lp));
-g.addEventListener('contextmenu',e=>{e.preventDefault();const t=e.target.closest('.c');if(t)toggleFlag(Number(t.dataset.i))});
-const fm=document.getElementById('flagMode');fm.onclick=()=>{flagMode=!flagMode;fm.textContent=flagMode?'🚩 插旗模式':'⛏️ 挖开模式';fm.classList.toggle('on',flagMode)};
+const HOLD=400,SLOP=14,ptrs=new Map();
+let lastHold=0;
+function endPtr(e,act){
+  const rec=ptrs.get(e.pointerId);if(!rec)return;
+  clearTimeout(rec.timer);ptrs.delete(e.pointerId);
+  if(!act||rec.fired||rec.moved||e.button===2)return;
+  const i=rec.i;
+  if(flagMode&&!open[i])toggleFlag(i);else dig(i);
+}
+g.addEventListener('pointerdown',e=>{
+  const t=e.target.closest('.c');if(!t||e.button===2)return;
+  const i=Number(t.dataset.i);
+  const prev=ptrs.get(e.pointerId);if(prev)clearTimeout(prev.timer);
+  const rec={i,x:e.clientX,y:e.clientY,fired:false,moved:false,timer:null};
+  rec.timer=setTimeout(()=>{rec.fired=true;lastHold=Date.now();toggleFlag(i);try{if(navigator.vibrate)navigator.vibrate(30)}catch(err){}},HOLD);
+  ptrs.set(e.pointerId,rec);
+});
+g.addEventListener('pointermove',e=>{
+  const rec=ptrs.get(e.pointerId);if(!rec||rec.fired||rec.moved)return;
+  if(Math.hypot(e.clientX-rec.x,e.clientY-rec.y)>SLOP){rec.moved=true;clearTimeout(rec.timer)}
+});
+addEventListener('pointerup',e=>endPtr(e,true));
+addEventListener('pointercancel',e=>endPtr(e,false));
+g.addEventListener('contextmenu',e=>{
+  e.preventDefault();
+  if(Date.now()-lastHold<700)return;
+  if(e.pointerType==='touch'||e.pointerType==='pen')return;
+  const t=e.target.closest('.c');if(t)toggleFlag(Number(t.dataset.i));
+});
+const fm=document.getElementById('flagMode');
+fm.onclick=()=>{flagMode=!flagMode;fm.textContent=flagMode?'插旗':'挖开';fm.classList.toggle('on',flagMode);fm.setAttribute('aria-pressed',flagMode?'true':'false')};
 document.getElementById('new').onclick=init;document.getElementById('again').onclick=init;
 addEventListener('resize',()=>{if(C)fit()});
 setLv(lv);
