@@ -2,8 +2,9 @@
 <title>24点 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
 #turn{font-size:1.3rem;font-weight:800;text-align:center;margin:4px 0}
-#cards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;min-height:120px;margin:8px auto;max-width:640px}
-.card24{width:min(22vw,120px);min-height:108px;border:3px solid #222;border-radius:16px;background:#fff;box-shadow:0 4px 0 #222;font-weight:900;font-size:2rem;color:#c92a2a;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:inherit}
+#cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:min(94vw,460px);margin:8px auto}
+.card24{width:100%;height:clamp(118px,22vh,170px);border:3px solid #222;border-radius:16px;background:#fff;box-shadow:0 4px 0 #222;font-weight:900;font-size:clamp(2rem,8vw,2.8rem);color:#c92a2a;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;padding:4px}
+#cards.n1 .card24,#cards.n3 .card24:last-child{grid-column:1 / -1;width:calc(50% - 6px);justify-self:center}
 .card24 small{font-size:.85rem;color:#333;font-weight:700;max-width:100%;padding:0 4px;word-break:break-all}
 .card24.on{background:#ffd43b}
 .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:640px;margin:8px auto}
@@ -55,6 +56,7 @@ function labelOf(c){
 }
 function snapshot(){return cards.map(c=>({...c}))}
 function paint(){
+  box.className='n'+cards.length;
   box.innerHTML='';
   cards.forEach(c=>{
     const b=document.createElement('button');b.type='button';b.className='card24'+(sel===c.id?' on':'');
