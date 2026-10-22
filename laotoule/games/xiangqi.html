@@ -1,0 +1,178 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>中国象棋 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#turn{font-size:1.35rem;font-weight:800;text-align:center;margin:4px 0 8px}
+#box{position:relative;width:min(96vw,calc((100vh - var(--ltl-chrome, 0px) - 200px)*0.9),540px);margin:0 auto}
+canvas{width:100%;height:auto;display:block;background:#f6e2b3;border:3px solid #222;border-radius:12px;touch-action:manipulation}
+.lv .btn.on,.side .btn.on{background:#e8590c;color:#fff}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>♟ 中国象棋</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>你赢了</span><b id="w">0</b></div><div class="stat"><span>电脑赢</span><b id="l">0</b></div><div class="stat"><span>难度</span><b id="lvn">中等</b></div></div>
+<div id="turn">轮到你走</div>
+<div id="box"><canvas id="cv" width="440" height="488"></canvas><div class="overlay" id="ov"><div id="ovt"></div><button class="btn" id="again">再来一盘</button></div></div>
+<div class="controls lv"><button class="btn" data-lv="0">😊 简单</button><button class="btn" data-lv="1">🤔 中等</button><button class="btn" data-lv="2">😤 困难</button></div>
+<div class="controls side"><button class="btn" id="red">🔴 执红</button><button class="btn" id="black">⚫ 执黑</button></div>
+<div class="controls"><button class="btn green" id="new">🔄 重开</button><button class="btn" id="undo">↩️ 悔棋</button><button class="btn blue" id="hint">💡 提示</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>红方在下面。点自己的棋子，再点亮着的位置，就能走。</li>
+<li>马走日、别蹩马腿；象走田、别塞象眼，也不能过河。士和将只在九宫里走。炮打子要隔一个棋子。兵过河才能横着走。</li>
+<li>将帅不能在一条竖线上面对面。被将军要躲开；无棋可走，被将是将死，没被将是困毙，都算输。</li>
+<li>简单、中等、困难都会自己想棋。走错了可以悔棋，提示会标出一步好棋。棋局自动保存。</li>
+</ul></div>
+</div>
+<script src="xiangqi.engine.js"></script>
+<script src="../common.js"></script>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const S=48,M=28,LVN=['简单','中等','困难'];
+let board,side,human,lv,hist,last,sel,hintMove,over,busy,counted,think=0;
+let stats=JSON.parse(localStorage.getItem('laotoule:xqStats')||'{"w":0,"l":0}');
+function showStats(){document.getElementById('w').textContent=stats.w;document.getElementById('l').textContent=stats.l;document.getElementById('lvn').textContent=LVN[lv]}
+function paintLv(){document.querySelectorAll('[data-lv]').forEach(b=>b.classList.toggle('on',Number(b.dataset.lv)===lv));document.getElementById('red').classList.toggle('on',human===1);document.getElementById('black').classList.toggle('on',human===-1)}
+function xy(i){return [M+(i%9)*S,M+((i/9)|0)*S]}
+function setTurn(){
+  const el=document.getElementById('turn');
+  if(over){el.textContent=over==='win'?'你赢了':'电脑赢了';return}
+  if(busy||side!==human){el.textContent='电脑思考中…';return}
+  const chk=XQ.inCheck(board,side);
+  el.textContent=(chk?'将军！':'')+'轮到你走（'+(human>0?'红方':'黑方')+'）';
+}
+function save(){
+  localStorage.setItem('laotoule:xqState',JSON.stringify({board:[...board],side,human,lv,hist,last,over,counted,sel}));
+  localStorage.setItem('laotoule:xq',String(stats.w));
+}
+function finish(kind){
+  over=kind;
+  if(!counted){counted=true;if(kind==='win')stats.w++;else stats.l++;localStorage.setItem('laotoule:xqStats',JSON.stringify(stats));showStats()}
+  const mate=XQ.inCheck(board,side);
+  document.getElementById('ovt').textContent=kind==='win'?(mate?'🎉 将死！你赢了':'🎉 对方困毙，你赢了'):(mate?'😅 被将死了':'😅 困毙了，你无棋可走');
+  document.getElementById('ov').classList.add('show');
+  if(kind==='win')[523,659,784,1046].forEach((f,k)=>setTimeout(()=>LTL.beep(f,.12,'triangle'),k*120));
+  setTurn();save();draw();
+}
+function play(m){
+  const f=(m/90)|0,t=m%90,cap=board[t],pc=board[f];
+  hist.push({f,t,cap,side,pc});
+  board[t]=pc;board[f]=0;last=[f,t];sel=-1;hintMove=-1;side=-side;
+  LTL.beep(side===human?420:300,.05,'square',.05);
+  const st=XQ.status(board,side);
+  save();draw();
+  if(st==='mate'||st==='stalemate'){finish(side===human?'lose':'win');return}
+  if(st==='check'&&side===human)LTL.toast('将军！');
+  setTurn();
+  if(side!==human)aiGo();
+}
+function aiGo(){
+  if(busy||over||side===human)return;
+  busy=true;const mine=++think;setTurn();draw();
+  const opt=lv===0?{depth:2,ms:260,noise:160}:lv===1?{depth:3,ms:600}:{depth:5,ms:1000};
+  setTimeout(()=>{
+    if(mine!==think||over||side===human){if(mine===think)busy=false;return}
+    const r=XQ.search(board,side,opt);
+    if(mine!==think)return;
+    busy=false;
+    if(r.move>=0)play(r.move);
+    else finish(side===human?'lose':'win');
+  },40);
+}
+function pop(){
+  const h=hist.pop();
+  board[h.f]=h.pc;board[h.t]=h.cap;side=h.side;
+  last=hist.length?[hist[hist.length-1].f,hist[hist.length-1].t]:null;
+}
+function undo(){
+  if(busy){LTL.toast('电脑正在想，请稍等');return}
+  if(!hist.length){LTL.toast('还没有棋可悔');return}
+  document.getElementById('ov').classList.remove('show');
+  over=null;counted=false;sel=-1;hintMove=-1;
+  pop();
+  if(side!==human&&hist.length)pop();
+  save();setTurn();draw();
+  if(!over&&side!==human)aiGo();
+}
+function reset(h){
+  think++;board=XQ.start();side=1;human=h;hist=[];last=null;sel=-1;hintMove=-1;over=null;counted=false;busy=false;
+  document.getElementById('ov').classList.remove('show');
+  paintLv();showStats();save();setTurn();draw();
+  if(side!==human)aiGo();
+}
+function legalFrom(i){
+  const mv=new Int32Array(128),n=XQ.genLegal(board,side,mv),o=[];
+  for(let k=0;k<n;k++)if((mv[k]/90|0)===i)o.push(mv[k]%90);
+  return o;
+}
+function draw(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#f6e2b3';ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.strokeStyle='#6b3e12';ctx.lineWidth=2;ctx.beginPath();
+  for(let y=0;y<10;y++){ctx.moveTo(M,M+y*S);ctx.lineTo(M+8*S,M+y*S)}
+  for(let x=0;x<9;x++){
+    ctx.moveTo(M+x*S,M);ctx.lineTo(M+x*S,M+4*S);
+    ctx.moveTo(M+x*S,M+5*S);ctx.lineTo(M+x*S,M+9*S);
+  }
+  ctx.moveTo(M,M+4*S);ctx.lineTo(M,M+5*S);ctx.moveTo(M+8*S,M+4*S);ctx.lineTo(M+8*S,M+5*S);
+  ctx.moveTo(M+3*S,M);ctx.lineTo(M+5*S,M+2*S);ctx.moveTo(M+5*S,M);ctx.lineTo(M+3*S,M+2*S);
+  ctx.moveTo(M+3*S,M+7*S);ctx.lineTo(M+5*S,M+9*S);ctx.moveTo(M+5*S,M+7*S);ctx.lineTo(M+3*S,M+9*S);
+  ctx.stroke();
+  ctx.fillStyle='#8a5a2b';ctx.font='bold 22px "Microsoft YaHei",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('楚 河',M+2*S,M+4.5*S);ctx.fillText('汉 界',M+6*S,M+4.5*S);
+  function mark(i,color){const [x,y]=xy(i);ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,S*0.46,0,7);ctx.fill()}
+  if(last){mark(last[0],'rgba(255,212,59,.55)');mark(last[1],'rgba(255,212,59,.9)')}
+  if(hintMove>=0){mark((hintMove/90)|0,'rgba(116,192,252,.7)');mark(hintMove%90,'rgba(25,113,194,.45)')}
+  if(sel>=0){
+    mark(sel,'rgba(232,89,12,.35)');
+    for(const t of legalFrom(sel)){
+      const [x,y]=xy(t);
+      if(board[t]){ctx.strokeStyle='#c92a2a';ctx.lineWidth=4;ctx.beginPath();ctx.arc(x,y,S*0.42,0,7);ctx.stroke()}
+      else{ctx.fillStyle='#2f9e44';ctx.beginPath();ctx.arc(x,y,7,0,7);ctx.fill()}
+    }
+  }
+  for(let i=0;i<90;i++){
+    const p=board[i];if(!p)continue;
+    const [x,y]=xy(i),red=p>0;
+    ctx.beginPath();ctx.arc(x,y,S*0.40,0,7);
+    ctx.fillStyle=red?'#fff5f5':'#fff';ctx.fill();
+    ctx.lineWidth=3;ctx.strokeStyle=red?'#c92a2a':'#111';ctx.stroke();
+    ctx.fillStyle=red?'#c92a2a':'#111';ctx.font='bold 26px "Microsoft YaHei",sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(XQ.pieceChar(p),x,y+1);
+  }
+}
+cv.addEventListener('pointerdown',e=>{
+  if(busy||over||side!==human)return;
+  const r=cv.getBoundingClientRect();
+  const px=(e.clientX-r.left)*cv.width/r.width,py=(e.clientY-r.top)*cv.height/r.height;
+  let best=-1,bd=1e9;
+  for(let i=0;i<90;i++){const [x,y]=xy(i),d=(px-x)**2+(py-y)**2;if(d<bd){bd=d;best=i}}
+  if(best<0||bd>(S*0.62)**2){sel=-1;draw();return}
+  if(sel<0){if(board[best]*human>0){sel=best;hintMove=-1;draw()}return}
+  const opts=legalFrom(sel);
+  if(opts.includes(best)){const m=sel*90+best;play(m);return}
+  if(board[best]*human>0){sel=best;draw()}else{sel=-1;draw()}
+});
+document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{lv=Number(b.dataset.lv);paintLv();showStats();save()});
+document.getElementById('red').onclick=()=>reset(1);
+document.getElementById('black').onclick=()=>reset(-1);
+document.getElementById('new').onclick=()=>reset(human);
+document.getElementById('again').onclick=()=>reset(human);
+document.getElementById('undo').onclick=undo;
+document.getElementById('hint').onclick=()=>{
+  if(busy||over||side!==human){LTL.toast('现在不用提示');return}
+  const r=XQ.search(board,human,lv===2?{depth:4,ms:700}:{depth:3,ms:450});
+  if(r.move<0){LTL.toast('没有好棋');return}
+  hintMove=r.move;sel=(r.move/90)|0;draw();LTL.toast('蓝圈是建议的一步');
+};
+function boot(){
+  lv=Number(localStorage.getItem('laotoule:xqLv')||1);human=1;
+  try{
+    const s=JSON.parse(localStorage.getItem('laotoule:xqState')||'null');
+    if(!s||!s.board||s.board.length!==90)throw 0;
+    board=Int8Array.from(s.board);side=s.side;human=s.human||1;lv=s.lv??lv;hist=s.hist||[];last=s.last;over=s.over;counted=!!s.counted;
+  }catch(e){board=XQ.start();side=1;hist=[];last=null;over=null;counted=false}
+  sel=-1;hintMove=-1;busy=false;
+  if(over){document.getElementById('ovt').textContent=over==='win'?'你赢了，再来一盘？':'这盘输了，再来一盘？';document.getElementById('ov').classList.add('show')}
+  paintLv();showStats();setTurn();draw();save();
+  if(!over&&side!==human)aiGo();
+}
+boot();
+</script></body></html>
