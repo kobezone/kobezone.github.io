@@ -6,7 +6,8 @@ body{background:#08351f}
 .wrap{max-width:980px}
 .stat{min-width:78px}
 .controls .btn,.diffs .btn{min-height:48px;padding:6px 12px}
-.diffs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 8px}
+.diffs{display:flex;gap:6px;justify-content:center;flex-wrap:nowrap;margin:0 0 8px}
+.diffs .btn{flex:1 1 0;min-width:0;padding:6px 2px;font-size:1.05rem;white-space:nowrap}
 .diffs .btn.on{background:#8ce99a}
 #felt{background:radial-gradient(circle at 50% 0,#1b8f4a,#0b5a32 55%,#084526);border:3px solid #052e16;border-radius:16px;padding:8px;box-shadow:0 6px 0 #052e16}
 .stockbar{display:flex;align-items:center;gap:10px;margin-bottom:8px}
@@ -48,9 +49,9 @@ body{background:#08351f}
   <button class="btn" id="hint" type="button">提示</button>
 </div>
 <div class="diffs">
-  <button class="btn on" data-diff="1" type="button">初级·单色</button>
-  <button class="btn" data-diff="2" type="button">中级·双色</button>
-  <button class="btn" data-diff="4" type="button">高级·四色</button>
+  <button class="btn on" data-diff="1" type="button">初级</button>
+  <button class="btn" data-diff="2" type="button">中级</button>
+  <button class="btn" data-diff="4" type="button">高级</button>
 </div>
 <div id="felt">
   <div class="stockbar">
