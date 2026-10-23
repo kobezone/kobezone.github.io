@@ -1,0 +1,242 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>斗地主 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+html,body{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#turn{font-size:1.2rem;font-weight:800;text-align:center;margin:2px 0}
+.ops{display:flex;gap:8px;justify-content:space-between;margin:6px 0}
+.who{flex:1;background:#fff;border:3px solid #222;border-radius:14px;padding:6px 8px;text-align:center;font-weight:800}
+.who b{display:block;font-size:1.35rem}
+.who.on{background:#ffd43b}
+.who small{font-weight:700;color:#555}
+#table{min-height:78px;margin:6px 0;padding:6px;background:#fff;border:3px dashed #222;border-radius:14px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-items:center}
+#hole{display:flex;gap:6px;justify-content:center;margin:4px 0}
+#hand{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:8px auto 4px;max-width:640px}
+.card{width:42px;height:58px;border:2px solid #222;border-radius:8px;background:#fff;box-shadow:0 3px 0 #222;font-weight:900;color:#222;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;padding:0;font-family:inherit}
+.card b{font-size:1.15rem}.card i{font-style:normal;font-size:.95rem}
+.card.red{color:#e03131}
+.card.back{background:#1971c2;color:#fff;box-shadow:0 3px 0 #0b4f8a}
+#hand .card{width:calc((100% - 36px) / 6);max-width:68px;height:auto;aspect-ratio:5/7}
+#hand .card b{font-size:clamp(1.2rem,5vw,1.7rem)}
+#hand .card i{font-size:clamp(1rem,4vw,1.3rem)}
+#hand .card.on{transform:translateY(-12px);background:#fff3bf;box-shadow:0 8px 0 #222}
+.playbar{position:sticky;bottom:0;z-index:6;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:8px 4px 10px;margin-top:6px;background:rgba(255,247,230,.96);border-top:3px solid #222}
+.playbar .btn{min-height:56px;font-size:1.2rem;flex:1;min-width:68px}
+#stage{position:relative}
+#ov{position:fixed;inset:0;z-index:30}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🃏 斗地主</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>赢的盘数</span><b id="wins">0</b></div><div class="stat"><span>叫分</span><b id="bid">-</b></div><div class="stat"><span>炸弹</span><b id="bombs">0</b></div></div>
+<div id="turn">准备发牌</div>
+<div class="ops"><div class="who" id="w2"><small>上家</small><b id="n2">17</b></div><div class="who" id="w0"><small>你</small><b id="n0">17</b></div><div class="who" id="w1"><small>下家</small><b id="n1">17</b></div></div>
+<div id="hole"></div>
+<div id="stage"><div id="table"></div><div class="overlay" id="ov"><div id="ovt"></div><button class="btn green" id="again" type="button">再来一局</button></div></div>
+<div id="hand"></div>
+<div class="playbar">
+<div id="bidBtns" style="display:contents"><button class="btn" id="p0" type="button">不叫</button><button class="btn" id="p1" type="button">1分</button><button class="btn" id="p2" type="button">2分</button><button class="btn" id="p3" type="button">3分</button></div>
+<div id="playBtns" style="display:none"><button class="btn green" id="play" type="button">出牌</button><button class="btn" id="pass" type="button">不出</button><button class="btn blue" id="hint" type="button">提示</button><button class="btn" id="clear" type="button">重选</button></div>
+<button class="btn" id="new" type="button">新一局</button>
+</div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>三个人，你和两个电脑。每人 17 张，叫 1 到 3 分，分高的当地主，拿走 3 张底牌。没人叫就重新发。</li>
+<li>点牌再点「出牌」。单张、对子、三张、三带、顺子、连对、飞机、炸弹、王炸都可以。要压过上家，没有就点「不出」。</li>
+<li>先出完的一方赢。地主一张没让农民出过是春天，农民赢时地主只出过一手是反春天，分数翻倍。炸弹也翻倍。赢的盘数会记住。</li>
+</ul></div>
+</div>
+<script src="doudizhu.engine.js"></script>
+<script src="../common.js"></script>
+<script>
+const RN=['3','4','5','6','7','8','9','10','J','Q','K','A','2','小','大'];
+const SU=['♠','♥','♣','♦'];
+let hands,hole,landlord,phase,turn,bidHigh,bidSeat,bidSpoken,bidTurn,last,passRun,played,bombs,wins,sel,busy,hintAt,tableNote;
+const handEl=document.getElementById('hand'),tableEl=document.getElementById('table'),holeEl=document.getElementById('hole'),ov=document.getElementById('ov');
+function seatName(i){return i===0?'你':i===1?'下家':'上家'}
+function red(c){return c.r===14||(c.r<13&&c.s%2===1)}
+function sortHand(h){h.sort((a,b)=>b.r-a.r||a.s-b.s)}
+function save(){
+  localStorage.setItem('laotoule:ddz',String(wins));
+  localStorage.setItem('laotoule:ddzState',JSON.stringify({
+    hands,hole,landlord,phase,turn,bidHigh,bidSeat,bidSpoken,bidTurn,last,passRun,played,bombs,wins,tableNote
+  }));
+}
+function makeCard(c,opts){
+  const b=document.createElement('button');
+  b.type='button';
+  b.className='card'+(red(c)?' red':'')+(opts&&opts.on?' on':'')+(opts&&opts.mini?'':'');
+  const t=document.createElement('b');t.textContent=RN[c.r];
+  const s=document.createElement('i');s.textContent=c.r>=13?'王':SU[c.s];
+  b.append(t,s);
+  return b;
+}
+function paint(){
+  document.getElementById('wins').textContent=wins;
+  document.getElementById('bid').textContent=landlord==null?(bidHigh?bidHigh+'分':'-'):(bidHigh+'分');
+  document.getElementById('bombs').textContent=bombs;
+  for(let i=0;i<3;i++){
+    const w=document.getElementById('w'+i);
+    w.classList.toggle('on',(phase==='bid'?bidTurn:turn)===i&&phase!=='over');
+    const tag=landlord===i?'地主':'';
+    document.getElementById('n'+i).textContent=hands[i].length+(tag?(' '+tag):'');
+  }
+  holeEl.replaceChildren();
+  hole.forEach(c=>{
+    if(landlord==null){const b=document.createElement('div');b.className='card back';b.textContent='牌';holeEl.appendChild(b)}
+    else holeEl.appendChild(makeCard(c));
+  });
+  tableEl.replaceChildren();
+  if(last){
+    const lab=document.createElement('div');lab.style.cssText='width:100%;text-align:center;font-weight:800';
+    lab.textContent=seatName(last.seat)+' 出了';tableEl.appendChild(lab);
+    last.cards.forEach(c=>tableEl.appendChild(makeCard(c)));
+  }else{
+    const lab=document.createElement('div');lab.style.fontWeight='800';lab.textContent=tableNote||'还没有人出牌';tableEl.appendChild(lab);
+  }
+  handEl.replaceChildren();
+  hands[0].forEach(c=>{
+    const b=makeCard(c,{on:sel.has(c.id)});
+    b.onclick=()=>{if(busy||phase!=='play'||turn!==0){if(phase==='bid')LTL.toast('先叫分');return}if(sel.has(c.id))sel.delete(c.id);else sel.add(c.id);hintAt=-1;paint()};
+    handEl.appendChild(b);
+  });
+  const bidding=phase==='bid';
+  document.getElementById('bidBtns').style.display=bidding?'contents':'none';
+  document.getElementById('playBtns').style.display=!bidding&&phase==='play'?'contents':'none';
+  let msg='准备发牌';
+  if(phase==='bid')msg=(bidTurn===0?'轮到你叫分':'等'+(bidTurn===1?'下家':'上家')+'叫分');
+  else if(phase==='play')msg=turn===0?(last&&last.seat!==0?'轮到你，压过上家或不出':'轮到你先出'):('等'+seatName(turn));
+  else if(phase==='over')msg='这局结束了';
+  document.getElementById('turn').textContent=msg;
+}
+function prevOf(seat){return last&&last.seat!==seat?last.cards:null}
+function act(seat,cards){
+  if(phase!=='play'||seat!==turn)return false;
+  if(!cards){
+    if(!prevOf(seat))return false;
+    passRun++;
+    tableNote=seatName(seat)+' 不出';
+    if(passRun>=2){turn=last.seat;last=null;passRun=0;tableNote=seatName(turn)+' 获得出牌权'}
+    else turn=(seat+1)%3;
+  }else{
+    const k=DDZ.classify(cards);
+    const prev=prevOf(seat);
+    if(!k||!DDZ.beats(k,prev?DDZ.classify(prev):null))return false;
+    const ids=new Set(cards.map(c=>c.id));
+    hands[seat]=hands[seat].filter(c=>!ids.has(c.id));
+    last={seat,cards,type:k.type};passRun=0;played[seat]++;tableNote='';
+    if(k.type==='bomb'||k.type==='rocket')bombs++;
+    if(seat===0)sel.clear();
+    if(!hands[seat].length){finish(seat);return true}
+    turn=(seat+1)%3;
+  }
+  hintAt=-1;save();paint();
+  if(phase==='play')schedule();
+  return true;
+}
+function finish(seat){
+  phase='over';
+  const lordWin=seat===landlord;
+  const farmersQuiet=[0,1,2].filter(i=>i!==landlord).every(i=>played[i]===0);
+  const spring=lordWin&&farmersQuiet;
+  const anti=!lordWin&&played[landlord]<=1;
+  const pts=bidHigh*(1<<bombs)*(spring||anti?2:1);
+  const humanWin=(lordWin&&landlord===0)||(!lordWin&&landlord!==0);
+  if(humanWin){wins++;localStorage.setItem('laotoule:ddz',String(wins))}
+  let text=(humanWin?'你赢了 ':'这局输了 ')+pts+' 分';
+  if(spring)text+='，春天';
+  if(anti)text+='，反春天';
+  if(bombs)text+='，炸弹 ×'+(1<<bombs);
+  document.getElementById('ovt').textContent=text;
+  ov.classList.add('show');
+  [523,659,784].forEach((f,i)=>setTimeout(()=>LTL.beep(f,.1,'triangle'),i*90));
+  save();paint();
+}
+function schedule(){
+  if(phase!=='play'||turn===0)return;
+  busy=true;
+  const seat=turn;
+  setTimeout(()=>{
+    if(phase!=='play'||turn!==seat){busy=false;return}
+    const prev=prevOf(seat);
+    const threat=[0,1,2].some(i=>i!==seat&&hands[i].length<=2);
+    let choice=DDZ.choose(hands[seat],prev,threat);
+    if(!choice&&!prev)choice=[hands[seat].slice().sort((a,b)=>a.r-b.r)[0]];
+    busy=false;
+    if(choice)act(seat,choice);else act(seat,null);
+  },420);
+}
+function speak(seat,v){
+  if(phase!=='bid'||seat!==bidTurn||busy)return;
+  if(v&&v<=bidHigh){LTL.toast('要高过 '+bidHigh+' 分');return}
+  bidSpoken++;
+  if(v>bidHigh){bidHigh=v;bidSeat=seat;tableNote=seatName(seat)+' 叫 '+v+' 分'}
+  else tableNote=seatName(seat)+' 不叫';
+  if(v===3||bidSpoken>=3){
+    if(!bidHigh){LTL.toast('没人叫分，重新发牌');deal();return}
+    landlord=bidSeat;
+    hands[landlord]=hands[landlord].concat(hole.map(c=>({...c})));
+    sortHand(hands[landlord]);
+    phase='play';turn=landlord;last=null;passRun=0;played=[0,0,0];bombs=0;
+    tableNote=seatName(landlord)+' 是地主，先出';
+    LTL.beep(560,.06,'square',.05);
+    save();paint();schedule();return;
+  }
+  bidTurn=(bidTurn+1)%3;save();paint();scheduleBid();
+}
+function scheduleBid(){
+  if(phase!=='bid'||bidTurn===0)return;
+  busy=true;
+  const seat=bidTurn;
+  setTimeout(()=>{
+    if(phase!=='bid'||bidTurn!==seat){busy=false;return}
+    const v=DDZ.bidOf(hands[seat],bidHigh);
+    busy=false;speak(seat,v);
+  },420);
+}
+function deal(){
+  const d=DDZ.deal(Math.random);
+  hands=d.hands.map(h=>h.map(c=>({...c})));
+  hands.forEach(sortHand);
+  hole=d.hole.map(c=>({...c}));
+  landlord=null;phase='bid';turn=0;bidHigh=0;bidSeat=null;bidSpoken=0;bidTurn=0;
+  last=null;passRun=0;played=[0,0,0];bombs=0;sel=new Set();hintAt=-1;busy=false;tableNote='底牌三张，先叫分';
+  ov.classList.remove('show');
+  save();paint();scheduleBid();
+}
+document.getElementById('p0').onclick=()=>speak(0,0);
+document.getElementById('p1').onclick=()=>speak(0,1);
+document.getElementById('p2').onclick=()=>speak(0,2);
+document.getElementById('p3').onclick=()=>speak(0,3);
+document.getElementById('play').onclick=()=>{
+  if(busy||phase!=='play'||turn!==0){LTL.toast('还没轮到你');return}
+  const cs=hands[0].filter(c=>sel.has(c.id));
+  if(!cs.length){LTL.toast('先点要出的牌');return}
+  if(!act(0,cs))LTL.toast(prevOf(0)?'压不住':'牌型不对');
+};
+document.getElementById('pass').onclick=()=>{
+  if(busy||phase!=='play'||turn!==0){LTL.toast('还没轮到你');return}
+  if(!act(0,null))LTL.toast('该你先出');
+};
+document.getElementById('hint').onclick=()=>{
+  if(busy||phase!=='play'||turn!==0)return;
+  const prev=prevOf(0);
+  const list=DDZ.moves(hands[0]).filter(cs=>DDZ.beats(DDZ.classify(cs),prev?DDZ.classify(prev):null));
+  if(!list.length){LTL.toast('没有能压的牌');return}
+  hintAt=(hintAt+1)%list.length;
+  sel=new Set(list[hintAt].map(c=>c.id));
+  paint();
+};
+document.getElementById('clear').onclick=()=>{sel.clear();hintAt=-1;paint()};
+document.getElementById('new').onclick=()=>deal();
+document.getElementById('again').onclick=()=>deal();
+wins=Number(localStorage.getItem('laotoule:ddz')||0);
+try{
+  const s=JSON.parse(localStorage.getItem('laotoule:ddzState')||'null');
+  if(!s||!s.hands||s.hands.length!==3)throw 0;
+  ({hands,hole,landlord,phase,turn,bidHigh,bidSeat,bidSpoken,bidTurn,last,passRun,played,bombs,tableNote}=s);
+  wins=s.wins||wins;sel=new Set();hintAt=-1;busy=false;
+  ov.classList.remove('show');
+  paint();
+  if(phase==='bid')scheduleBid();
+  if(phase==='play')schedule();
+  if(phase==='over')ov.classList.add('show');
+}catch(e){deal(false)}
+</script></body></html>

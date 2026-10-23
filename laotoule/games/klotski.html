@@ -1,0 +1,163 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>华容道 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+html,body{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#turn{font-size:1.15rem;font-weight:800;text-align:center;margin:2px 0 6px}
+#board{position:relative;width:min(94vw,calc((100dvh - var(--ltl-chrome, 0px) - 250px) * .8),520px);aspect-ratio:4/5;margin:6px auto;background:#5c3d2e;border:4px solid #222;border-radius:18px;box-shadow:inset 0 0 0 4px #c4a574;touch-action:none}
+.pc{position:absolute;box-sizing:border-box;border:2px solid #222;border-radius:14px;background:#fff center/cover no-repeat;box-shadow:0 4px 0 rgba(0,0,0,.35);display:flex;align-items:flex-end;justify-content:center;padding:0 0 4px;color:#fff;font-family:inherit}
+.pc.cao{box-shadow:0 0 0 4px #e6b325,0 4px 0 rgba(0,0,0,.35)}
+.pc.on{outline:4px solid #ffd43b;outline-offset:-6px}
+.pc:active{transform:scale(.97)}
+.pc span{background:rgba(0,0,0,.55);border-radius:8px;padding:0 6px;font-size:clamp(.85rem,3.2vw,1.1rem);font-weight:900;line-height:1.4}
+.lv .btn.on{background:#e8590c;color:#fff}
+#stage{position:relative}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🚪 华容道</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>步数</span><b id="steps">0</b></div><div class="stat"><span>最少</span><b id="best">--</b></div><div class="stat"><span>局面</span><b id="layName">横刀立马</b></div></div>
+<div id="turn">把曹操滑到最下面的出口</div>
+<div id="stage"><div id="board"></div><div class="overlay" id="ov"><div id="ovt">曹操出去了</div><button class="btn green" id="again" type="button">再来一局</button></div></div>
+<div class="controls lv"><button class="btn on" id="layClassic" type="button">横刀立马</button><button class="btn" id="layEasy" type="button">近在咫尺</button></div>
+<div class="dpad"><span></span><button class="btn blue" data-d="up" type="button">⬆</button><span></span><button class="btn blue" data-d="left" type="button">⬅</button><button class="btn blue" data-d="down" type="button">⬇</button><button class="btn blue" data-d="right" type="button">➡</button></div>
+<div class="controls"><button class="btn blue" id="hint" type="button">💡 提示</button><button class="btn" id="reset" type="button">↩ 重置</button><button class="btn green" id="new" type="button">🔄 重开</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>这是经典华容道。曹操是大方块，金边。把他滑到最底下中间的出口就赢。</li>
+<li>点一下棋子，再点它前进方向上的空格；也可以按住滑动，或点方向键，一次走一格。直路上没有挡的话，可以一次滑过好几格，只算一步。</li>
+<li>牌面是原创插画：曹操、关羽、张飞、赵云、马超、黄忠和小兵，每人样子都不一样。</li>
+<li>横刀立马是经典开局。近在咫尺更短。最少步数会记住。</li>
+</ul></div>
+</div>
+<script src="klotski.engine.js"></script>
+<script src="../common.js"></script>
+<script>
+let layout='classic',pieces=[],sel=null,steps=0,busy=false;
+const board=document.getElementById('board'),ov=document.getElementById('ov');
+const DIR={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]};
+function lay(){return KLOTSKI.LAYOUTS.find(l=>l.id===layout)||KLOTSKI.LAYOUTS[0]}
+function bestKey(){return layout==='classic'?'laotoule:klot':'laotoule:klotEasy'}
+function showBest(){const v=localStorage.getItem(bestKey());document.getElementById('best').textContent=v&&Number(v)>0?v:'--'}
+function save(){
+  localStorage.setItem('laotoule:klotState',JSON.stringify({layout,pieces,steps,sel}));
+  showBest();
+}
+function paint(){
+  board.replaceChildren();
+  for(const p of pieces){
+    const el=document.createElement('button');
+    el.type='button';
+    el.className='pc '+p.kind+(sel===p.id?' on':'');
+    el.style.left='calc('+(p.x/4*100)+'% + 3px)';
+    el.style.top='calc('+(p.y/5*100)+'% + 3px)';
+    el.style.width='calc('+(p.w/4*100)+'% - 6px)';
+    el.style.height='calc('+(p.h/5*100)+'% - 6px)';
+    el.style.backgroundImage='url(assets/klotski/'+p.img+')';
+    const nm=document.createElement('span');nm.textContent=p.name;el.appendChild(nm);
+    el.addEventListener('pointerdown',e=>grab(e,p.id));
+    board.appendChild(el);
+  }
+  document.getElementById('steps').textContent=steps;
+  document.getElementById('layName').textContent=lay().name;
+  document.getElementById('turn').textContent=KLOTSKI.won(pieces)?'曹操已经到出口了':'把曹操滑到最下面的出口';
+  document.getElementById('layClassic').classList.toggle('on',layout==='classic');
+  document.getElementById('layEasy').classList.toggle('on',layout==='easy');
+  showBest();
+}
+function boot(id,keep){
+  layout=id||layout;
+  const src=lay();
+  if(keep&&keep.pieces){pieces=KLOTSKI.clone(keep.pieces);steps=keep.steps||0;sel=keep.sel||null}
+  else{pieces=KLOTSKI.clone(src.pieces);steps=0;sel=null}
+  ov.classList.remove('show');
+  paint();save();
+}
+function commit(id,dx,dy){
+  if(busy||KLOTSKI.won(pieces))return;
+  let moved=null,adx=0,ady=0;
+  const sx=Math.sign(dx),sy=Math.sign(dy),dist=Math.max(Math.abs(dx),Math.abs(dy));
+  for(let d=dist;d>=1;d--){
+    const n=KLOTSKI.tryMove(pieces,id,sx*d,sy*d);
+    if(n){moved=n;adx=sx*d;ady=sy*d;break}
+  }
+  if(!moved){LTL.toast('这边过不去');return}
+  pieces=moved;steps++;sel=id;LTL.beep(520,.04,'square',.04);
+  if(KLOTSKI.won(pieces)){
+    const prev=Number(localStorage.getItem(bestKey())||0);
+    if(!prev||steps<prev)localStorage.setItem(bestKey(),String(steps));
+    document.getElementById('ovt').textContent='曹操出去了！用了 '+steps+' 步';
+    ov.classList.add('show');
+    [523,659,784].forEach((f,i)=>setTimeout(()=>LTL.beep(f,.1,'triangle'),i*90));
+  }
+  paint();save();
+}
+function tryCell(id,cx,cy){
+  const p=pieces.find(q=>q.id===id);if(!p)return;
+  let dx=0,dy=0;
+  if(cx>=p.x&&cx<p.x+p.w){
+    if(cy<p.y)dy=cy-p.y;else if(cy>=p.y+p.h)dy=cy-(p.y+p.h-1);
+  }else if(cy>=p.y&&cy<p.y+p.h){
+    if(cx<p.x)dx=cx-p.x;else if(cx>=p.x+p.w)dx=cx-(p.x+p.w-1);
+  }
+  if(!dx&&!dy){sel=id;paint();return}
+  commit(id,dx,dy);
+}
+function grab(e,id){
+  if(e.button!=null&&e.button!==0)return;
+  e.preventDefault();
+  const x0=e.clientX,y0=e.clientY,pid=e.pointerId;
+  const el=e.currentTarget;
+  const move=ev=>{if(ev.pointerId===pid)ev.preventDefault()};
+  const up=ev=>{
+    if(ev.pointerId!==pid)return;
+    el.removeEventListener('pointermove',move);
+    el.removeEventListener('pointerup',up);
+    el.removeEventListener('pointercancel',up);
+    const dx=ev.clientX-x0,dy=ev.clientY-y0;
+    if(Math.hypot(dx,dy)<18){sel=sel===id?null:id;paint();save();return}
+    const cell=board.getBoundingClientRect().width/4;
+    let mx=0,my=0;
+    if(Math.abs(dx)>Math.abs(dy))mx=Math.round(dx/cell)||Math.sign(dx);
+    else my=Math.round(dy/cell)||Math.sign(dy);
+    commit(id,mx,my);
+  };
+  el.addEventListener('pointermove',move,{passive:false});
+  el.addEventListener('pointerup',up);
+  el.addEventListener('pointercancel',up);
+}
+board.addEventListener('pointerdown',e=>{
+  if(e.target!==board)return;
+  if(!sel){LTL.toast('先点一个棋子');return}
+  const r=board.getBoundingClientRect();
+  const cx=Math.floor((e.clientX-r.left)/r.width*4);
+  const cy=Math.floor((e.clientY-r.top)/r.height*5);
+  if(cx<0||cy<0||cx>3||cy>4)return;
+  tryCell(sel,cx,cy);
+});
+document.querySelectorAll('.dpad button').forEach(b=>b.onclick=()=>{
+  if(!sel){LTL.toast('先点一个棋子');return}
+  const [dx,dy]=DIR[b.dataset.d];
+  commit(sel,dx,dy);
+});
+document.getElementById('hint').onclick=()=>{
+  if(busy||KLOTSKI.won(pieces))return;
+  busy=true;LTL.toast('正在找下一步',2200);
+  setTimeout(()=>{
+    const h=KLOTSKI.hint(pieces);
+    busy=false;
+    if(!h){LTL.toast('这一步走不通');return}
+    const p=pieces.find(q=>q.id===h.id);
+    LTL.toast((p?p.name:'棋子')+'往'+(h.dx>0?'右':h.dx<0?'左':h.dy>0?'下':'上'));
+    commit(h.id,h.dx,h.dy);
+  },40);
+};
+document.getElementById('layClassic').onclick=()=>boot('classic');
+document.getElementById('layEasy').onclick=()=>boot('easy');
+document.getElementById('reset').onclick=()=>boot(layout);
+document.getElementById('new').onclick=()=>boot(layout);
+document.getElementById('again').onclick=()=>boot(layout);
+try{
+  const s=JSON.parse(localStorage.getItem('laotoule:klotState')||'null');
+  if(!s||!s.pieces)throw 0;
+  boot(s.layout,s);
+  if(KLOTSKI.won(pieces))ov.classList.add('show');
+}catch(e){boot('classic')}
+</script></body></html>

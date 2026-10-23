@@ -1,0 +1,179 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>纸牌接龙 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+html,body{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+#turn{font-size:1.05rem;font-weight:800;text-align:center;margin:2px 0 4px}
+#top{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;max-width:640px;margin:0 auto}
+#tab{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;max-width:640px;margin:8px auto 0}
+.pile{position:relative;min-height:64px}
+.slot,.cd{width:100%;border-radius:8px;border:2px solid #222;box-sizing:border-box;font-family:inherit;font-weight:900;padding:0}
+.slot{aspect-ratio:5/7;background:#e9ecef;color:#868e96;font-size:clamp(.7rem,3vw,1rem)}
+.slot.back{background:#1971c2;color:#fff}
+.cd{position:relative;aspect-ratio:5/7;background:#fff;color:#222;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-size:clamp(.72rem,3.1vw,1.05rem);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.cd.abs{position:absolute;left:0;right:0;aspect-ratio:auto}
+.cd.red{color:#e03131}
+.cd.back{background:#1971c2;color:#fff}
+.cd.on{outline:3px solid #ffd43b;outline-offset:-3px;z-index:3}
+.lv .btn.on{background:#e8590c;color:#fff}
+#stage{position:relative}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🃏 纸牌接龙</h1></div>
+<div class="wrap">
+<div class="stats"><div class="stat"><span>用时</span><b id="time">0:00</b></div><div class="stat"><span>步数</span><b id="moves">0</b></div><div class="stat"><span>最快</span><b id="best">--</b></div></div>
+<div id="turn">点牌，再点要放的位置</div>
+<div id="stage"><div id="top"></div><div id="tab"></div><div class="overlay" id="ov"><div id="ovt">接龙完成</div><button class="btn green" id="again" type="button">再来一局</button></div></div>
+<div class="controls lv"><button class="btn on" id="d1" type="button">翻 1 张</button><button class="btn" id="d3" type="button">翻 3 张</button><button class="btn" id="undo" type="button">↩️ 撤销</button><button class="btn blue" id="hint" type="button">💡 提示</button><button class="btn green" id="new" type="button">🔄 重开</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>七列牌，从 A 收到右上角四个花色位，一直收到 K 就赢。</li>
+<li>下面的牌要红黑交替、从大到小。空列只能放 K。点一张，再点要放的列或花色位。连点两下，能收的牌会自动收上去。</li>
+<li>左上角是牌堆，可以一次翻 1 张或 3 张。翻完会把弃牌翻回来。走错了可以撤销。最快时间会记住。</li>
+</ul></div>
+</div>
+<script src="klondike.engine.js"></script>
+<script src="../common.js"></script>
+<script>
+const SU=['♠','♥','♣','♦'],RN=['','A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let st,sel,undo,drawN,tBase,tRun,t0,timer,wonFlag,lastTap;
+const topEl=document.getElementById('top'),tabEl=document.getElementById('tab'),ov=document.getElementById('ov');
+function fmt(ms){const s=Math.max(0,Math.floor(ms/1000));return Math.floor(s/60)+':'+(s%60<10?'0':'')+(s%60)}
+function elapsed(){return tBase+(tRun?Date.now()-t0:0)}
+function paintTime(){document.getElementById('time').textContent=fmt(elapsed())}
+function startClock(){if(tRun||wonFlag)return;tRun=true;t0=Date.now();timer=setInterval(paintTime,250)}
+function stopClock(){if(tRun){tBase=elapsed();tRun=false;clearInterval(timer)}paintTime()}
+function showBest(){const v=Number(localStorage.getItem('laotoule:klon')||0);document.getElementById('best').textContent=v?fmt(v*1000):'--'}
+function save(){
+  localStorage.setItem('laotoule:klonDraw',String(drawN));
+  localStorage.setItem('laotoule:klonState',JSON.stringify({st,sel,tBase:elapsed(),wonFlag,drawN}));
+  showBest();
+}
+function label(c){return RN[c.r]+SU[c.s]}
+function cardBtn(c,on,abs){
+  const b=document.createElement('button');
+  b.type='button';
+  b.className='cd'+(abs?' abs':'')+(c.s%2?' red':'')+(on?' on':'')+(!c.up?' back':'');
+  if(c.up){const t=document.createElement('b');t.textContent=RN[c.r];const s=document.createElement('i');s.style.fontStyle='normal';s.textContent=SU[c.s];b.append(t,s)}
+  return b;
+}
+function layout(){
+  document.querySelectorAll('#tab .pile').forEach(col=>{
+    const cards=[...col.querySelectorAll('.cd')];
+    const w=col.clientWidth||40,h=Math.round(w*1.38),step=Math.max(14,Math.round(h*0.32));
+    col.style.height=(h+Math.max(0,cards.length-1)*step)+'px';
+    cards.forEach((el,i)=>{el.style.top=(i*step)+'px';el.style.height=h+'px'});
+  });
+}
+function paint(){
+  document.getElementById('moves').textContent=st.moves;
+  document.getElementById('d1').classList.toggle('on',drawN===1);
+  document.getElementById('d3').classList.toggle('on',drawN===3);
+  paintTime();showBest();
+  topEl.replaceChildren();
+  const stock=document.createElement('button');stock.type='button';
+  stock.className='slot'+(st.stock.length?' back':'');
+  stock.textContent=st.stock.length?String(st.stock.length):'↻';
+  stock.onclick=doDraw;topEl.appendChild(stock);
+  const waste=document.createElement('div');waste.className='pile';
+  const w=st.waste[st.waste.length-1];
+  if(w){const b=cardBtn(w,sel&&sel.z==='w');b.onclick=()=>tap({z:'w'});waste.appendChild(b)}
+  else{const e=document.createElement('div');e.className='slot';waste.appendChild(e)}
+  topEl.appendChild(waste);
+  for(let s=0;s<4;s++){
+    const pile=st.found[s],c=pile[pile.length-1];
+    const b=c?cardBtn(c,sel&&sel.z==='f'&&sel.suit===s):document.createElement('button');
+    if(!c){b.type='button';b.className='slot';b.textContent='A'+SU[s]}
+    b.onclick=()=>tap(c?{z:'f',suit:s}:{z:'f',suit:s,empty:1});
+    topEl.appendChild(b);
+  }
+  tabEl.replaceChildren();
+  st.tab.forEach((col,ci)=>{
+    const box=document.createElement('div');box.className='pile';
+    if(!col.length){
+      const e=document.createElement('button');e.type='button';e.className='slot';e.textContent='K';
+      e.onclick=()=>tap({z:'t',col:ci,empty:1});box.appendChild(e);
+    }
+    col.forEach((c,i)=>{
+      const b=cardBtn(c,sel&&sel.z==='t'&&sel.col===ci&&sel.index===i,true);
+      if(c.up)b.onclick=()=>tap({z:'t',col:ci,index:i});
+      box.appendChild(b);
+    });
+    tabEl.appendChild(box);
+  });
+  requestAnimationFrame(layout);
+}
+function same(a,b){return a&&b&&a.z===b.z&&a.col===b.col&&a.index===b.index&&a.suit===b.suit&&!a.empty&&!b.empty}
+function pushUndo(){undo.push(KLON.clone(st));if(undo.length>80)undo.shift()}
+function changed(){
+  st.moves++;sel=null;startClock();
+  if(KLON.won(st)){
+    wonFlag=true;stopClock();
+    const sec=Math.max(1,Math.round(elapsed()/1000));
+    const prev=Number(localStorage.getItem('laotoule:klon')||0);
+    if(!prev||sec<prev)localStorage.setItem('laotoule:klon',String(sec));
+    document.getElementById('ovt').textContent='接龙完成！用时 '+fmt(sec*1000);
+    ov.classList.add('show');
+    [523,659,784].forEach((f,i)=>setTimeout(()=>LTL.beep(f,.1,'triangle'),i*90));
+  }
+  save();paint();
+}
+function doMove(fn){
+  if(wonFlag)return false;
+  pushUndo();
+  if(!fn()){undo.pop();return false}
+  changed();return true;
+}
+function doDraw(){
+  if(!doMove(()=>KLON.apply(st,{t:'draw'})))LTL.toast('没有牌可翻');
+}
+function sendHome(from){
+  if(from.z==='w')return KLON.apply(st,{t:'w-f'});
+  if(from.z==='t'&&from.index===st.tab[from.col].length-1)return KLON.apply(st,{t:'t-f',col:from.col});
+  return false;
+}
+function tryMove(from,to){
+  if(from.z==='w'&&to.z==='f')return KLON.apply(st,{t:'w-f'});
+  if(from.z==='w'&&to.z==='t')return KLON.apply(st,{t:'w-t',to:to.col});
+  if(from.z==='t'&&to.z==='f'&&from.index===st.tab[from.col].length-1)return KLON.apply(st,{t:'t-f',col:from.col});
+  if(from.z==='t'&&to.z==='t')return KLON.apply(st,{t:'t-t',from:from.col,index:from.index,to:to.col});
+  if(from.z==='f'&&to.z==='t')return KLON.apply(st,{t:'f-t',suit:from.suit,to:to.col});
+  return false;
+}
+function tap(target){
+  if(wonFlag)return;
+  const k=JSON.stringify(target),now=Date.now(),dbl=now-lastTap.t<380&&lastTap.k===k;
+  lastTap={t:now,k};
+  if(dbl&&doMove(()=>sendHome(target)))return;
+  if(sel&&doMove(()=>tryMove(sel,target)))return;
+  if(sel&&same(sel,target)){sel=null;paint();return}
+  if(target.empty){LTL.toast(sel?'这里放不了':'先点一张明牌');return}
+  sel=target;paint();save();
+}
+function fresh(seed){
+  stopClock();
+  st=KLON.fresh(seed>>>0,drawN);sel=null;undo=[];tBase=0;tRun=false;t0=0;wonFlag=false;lastTap={t:0,k:''};
+  ov.classList.remove('show');
+  document.getElementById('turn').textContent=drawN===3?'一次翻 3 张':'一次翻 1 张';
+  save();paint();
+}
+document.getElementById('d1').onclick=()=>{drawN=1;fresh(Date.now())};
+document.getElementById('d3').onclick=()=>{drawN=3;fresh(Date.now())};
+document.getElementById('undo').onclick=()=>{
+  const p=undo.pop();if(!p){LTL.toast('没有可撤销的');return}
+  st=p;sel=null;wonFlag=false;ov.classList.remove('show');save();paint();
+};
+document.getElementById('hint').onclick=()=>{
+  const h=KLON.hint(st);
+  if(!h){LTL.toast('现在没有合适的步');return}
+  if(!doMove(()=>KLON.apply(st,h)))LTL.toast('这一步走不了');
+};
+document.getElementById('new').onclick=()=>fresh(Date.now());
+document.getElementById('again').onclick=()=>fresh(Date.now());
+addEventListener('resize',()=>requestAnimationFrame(layout));
+drawN=Number(localStorage.getItem('laotoule:klonDraw')||1)===3?3:1;
+try{
+  const s=JSON.parse(localStorage.getItem('laotoule:klonState')||'null');
+  if(!s||!s.st||!s.st.tab)throw 0;
+  st=s.st;sel=s.sel||null;undo=[];drawN=s.drawN===3?3:drawN;tBase=s.tBase||0;tRun=false;wonFlag=!!s.wonFlag;lastTap={t:0,k:''};
+  if(wonFlag)ov.classList.add('show');
+  paint();
+}catch(e){fresh((Date.now()%100000)+1)}
+</script></body></html>
