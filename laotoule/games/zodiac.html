@@ -6,6 +6,10 @@
 .mover{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
 .mover .btn{min-width:92px}
 #drop{min-width:148px;font-size:1.15rem}
+#hammer{min-width:158px}
+#hammer.off{opacity:.4;filter:grayscale(.65)}
+#hammer.arm{background:#ff922b;outline:4px solid #e8590c;outline-offset:2px}
+#stage.picking{box-shadow:0 0 0 4px #e8590c,0 6px 0 #222}
 #nextCv{width:74px;height:74px;background:#fff;border-radius:14px;border:3px solid #222;display:block}
 .preview b{font-size:1rem}
 .cele{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(40,16,0,.42)}
@@ -32,6 +36,7 @@
   <button class="btn blue" id="left" type="button">⬅ 左移</button>
   <button class="btn green" id="drop" type="button">⬇ 放下</button>
   <button class="btn blue" id="right" type="button">右移 ➡</button>
+  <button class="btn" id="hammer" type="button">🔨 锤子 10</button>
 </div>
 <div class="controls"><button class="btn" id="restart" type="button">🔄 重新开始</button></div>
 <div class="help"><h2>📖 怎么玩</h2><ul>
@@ -40,6 +45,7 @@
 <li>掉下来的大多是鼠、牛、虎、兔。龙、蛇、马也会偶尔出现，越往后越少。羊和更大的只能靠合成。</li>
 <li>两只<b>猪</b>合成一只<b>龙猪</b>（比猪小，长着龙角）。两只龙猪再碰到会一起飞走，再奖励一大笔分，并有庆祝画面。首页关掉声音后，庆祝也不响。</li>
 <li>生肖停在顶上的<b>红线</b>上方大约 2 秒，这局就结束。</li>
+<li><b>锤子</b>一局最多 10 次，次数写在按钮上。点锤子，再点一只小动物，它会直接消失，并扣掉这只分数的两倍。扣完会变成负数就不能砸，按钮会变灰。砸掉以后上面的会掉下来，照旧合成。用完 10 次要等下一局。</li>
 </ul></div>
 </div>
 <div class="cele" id="cele" hidden>
@@ -79,7 +85,9 @@ function info(level){return level>=12?{n:'龙猪',v:PEARL_V,c:'#ffd8a8'}:Z[level
 const stage=document.getElementById('stage'),cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const nextCv=document.getElementById('nextCv'),nctx=nextCv.getContext('2d');
 const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),ov=document.getElementById('ov');
+const HAMMER_MAX=10;
 let bodies=[],score=0,over=false,aimX=WORLD_W/2,current=0,next=0,cooling=0,dangerT=0,floaters=[];
+let hammers=HAMMER_MAX,hammerOn=false,hammerSig='';
 let acc=0,last=performance.now(),celebrateOn=false,bits=[],cheer=null;
 const keys={};
 const cele=document.getElementById('cele'),fx=document.getElementById('fx'),celeCv=document.getElementById('celeCv');
@@ -96,8 +104,63 @@ function makeBody(level,x,y){
 function clampAim(){const r=radiusFor(current);aimX=Math.max(r+2,Math.min(WORLD_W-r-2,aimX))}
 function hitsAny(x,y,r){return bodies.some(b=>{const dx=b.x-x,dy=b.y-y;return dx*dx+dy*dy<(r+b.r-3)*(r+b.r-3)})}
 function addScore(n){score+=n;scoreEl.textContent=score;if(LTL.record('zodiac',score))bestEl.textContent=score}
+function minHammerCost(){
+  if(!bodies.length)return 4;
+  let m=Infinity;
+  for(const b of bodies)m=Math.min(m,info(b.level).v*2);
+  return m;
+}
+function hammerBlocked(){
+  if(hammers<=0)return '用完';
+  if(score<=0||score<minHammerCost())return '不够';
+  return '';
+}
+function paintHammer(){
+  const el=document.getElementById('hammer');
+  if(!el)return;
+  const why=hammerBlocked();
+  const sig=(hammerOn?'1':'0')+'|'+hammers+'|'+why+'|'+score+'|'+(over?'o':'')+'|'+(celebrateOn?'c':'');
+  if(sig===hammerSig)return;
+  hammerSig=sig;
+  el.textContent=hammerOn?('🎯 点一只 · '+hammers):('🔨 锤子 '+hammers);
+  el.classList.toggle('off',!!why&&!hammerOn);
+  el.classList.toggle('arm',hammerOn&&!over&&!celebrateOn);
+  stage.classList.toggle('picking',hammerOn&&!over&&!celebrateOn);
+}
+function toggleHammer(){
+  if(over||celebrateOn)return;
+  if(hammerOn){hammerOn=false;paintHammer();return}
+  const why=hammerBlocked();
+  if(why==='用完'){LTL.toast('锤子这局用完了');return}
+  if(why){LTL.toast('分数不够扣，不能砸');return}
+  if(!bodies.length){LTL.toast('场上还没有小动物');return}
+  hammerOn=true;paintHammer();
+  LTL.toast('点一只小动物，扣掉它分数的两倍');
+}
+function smashAt(x,y){
+  if(!hammerOn||over||celebrateOn)return false;
+  let bestI=-1,bestD=1e9;
+  for(let i=0;i<bodies.length;i++){
+    const b=bodies[i],d=Math.hypot(b.x-x,b.y-y);
+    if(d<=b.r+1&&d<bestD){bestD=d;bestI=i}
+  }
+  if(bestI<0){LTL.toast('点在小动物身上');return false}
+  const b=bodies[bestI],cost=info(b.level).v*2;
+  if(score<cost){LTL.toast('要扣 '+cost+' 分，分数不够');return false}
+  score-=cost;
+  scoreEl.textContent=String(score);
+  bodies.splice(bestI,1);
+  hammers--;
+  hammerOn=false;
+  floaters.push({x:b.x,y:b.y-b.r,text:'-'+cost,life:1,c:'#c92a2a'});
+  LTL.beep(160,.07,'square',.05);
+  LTL.toast(hammers>0?('砸掉了，还剩 '+hammers+' 次'):'锤子用完了');
+  paintHammer();
+  return true;
+}
 
 function drop(){
+  if(hammerOn){LTL.toast('先点一只小动物，或再点锤子取消');return}
   if(over||celebrateOn||cooling>0)return;
   clampAim();
   const r=radiusFor(current),y=r+6;
@@ -110,8 +173,10 @@ function restart(force){
   if(!force&&score>0&&!over&&!celebrateOn&&!confirm('确定重新开始吗？'))return;
   bodies=[];score=0;over=false;dangerT=0;cooling=0;floaters=[];cheer=null;
   celebrateOn=false;bits=[];cele.hidden=true;cele.classList.remove('flash');
+  hammers=HAMMER_MAX;hammerOn=false;
   current=randomLow();next=randomLow();aimX=WORLD_W/2;
   scoreEl.textContent='0';ov.classList.remove('show');
+  paintHammer();
 }
 function burst(){
   bits=[];
@@ -136,7 +201,7 @@ function fanfare(){
   [523,659,784,1046,1318].forEach((f,i)=>setTimeout(()=>LTL.beep(f,.14,'triangle',.07),i*110));
 }
 function startCele(kind){
-  celebrateOn=true;
+  celebrateOn=true;hammerOn=false;paintHammer();
   document.getElementById('celet').textContent=kind==='gone'?'两只龙猪飞走啦！':'合成龙猪啦！';
   document.getElementById('celesub').textContent=kind==='gone'?'再奖励 '+PEARL_BONUS+' 分':'这是最高一级';
   paintHero();burst();
@@ -210,9 +275,11 @@ function mergePass(){
 }
 function update(dt){
   if(over||celebrateOn)return;
+  if(!hammerOn){
   if(keys.ArrowLeft||keys.a||keys.A)aimX-=260*dt;
   if(keys.ArrowRight||keys.d||keys.D)aimX+=260*dt;
   clampAim();
+  }
   if(cooling>0)cooling-=dt;
   for(const b of bodies){
     b.age+=dt;b.vy+=2100*dt;b.vx*=Math.pow(0.15,dt);
@@ -235,7 +302,7 @@ function update(dt){
   for(const b of bodies)if(b.calm>0.4&&b.y-b.r<DANGER_Y)threat=true;
   dangerT=threat?dangerT+dt:Math.max(0,dangerT-dt);
   if(dangerT>=2){
-    over=true;
+    over=true;hammerOn=false;
     document.getElementById('ovt').textContent='生肖堆过线啦，得分 '+score;
     ov.classList.add('show');
     LTL.beep(140,.4,'sawtooth',.05);
@@ -342,14 +409,19 @@ function draw(){
   ctx.fillText(dangerT>0?'快满出来了':'危险线',12,DANGER_Y-4);
   const t=performance.now()/1000;
   for(const b of bodies)drawAnimal(ctx,b.x,b.y,b.r,b.level,Math.max(0,b.pop),t);
-  if(!over){
+  if(hammerOn&&!over){
+    ctx.fillStyle='#e8590c';ctx.font='800 18px sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText('点一只砸掉 · 还剩 '+hammers+' 次',WORLD_W/2,8);
+  }
+  if(!over&&!hammerOn){
     const r=radiusFor(current);
     ctx.globalAlpha=.35;ctx.strokeStyle='#868e96';ctx.lineWidth=2;ctx.setLineDash([4,6]);
     ctx.beginPath();ctx.moveTo(aimX,r+6);ctx.lineTo(aimX,WORLD_H-8);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
     drawAnimal(ctx,aimX,r+6,r,current,0,t);
   }
   ctx.font='800 20px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-  for(const f of floaters){ctx.globalAlpha=Math.max(0,f.life);ctx.fillStyle='#e8590c';ctx.fillText(f.text,f.x,f.y);ctx.globalAlpha=1}
+  for(const f of floaters){ctx.globalAlpha=Math.max(0,f.life);ctx.fillStyle=f.c||'#e8590c';ctx.fillText(f.text,f.x,f.y);ctx.globalAlpha=1}
+  paintHammer();
   nctx.setTransform(1,0,0,1,0,0);nctx.clearRect(0,0,148,148);
   nctx.fillStyle='#fff';nctx.fillRect(0,0,148,148);
   drawAnimal(nctx,74,70,40,next,0,t);
@@ -369,10 +441,12 @@ function bindHold(btn,dir){
   const stop=()=>clearInterval(timer);
   btn.addEventListener('pointerup',stop);btn.addEventListener('pointerleave',stop);btn.addEventListener('pointercancel',stop);
 }
-stage.addEventListener('pointerdown',e=>{if(over)return;aimX=(e.clientX-stage.getBoundingClientRect().left)/stage.clientWidth*WORLD_W;clampAim();stage.setPointerCapture(e.pointerId)});
-stage.addEventListener('pointermove',e=>{if(!stage.hasPointerCapture(e.pointerId)||over)return;aimX=(e.clientX-stage.getBoundingClientRect().left)/stage.clientWidth*WORLD_W;clampAim()});
-stage.addEventListener('pointerup',e=>{if(over)return;aimX=(e.clientX-stage.getBoundingClientRect().left)/stage.clientWidth*WORLD_W;drop()});
+function stageXY(e){const r=stage.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*WORLD_W,y:(e.clientY-r.top)/r.height*WORLD_H}}
+stage.addEventListener('pointerdown',e=>{if(over||hammerOn)return;aimX=stageXY(e).x;clampAim();stage.setPointerCapture(e.pointerId)});
+stage.addEventListener('pointermove',e=>{if(hammerOn||!stage.hasPointerCapture(e.pointerId)||over)return;aimX=stageXY(e).x;clampAim()});
+stage.addEventListener('pointerup',e=>{if(over)return;if(hammerOn){const p=stageXY(e);smashAt(p.x,p.y);return}aimX=stageXY(e).x;drop()});
 document.getElementById('drop').onclick=()=>drop();
+document.getElementById('hammer').onclick=()=>toggleHammer();
 bindHold(document.getElementById('left'),-1);
 bindHold(document.getElementById('right'),1);
 document.getElementById('again').onclick=()=>restart(true);
@@ -398,7 +472,12 @@ window.__ZODIAC={
   drop,restart(force){restart(!!force)},
   randomLow,weights:DROP_W.slice(),
   celebrating(){return celebrateOn},
-  spawn(level,x,y){const b=makeBody(level,x,y);b.pop=0;b.age=1;bodies.push(b);return {level:b.level,r:b.r}},
-  clear(){bodies=[]}
+  spawn(level,x,y){const b=makeBody(level,x,y);b.pop=0;b.age=1;bodies.push(b);return {level:b.level,r:b.r,v:info(level).v}},
+  clear(){bodies=[]},
+  get hammers(){return hammers},get hammerOn(){return hammerOn},
+  setScore(n){score=n;scoreEl.textContent=String(score);hammerSig='';paintHammer()},
+  arm(){if(!hammerOn)toggleHammer();return hammerOn},
+  cancel(){hammerOn=false;paintHammer()},
+  smash:smashAt,cost(level){return info(level).v*2}
 };
 </script></body></html>

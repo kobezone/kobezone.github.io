@@ -1,4 +1,4 @@
-const VERSION='laotoule-v2.1';
+const VERSION='laotoule-v2.2';
 const FILES=['./','index.html','style.css','common.js','settings.html','changelog.html','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png',
 'games/2048.html','games/pelican.html','games/snake.html','games/minesweeper.html','games/tetris.html','games/gomoku.html','games/memory.html','games/whack.html','games/zodiac.html','games/tank.html','games/mota.html','games/ninja.html','games/sokoban.html','games/lianliankan.html','games/bloxblock.html','games/spider.html',
 'games/xiangqi.html','games/xiangqi.engine.js','games/sudoku.html','games/sudoku.engine.js','games/24.html','games/tf24.engine.js','games/bigtext.html',
