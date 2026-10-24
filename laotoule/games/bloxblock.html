@@ -1,7 +1,7 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>滚砖块 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#stage{position:relative;width:min(96vw,640px);height:min(calc(100vh - var(--ltl-chrome, 0px) - 260px),520px);margin:0 auto;border:3px solid #222;border-radius:16px;overflow:hidden;background:#222;touch-action:none;box-shadow:0 6px 0 #222}
+#stage{position:relative;width:min(96vw,640px);height:min(calc(100vh - var(--ltl-chrome, 0px) - 260px),520px);margin:0 auto;border:3px solid #1a120c;border-radius:16px;overflow:hidden;background:#1a120c;touch-action:none;box-shadow:0 6px 0 #1a120c,inset 0 0 24px rgba(0,0,0,.45)}
 #cv{width:100%;height:100%;display:block}
 #lname{text-align:center;font-size:1.35rem;font-weight:800;margin:0 0 8px}
 #levels{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
@@ -31,7 +31,7 @@
 <li>蓝色砖是 <b>1×1×2</b> 的长条。方向键、大箭头，或在画面上<b>滑动</b>，它就朝那边滚。可以立着，也可以横躺、纵躺。</li>
 <li>滚出地面就掉下去。橙色格子比较脆，<b>躺着可以压，立上去会碎</b>。</li>
 <li>绿色「踏」随便压到就会变。红色「立」<b>必须立在上面</b>才变。变了之后，黑缺口会补上蓝桥，有的桥会收回去。</li>
-<li>黄格子中间是洞。砖要<b>立着</b>滚进洞里才算过关。一共 12 关，可以点下面的数字换关。</li>
+<li>黄格子中间是洞。砖要<b>立着</b>滚进洞里才算过关。一共 12 关，可以点下面的数字换关。砖和地面画成立体的，怎么滚没有变。</li>
 </ul></div>
 </div>
 <script src="../common.js"></script>
@@ -194,35 +194,102 @@ function roundRect(x,y,w,h,r){
   ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
   ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
+function slabColors(kind){
+  if(kind==='soft') return {hi:'#d3f9d8',top:'#69db7c',front:'#2b8a3e',side:'#1b6b2e'};
+  if(kind==='hard') return {hi:'#ffc9c9',top:'#ff8787',front:'#c92a2a',side:'#9c1d1d'};
+  if(kind==='frag') return {hi:'#ffe8cc',top:'#ff922b',front:'#d9480f',side:'#b33b08'};
+  if(kind==='goal') return {hi:'#fff3bf',top:'#ffd43b',front:'#e67700',side:'#c45c00'};
+  if(kind==='bridge') return {hi:'#d0ebff',top:'#74c0fc',front:'#1c7ed6',side:'#1864ab'};
+  return {hi:'#fff6e8',top:'#f3d2a8',front:'#c49a6c',side:'#a07848'};
+}
+function drawPit(px,py,S){
+  ctx.fillStyle='#120c08';
+  roundRect(px+S*.08,py+S*.12,S*.84,S*.78,S*.12); ctx.fill();
+  ctx.strokeStyle='rgba(0,0,0,.55)'; ctx.lineWidth=Math.max(2,S*.05);
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.05)';
+  ctx.beginPath(); ctx.ellipse(px+S*.5,py+S*.42,S*.22,S*.08,0,0,6.3); ctx.fill();
+}
+function drawSlab(px,py,S,col){
+  const m=S*.07, thick=S*.16;
+  const x=px+m, y=py+m*.35, w=S-m*2, h=S-m*1.15-thick;
+  ctx.fillStyle='rgba(0,0,0,.38)';
+  roundRect(x+S*.07, y+thick*.7, w, h, S*.08); ctx.fill();
+  ctx.fillStyle=col.side;
+  roundRect(x+S*.05, y+thick, w-S*.05, h, S*.08); ctx.fill();
+  ctx.fillStyle=col.front;
+  roundRect(x, y+thick*.72, w-S*.05, h, S*.08); ctx.fill();
+  const g=ctx.createLinearGradient(x,y,x+w*.2,y+h);
+  g.addColorStop(0,col.hi); g.addColorStop(.22,col.top); g.addColorStop(1,col.top);
+  ctx.fillStyle=g;
+  roundRect(x, y, w-S*.05, h, S*.1); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.7)'; ctx.lineWidth=Math.max(1.4,S*.03);
+  ctx.beginPath(); ctx.moveTo(x+S*.14, y+S*.07); ctx.lineTo(x+w-S*.2, y+S*.07); ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,.13)';
+  ctx.fillRect(x+w-S*.16, y+S*.08, S*.07, h-S*.12);
+  return {x,y,w:w-S*.05,h};
+}
 function draw(){
-  const dpr=cv.width/Math.max(1,stage.getBoundingClientRect().width);
   ctx.setTransform(1,0,0,1,0,0);
   ctx.clearRect(0,0,cv.width,cv.height);
-  ctx.fillStyle='#222'; ctx.fillRect(0,0,cv.width,cv.height);
-  if(!lv) return;
+  const bg=ctx.createLinearGradient(0,0,0,cv.height);
+  bg.addColorStop(0,'#3a2818'); bg.addColorStop(1,'#100b07');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,cv.width,cv.height);
+  if(!lv) {requestAnimationFrame(draw); return}
   const S=Math.min(cv.width/lv.w, cv.height/lv.h);
   const ox=(cv.width-lv.w*S)/2, oy=(cv.height-lv.h*S)/2;
+  ctx.fillStyle='#4a3424';
+  roundRect(ox-S*.06, oy+S*.08, lv.w*S+S*.12, lv.h*S+S*.06, S*.08); ctx.fill();
+  ctx.fillStyle='#24180f';
+  roundRect(ox, oy+S*.2, lv.w*S, lv.h*S-S*.06, S*.05); ctx.fill();
   const show=anim?lerpState(anim):state;
   for(let y=0;y<lv.h;y++) for(let x=0;x<lv.w;x++){
-    const t=lv.type[y][x]; if(!t && lv.grid[y][x]===' ') continue;
-    const px=ox+x*S, py=oy+y*S, open=show.open;
-    ctx.save();
-    if(t===4){
-      const on=solid(lv,x,y,open);
-      if(!on){ctx.setLineDash([Math.max(4,S*.12), Math.max(3,S*.08)]); ctx.strokeStyle='#868e96'; ctx.lineWidth=Math.max(2,S*.06); ctx.strokeRect(px+S*.18,py+S*.18,S*.64,S*.64); ctx.setLineDash([]); ctx.restore(); continue}
-      ctx.fillStyle='#74c0fc';
-    } else if(t===2) ctx.fillStyle='#ff922b';
-    else if(t===3) ctx.fillStyle='#ffd43b';
-    else if(lv.switches.some(sw=>sw.x===x&&sw.y===y&&sw.hard)) ctx.fillStyle='#ffa8a8';
-    else if(lv.switches.some(sw=>sw.x===x&&sw.y===y)) ctx.fillStyle='#8ce99a';
-    else ctx.fillStyle='#fff4e6';
-    roundRect(px+S*.06,py+S*.06,S*.88,S*.88,S*.12); ctx.fill();
-    ctx.strokeStyle='#222'; ctx.lineWidth=Math.max(2,S*.05); ctx.stroke();
-    if(t===2){ctx.strokeStyle='#7a3e00'; ctx.beginPath(); ctx.moveTo(px+S*.28,py+S*.4); ctx.lineTo(px+S*.48,py+S*.62); ctx.lineTo(px+S*.7,py+S*.36); ctx.stroke()}
-    if(t===3){ctx.fillStyle='#222'; ctx.beginPath(); ctx.arc(px+S/2,py+S*.58,S*.2,0,6.3); ctx.fill(); ctx.fillStyle='#222'; ctx.font=`800 ${Math.max(13,S*.3)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('洞', px+S/2, py+S*.26)}
+    const t=lv.type[y][x];
+    const px=ox+x*S, py=oy+y*S;
+    if(!t){ if(lv.grid[y][x]===' ') drawPit(px,py,S); continue }
+    const open=show.open;
+    if(t===4 && !solid(lv,x,y,open)){
+      drawPit(px,py,S);
+      ctx.setLineDash([Math.max(4,S*.1), Math.max(3,S*.07)]);
+      ctx.strokeStyle='#8ec8f8'; ctx.lineWidth=Math.max(2,S*.045);
+      ctx.strokeRect(px+S*.22,py+S*.28,S*.56,S*.46); ctx.setLineDash([]);
+      continue;
+    }
     const sw=lv.switches.find(s=>s.x===x&&s.y===y);
-    if(sw){ctx.fillStyle='#222'; ctx.font=`800 ${Math.max(14,S*.34)}px sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(sw.hard?'立':'踏', px+S/2, py+S/2)}
-    ctx.restore();
+    const kind=t===2?'frag':t===3?'goal':t===4?'bridge':sw?(sw.hard?'hard':'soft'):'floor';
+    const face=drawSlab(px,py,S,slabColors(kind));
+    if(t===2){
+      ctx.strokeStyle='#7a3e00'; ctx.lineWidth=Math.max(2,S*.045); ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(face.x+face.w*.28, face.y+face.h*.42);
+      ctx.lineTo(face.x+face.w*.48, face.y+face.h*.68);
+      ctx.lineTo(face.x+face.w*.72, face.y+face.h*.36); ctx.stroke();
+    }
+    if(t===4){
+      ctx.strokeStyle='rgba(255,255,255,.45)'; ctx.lineWidth=Math.max(1.5,S*.03);
+      ctx.beginPath();
+      ctx.moveTo(face.x+face.w*.08, face.y+face.h*.38); ctx.lineTo(face.x+face.w*.92, face.y+face.h*.38);
+      ctx.moveTo(face.x+face.w*.08, face.y+face.h*.62); ctx.lineTo(face.x+face.w*.92, face.y+face.h*.62);
+      ctx.stroke();
+    }
+    if(t===3){
+      const cx=face.x+face.w/2, cy=face.y+face.h*.62, rx=face.w*.28, ry=face.h*.22;
+      ctx.fillStyle='#6b4e00';
+      ctx.beginPath(); ctx.ellipse(cx, cy+S*.03, rx*1.12, ry*1.15, 0, 0, 6.3); ctx.fill();
+      const hg=ctx.createRadialGradient(cx-rx*.2, cy-ry*.35, S*.02, cx, cy, rx);
+      hg.addColorStop(0,'#3a2a12'); hg.addColorStop(.55,'#120c06'); hg.addColorStop(1,'#000');
+      ctx.fillStyle=hg;
+      ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, 6.3); ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=Math.max(1.2,S*.028);
+      ctx.beginPath(); ctx.ellipse(cx, cy-ry*.2, rx*.7, ry*.4, 0, Math.PI*1.1, Math.PI*1.9); ctx.stroke();
+      ctx.fillStyle='#3d2a00'; ctx.font=`800 ${Math.max(13,S*.28)}px sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText('洞', cx, face.y+face.h*.24);
+    }
+    if(sw){
+      ctx.fillStyle='#222'; ctx.font=`800 ${Math.max(14,S*.32)}px sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(sw.hard?'立':'踏', face.x+face.w/2, face.y+face.h/2);
+    }
   }
   drawBlock(show, ox, oy, S);
   requestAnimationFrame(draw);
@@ -238,14 +305,27 @@ function drawBlock(st,ox,oy,S){
   const xs=occ.map(c=>c[0]), ys=occ.map(c=>c[1]);
   const x0=ox+Math.min(...xs)*S, y0=oy+Math.min(...ys)*S;
   const w=(Math.max(...xs)-Math.min(...xs)+1)*S, h=(Math.max(...ys)-Math.min(...ys)+1)*S;
-  const lift=tall?S*.62:S*.18;
-  ctx.fillStyle='rgba(0,0,0,.35)';
-  roundRect(x0+S*.16, y0+S*.2, w-S*.28, h-S*.28, S*.1); ctx.fill();
-  ctx.fillStyle='#364fc7';
-  roundRect(x0+S*.14, y0+S*.14-lift*.35, w-S*.28, h-S*.22+lift*.2, S*.1); ctx.fill();
-  ctx.fillStyle=tall?'#748ffc':'#4c6ef5';
-  roundRect(x0+S*.14, y0+S*.08-lift, w-S*.28, h-S*.16, S*.12); ctx.fill();
-  ctx.strokeStyle='#fff'; ctx.lineWidth=Math.max(2,S*.06); ctx.stroke();
+  const lift=tall?S*.78:S*.2;
+  const depth=tall?S*.2:S*.14;
+  const x=x0+S*.16, bw=w-S*.32, bh=(tall?h*.92:h-S*.2);
+  const y=y0+S*.16-lift;
+  ctx.fillStyle='rgba(0,0,0,.42)';
+  ctx.beginPath(); ctx.ellipse(x0+w*.52, y0+h*.72, w*.28, h*.12, 0, 0, 6.3); ctx.fill();
+  ctx.fillStyle='#1c2a78';
+  roundRect(x+S*.07, y+depth, bw-S*.04, bh, S*.1); ctx.fill();
+  ctx.fillStyle='#2b3e9e';
+  roundRect(x, y+depth*.62, bw-S*.06, bh, S*.1); ctx.fill();
+  const g=ctx.createLinearGradient(x,y,x+bw,y+bh);
+  g.addColorStop(0,'#edf2ff'); g.addColorStop(.2,'#bac8ff'); g.addColorStop(1,tall?'#5c7cfa':'#3b5bdb');
+  ctx.fillStyle=g;
+  roundRect(x, y, bw-S*.06, bh, S*.12); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=Math.max(2,S*.045); ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=Math.max(1.5,S*.03);
+  ctx.beginPath(); ctx.moveTo(x+S*.12, y+S*.08); ctx.lineTo(x+bw-S*.22, y+S*.08); ctx.stroke();
+  if(!tall){
+    ctx.fillStyle='#364fc7';
+    roundRect(x+bw-S*.2, y+S*.1, S*.1, bh-S*.18, S*.04); ctx.fill();
+  }
 }
 function resize(){
   const r=stage.getBoundingClientRect();
