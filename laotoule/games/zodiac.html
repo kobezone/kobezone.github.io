@@ -1,31 +1,33 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>生肖合成 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#stage{position:relative;width:min(94vw,calc((100vh - var(--ltl-chrome, 0px) - 180px)*0.75),480px);aspect-ratio:360/480;margin:0 auto;border:3px solid #222;border-radius:20px;overflow:hidden;background:#fff4e0;box-shadow:0 6px 0 #222;touch-action:none}
+.wrap{padding:6px 8px 2px}
+.stats{margin:0 0 4px}
+#stage{position:relative;width:min(96vw,calc((100vh - var(--ltl-chrome, 0px) - 168px)*360/620));aspect-ratio:360/620;margin:0 auto;border:3px solid #222;border-radius:20px;overflow:hidden;background:#fff4e0;box-shadow:0 6px 0 #222;touch-action:none}
 #cv{width:100%;height:100%;display:block;touch-action:none}
-.mover{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.mover{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 2px}
 .mover .btn{min-width:92px}
 #drop{min-width:148px;font-size:1.15rem}
 #hammer{min-width:158px}
 #hammer.off{opacity:.4;filter:grayscale(.65)}
 #hammer.arm{background:#ff922b;outline:4px solid #e8590c;outline-offset:2px}
 #stage.picking{box-shadow:0 0 0 4px #e8590c,0 6px 0 #222}
-#nextCv{width:74px;height:74px;background:#fff;border-radius:14px;border:3px solid #222;display:block}
+#nextCv{width:52px;height:52px;background:#fff;border-radius:12px;border:3px solid #222;display:block}
 .preview b{font-size:1rem}
 .cele{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(28,12,24,.55)}
 .cele[hidden]{display:none !important}
 .cele.flash{animation:celeflash 8s ease forwards}
 @keyframes celeflash{
-  0%{box-shadow:inset 0 0 0 80vmax rgba(255,248,230,.92)}
-  14%{box-shadow:inset 0 0 80px 36vmax rgba(255,186,214,.5)}
-  30%{box-shadow:inset 0 0 50px 22vmax rgba(186,230,253,.48)}
-  48%{box-shadow:inset 0 0 90px 30vmax rgba(255,236,170,.55)}
-  66%{box-shadow:inset 0 0 60px 20vmax rgba(214,180,254,.5)}
-  84%{box-shadow:inset 0 0 70px 24vmax rgba(255,255,255,.4)}
-  100%{box-shadow:inset 0 0 36px 12vmax rgba(255,228,236,.28)}
+  0%{box-shadow:inset 0 0 0 80vmax rgba(255,243,191,.92)}
+  14%{box-shadow:inset 0 0 80px 36vmax rgba(224,49,49,.55)}
+  30%{box-shadow:inset 0 0 50px 22vmax rgba(240,140,0,.5)}
+  48%{box-shadow:inset 0 0 90px 30vmax rgba(255,224,102,.62)}
+  66%{box-shadow:inset 0 0 60px 20vmax rgba(201,42,42,.48)}
+  84%{box-shadow:inset 0 0 70px 24vmax rgba(255,236,153,.45)}
+  100%{box-shadow:inset 0 0 36px 12vmax rgba(224,49,49,.28)}
 }
 #fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.cele-card{position:relative;background:linear-gradient(#fff,#fff4ea);border:4px solid #222;border-radius:28px;padding:8px 16px 16px;text-align:center;box-shadow:0 8px 0 #222,0 0 28px rgba(255,214,180,.85);max-width:min(92vw,420px);animation:celecard 8s ease}
+.cele-card{position:relative;background:linear-gradient(#fffaf0,#ffe8cc);border:4px solid #222;border-radius:28px;padding:8px 16px 16px;text-align:center;box-shadow:0 8px 0 #222,0 0 28px rgba(224,49,49,.55);max-width:min(92vw,420px);animation:celecard 8s ease}
 @keyframes celecard{0%{transform:scale(.86)}10%{transform:scale(1.06)}22%{transform:scale(.98)}42%{transform:scale(1.04)}68%{transform:scale(1)}100%{transform:scale(1)}}
 .cele-card h2{margin:0;font-size:1.7rem;color:#e8590c}
 .cele-card p{margin:4px 0 8px;font-weight:800}
@@ -45,23 +47,23 @@
   <button class="btn blue" id="left" type="button">⬅ 左移</button>
   <button class="btn green" id="drop" type="button">⬇ 放下</button>
   <button class="btn blue" id="right" type="button">右移 ➡</button>
-  <button class="btn" id="hammer" type="button">🔨 锤子 10</button>
+  <button class="btn" id="hammer" type="button">🔨 锤子 100</button>
 </div>
 <div class="controls"><button class="btn" id="restart" type="button">🔄 重新开始</button></div>
 <div class="help"><h2>📖 怎么玩</h2><ul>
 <li>左右移动最上面那只生肖，<b>松手</b>、点「放下」或按<b>空格</b>，它就会掉下去。手机可以在框里左右拖。</li>
-<li>两只<b>一样</b>的生肖碰到一起，会合成下一只，个头更大。顺序是：鼠2、牛4、虎8、兔16、龙32、蛇64、马128、羊256、猴512、鸡1024、狗2048、猪4096，再往后是一颗珍珠。</li>
-<li>掉下来的大多是鼠、牛、虎、兔。龙、蛇、马也会偶尔出现，越往后越少。羊和更大的只能靠合成。</li>
-<li>两只<b>猪</b>合成一颗<b>珍珠</b>。它是光滑的珠子，有柔和高光和淡淡珠光，个头和马差不多，不是大龙球。两颗珍珠再碰到会一起化开，再奖励一大笔分，并有较长的庆祝画面。首页关掉声音后，庆祝也不响。</li>
+<li>两只<b>一样</b>的生肖碰到一起，会合成下一只。顺序是：鼠2、牛4、虎8、兔16、龙32、蛇64、马128、羊256、猴512、鸡1024。两只鸡合成<b>龙珠</b>，分数是 <b>2048</b>，这局就赢，不用再合到 4096。</li>
+<li>掉下来的大多是鼠、牛、虎、兔。龙、蛇、马也会偶尔出现，越往后越少。羊、猴、鸡只能靠合成。</li>
+<li><b>龙珠</b>是一颗红金色的珠子，珠上画着一条中国龙（有龙身、龙须）。珠子个头和马差不多。两颗龙珠再碰到会化开，再奖励一大笔分。首页关掉声音后，庆祝也不响。</li>
 <li>生肖停在顶上的<b>红线</b>上方大约 2 秒，这局就结束。</li>
-<li><b>锤子</b>一局最多 10 次，次数写在按钮上。点锤子，再点一只小动物，它会直接消失，并扣掉这只分数的两倍。扣完会变成负数就不能砸，按钮会变灰。砸掉以后上面的会掉下来，照旧合成。用完 10 次要等下一局。</li>
+<li><b>锤子</b>一局最多 100 次，次数写在按钮上。点锤子，再点一只小动物，它会直接消失，并扣掉这只分数的两倍。扣完会变成负数就不能砸，按钮会变灰。砸掉以后上面的会掉下来，照旧合成。用完要等下一局。</li>
 </ul></div>
 </div>
 <div class="cele" id="cele" hidden>
 <canvas id="fx"></canvas>
 <div class="cele-card">
 <canvas id="celeCv" width="280" height="260"></canvas>
-<h2 id="celet">合成珍珠啦！</h2>
+<h2 id="celet">合成龙珠啦！</h2>
 <p id="celesub">最高级出现了</p>
 <button class="btn green" id="celeGo" type="button">继续玩</button>
 <button class="btn" id="celeAgain" type="button">再来一局</button>
@@ -69,7 +71,7 @@
 </div>
 <script src="../common.js"></script>
 <script>
-const WORLD_W=360,WORLD_H=480,DANGER_Y=96;
+const WORLD_W=360,WORLD_H=620,DANGER_Y=96;
 const Z=[
   {n:'鼠',v:2,c:'#e5dbff'},
   {n:'牛',v:4,c:'#fff3bf'},
@@ -80,21 +82,20 @@ const Z=[
   {n:'马',v:128,c:'#ffd8a8'},
   {n:'羊',v:256,c:'#f1f3f5'},
   {n:'猴',v:512,c:'#ffe066'},
-  {n:'鸡',v:1024,c:'#ffec99'},
-  {n:'狗',v:2048,c:'#d0ebff'},
-  {n:'猪',v:4096,c:'#ffc9c9'}
+  {n:'鸡',v:1024,c:'#ffec99'}
 ];
-const HORSE_R=22+6*4.5,PEARL_R=HORSE_R,PEARL_V=8192,PEARL_BONUS=30000;
+// 马是第 6 级，半径 22+6*4.5=49。龙珠用同一半径。合出龙珠（2048）即胜利。
+const DRAGON_LV=10,DRAGON_R=22+6*4.5,DRAGON_V=2048,DRAGON_BONUS=30000;
 // 原先只掉 0–3：鼠 46%、牛 32%、虎 15%、兔 7%，32 及更大为 0。
 // 现在 100 份权重：鼠40 牛26 虎16 兔10 龙4 蛇3 马1。羊以后仍只能合成。
 const DROP_W=[40,26,16,10,4,3,1];
-function radiusFor(level){return level>=12?PEARL_R:22+level*4.5}
-function info(level){return level>=12?{n:'珍珠',v:PEARL_V,c:'#fff6ea'}:Z[level]}
+function radiusFor(level){return level>=DRAGON_LV?DRAGON_R:22+level*4.5}
+function info(level){return level>=DRAGON_LV?{n:'龙珠',v:DRAGON_V,c:'#e03131'}:Z[level]}
 
 const stage=document.getElementById('stage'),cv=document.getElementById('cv'),ctx=cv.getContext('2d');
 const nextCv=document.getElementById('nextCv'),nctx=nextCv.getContext('2d');
 const scoreEl=document.getElementById('score'),bestEl=document.getElementById('best'),ov=document.getElementById('ov');
-const HAMMER_MAX=10;
+const HAMMER_MAX=100;
 let bodies=[],score=0,over=false,aimX=WORLD_W/2,current=0,next=0,cooling=0,dangerT=0,floaters=[];
 let hammers=HAMMER_MAX,hammerOn=false,hammerSig='';
 let acc=0,last=performance.now(),celebrateOn=false,bits=[],cheer=null,celeT=0,fanfareTimers=[];
@@ -190,7 +191,7 @@ function restart(force){
 }
 const CELE_BURST=8;
 function spawnBit(w,h,kind){
-  const colors=['#fff','#ffe8f2','#fff3bf','#d0ebff','#e5dbff','#ffd6e0'];
+  const colors=['#ffe066','#ff922b','#e03131','#fff3bf','#c92a2a','#fab005'];
   return {
     kind,x:w*(0.12+Math.random()*0.76),y:h*(0.28+Math.random()*0.36),
     vx:(Math.random()-0.5)*(kind==='ribbon'?200:110),
@@ -215,11 +216,11 @@ function paintHero(){
   h.clearRect(0,0,280,260);
   const t=performance.now()/1000;
   const halo=h.createRadialGradient(140,118,18,140,118,112);
-  halo.addColorStop(0,'rgba(255,255,255,.95)');
-  halo.addColorStop(.4,'rgba(255,214,228,.4)');
-  halo.addColorStop(1,'rgba(255,255,255,0)');
+  halo.addColorStop(0,'rgba(255,243,191,.95)');
+  halo.addColorStop(.45,'rgba(224,49,49,.35)');
+  halo.addColorStop(1,'rgba(255,243,191,0)');
   h.fillStyle=halo;h.beginPath();h.arc(140,118,112,0,6.3);h.fill();
-  drawAnimal(h,140,118,64,12,0,t);
+  drawAnimal(h,140,118,64,DRAGON_LV,0,t);
 }
 function fanfare(){
   fanfareTimers.forEach(clearTimeout);
@@ -233,8 +234,8 @@ function stopCele(){
 }
 function startCele(kind){
   celebrateOn=true;hammerOn=false;paintHammer();
-  document.getElementById('celet').textContent=kind==='gone'?'两颗珍珠化开啦！':'合成珍珠啦！';
-  document.getElementById('celesub').textContent=kind==='gone'?'再奖励 '+PEARL_BONUS+' 分':'这是最高一级';
+  document.getElementById('celet').textContent=kind==='gone'?'两颗龙珠化开啦！':'合成龙珠啦！';
+  document.getElementById('celesub').textContent=kind==='gone'?'再奖励 '+DRAGON_BONUS+' 分':'合到 2048，过关了';
   paintHero();burst();
   cele.hidden=false;cele.classList.remove('flash');void cele.offsetWidth;cele.classList.add('flash');
   fanfare();
@@ -262,12 +263,12 @@ function drawBits(dt){
     const x=cx+Math.cos(a)*rad, y=cy+Math.sin(a)*rad*0.72;
     const g=f.createRadialGradient(x,y,0,x,y,10);
     g.addColorStop(0,'rgba(255,255,255,.95)');
-    g.addColorStop(1,i%2?'rgba(255,186,214,0)':'rgba(186,220,255,0)');
+    g.addColorStop(1,i%2?'rgba(224,49,49,0)':'rgba(255,224,102,0)');
     f.fillStyle=g;f.beginPath();f.arc(x,y,10,0,6.3);f.fill();
   }
   const halo=f.createRadialGradient(cx,cy,30,cx,cy,Math.min(w,h)*0.5);
-  halo.addColorStop(0,'rgba(255,255,255,'+(0.2*pulse)+')');
-  halo.addColorStop(.45,'rgba(255,186,214,'+(0.16*pulse)+')');
+  halo.addColorStop(0,'rgba(255,243,191,'+(0.22*pulse)+')');
+  halo.addColorStop(.45,'rgba(224,49,49,'+(0.2*pulse)+')');
   halo.addColorStop(1,'rgba(255,255,255,0)');
   f.fillStyle=halo;f.fillRect(0,0,w,h);
   bits=bits.filter(b=>{
@@ -318,9 +319,9 @@ function mergePass(){
       if(d>a.r+b.r+1.5)continue;
       dead.add(i);dead.add(j);
       const px=(a.x+b.x)/2,py=(a.y+b.y)/2;
-      if(a.level>=12){
-        addScore(PEARL_BONUS);
-        floaters.push({x:px,y:py,text:'+'+PEARL_BONUS,life:1.1});
+      if(a.level>=DRAGON_LV){
+        addScore(DRAGON_BONUS);
+        floaters.push({x:px,y:py,text:'+'+DRAGON_BONUS,life:1.1});
         cheer='gone';
       }else{
         const nl=a.level+1,nb=makeBody(nl,px,py);
@@ -332,7 +333,7 @@ function mergePass(){
         addScore(gain);
         floaters.push({x:nb.x,y:nb.y-nb.r,text:'+'+gain,life:0.9});
         LTL.beep(420+nl*40,.09,'triangle',.06);
-        if(nl===12)cheer='born';
+        if(nl===DRAGON_LV)cheer='born';
       }
       break;
     }
@@ -434,43 +435,90 @@ function drawFace(c,r,level){
   badge(c,r,String(info(level).v));
 }
 function roundPill(c,x,y,w,h,rad){c.beginPath();c.moveTo(x+rad,y);c.arcTo(x+w,y,x+w,y+h,rad);c.arcTo(x+w,y+h,x,y+h,rad);c.arcTo(x,y+h,x,y,rad);c.arcTo(x,y,x+w,y,rad);c.closePath();c.fill()}
-function drawPearl(c,r,t){
-  const time=t||0;
-  const body=c.createRadialGradient(-r*.36,-r*.42,r*.05,r*.06,r*.08,r);
-  body.addColorStop(0,'#ffffff');
-  body.addColorStop(.24,'#fffdfb');
-  body.addColorStop(.58,'#f8ece4');
-  body.addColorStop(.82,'#f6dce8');
-  body.addColorStop(1,'#e6d2ea');
-  c.beginPath();c.arc(0,0,r,0,6.3);c.fillStyle=body;c.fill();
-  c.save();c.beginPath();c.arc(0,0,r*.98,0,6.3);c.clip();
-  const blooms=[[255,186,206],[186,220,255],[224,196,255],[255,232,176]];
-  for(let i=0;i<4;i++){
-    const a=time*0.55+i*1.57;
-    const px=Math.cos(a)*r*.42, py=Math.sin(a)*r*.42;
-    const [R,G,B]=blooms[i];
-    const wash=c.createRadialGradient(px,py,r*.02,px,py,r*.62);
-    wash.addColorStop(0,'rgba('+R+','+G+','+B+',.34)');
-    wash.addColorStop(.7,'rgba('+R+','+G+','+B+',.08)');
-    wash.addColorStop(1,'rgba('+R+','+G+','+B+',0)');
-    c.fillStyle=wash;c.beginPath();c.arc(px,py,r*.62,0,6.3);c.fill();
+function dragonCoil(c){
+  c.beginPath();
+  c.moveTo(-.62,.46);
+  c.bezierCurveTo(-.98,.08,-.62,-.34,-.08,-.16);
+  c.bezierCurveTo(.4,.02,.18,.52,.66,.24);
+  c.bezierCurveTo(.96,.06,.7,-.4,.16,-.58);
+}
+function drawDragonBead(c,r){
+  const g=c.createRadialGradient(-r*.3,-r*.34,r*.08,r*.06,r*.04,r);
+  g.addColorStop(0,'#ffe566');
+  g.addColorStop(.24,'#f59f00');
+  g.addColorStop(.62,'#e03131');
+  g.addColorStop(1,'#6b1212');
+  c.beginPath();c.arc(0,0,r,0,6.3);c.fillStyle=g;c.fill();
+  c.strokeStyle='#4a0d0d';c.lineWidth=Math.max(1.6,r*.05);c.stroke();
+  c.strokeStyle='rgba(255,248,220,.88)';c.lineWidth=Math.max(1.3,r*.06);
+  c.beginPath();c.arc(-r*.2,-r*.26,r*.46,Math.PI*1.08,Math.PI*1.72);c.stroke();
+  c.save();
+  c.beginPath();c.arc(0,0,r*.97,0,6.3);c.clip();
+  c.translate(0,0);c.scale(r,r);
+  c.lineCap='round';c.lineJoin='round';
+  dragonCoil(c);c.strokeStyle='#5c140c';c.lineWidth=.3;c.stroke();
+  dragonCoil(c);c.strokeStyle='#f08c00';c.lineWidth=.2;c.stroke();
+  dragonCoil(c);c.strokeStyle='#ffe066';c.lineWidth=.055;c.stroke();
+  c.fillStyle='#c92a2a';
+  const spikes=[[-.52,.2],[-.3,-.02],[.02,-.14],[.38,.16],[.42,-.18]];
+  for(const [x,y] of spikes){
+    c.beginPath();c.moveTo(x-.045,y);c.lineTo(x-.01,y-.15);c.lineTo(x+.06,y);c.closePath();c.fill();
   }
+  const scales=[[-.48,.3],[-.28,.1],[-.06,-.06],[.16,.02],[.34,.22],[.5,.08],[.36,-.16]];
+  scales.forEach((p,i)=>{
+    c.fillStyle=i%2?'#fff3bf':'#9c1c14';
+    c.beginPath();c.arc(p[0],p[1],.062,0,6.3);c.fill();
+  });
+  c.strokeStyle='#ffe066';c.lineWidth=.04;
+  c.beginPath();
+  c.moveTo(.5,.2);c.lineTo(.74,.04);
+  c.moveTo(.5,.22);c.lineTo(.76,.18);
+  c.moveTo(.48,.24);c.lineTo(.72,.34);
+  c.stroke();
+  c.fillStyle='rgba(255,248,220,.95)';
+  c.beginPath();c.arc(-.58,.56,.12,0,6.3);c.arc(-.44,.48,.09,0,6.3);c.arc(-.7,.5,.075,0,6.3);c.fill();
   c.restore();
-  const hi=c.createRadialGradient(-r*.32,-r*.38,0,-r*.28,-r*.32,r*.48);
-  hi.addColorStop(0,'rgba(255,255,255,.98)');
-  hi.addColorStop(.4,'rgba(255,255,255,.42)');
-  hi.addColorStop(1,'rgba(255,255,255,0)');
-  c.fillStyle=hi;c.beginPath();c.ellipse(-r*.26,-r*.32,r*.36,r*.22,-.5,0,6.3);c.fill();
-  c.fillStyle='rgba(255,255,255,.4)';
-  c.beginPath();c.ellipse(r*.1,r*.5,r*.2,r*.08,.25,0,6.3);c.fill();
-  c.strokeStyle='rgba(120,90,110,.28)';c.lineWidth=Math.max(1,r*.03);
-  c.beginPath();c.arc(0,0,r,0,6.3);c.stroke();
-  badge(c,r,'珍珠');
+  const hx=r*.04,hy=-r*.62;
+  c.save();c.lineCap='round';c.lineJoin='round';
+  c.strokeStyle='#c92a2a';c.lineWidth=Math.max(1.6,r*.055);
+  c.beginPath();
+  c.moveTo(hx-r*.2,hy+r*.02);c.quadraticCurveTo(hx-r*.5,hy+r*.16,hx-r*.3,hy+r*.4);
+  c.moveTo(hx-r*.08,hy+r*.06);c.quadraticCurveTo(hx-r*.34,hy+r*.3,hx-r*.06,hy+r*.46);
+  c.moveTo(hx+r*.02,hy+r*.08);c.quadraticCurveTo(hx-r*.08,hy+r*.34,hx+r*.12,hy+r*.4);
+  c.stroke();
+  c.fillStyle='#fab005';
+  c.beginPath();c.ellipse(hx,hy,r*.34,r*.22,-.18,0,6.3);c.fill();
+  c.strokeStyle='#5c3b00';c.lineWidth=Math.max(1.2,r*.04);c.stroke();
+  c.fillStyle='#ffe066';
+  c.beginPath();c.ellipse(hx+r*.28,hy+r*.05,r*.16,r*.09,-.15,0,6.3);c.fill();
+  c.stroke();
+  c.fillStyle='#7a4e00';c.beginPath();c.arc(hx+r*.36,hy+r*.03,Math.max(1,r*.028),0,6.3);c.fill();
+  c.fillStyle='#e03131';
+  c.beginPath();c.moveTo(hx+r*.18,hy+r*.08);c.lineTo(hx+r*.34,hy+r*.16);c.lineTo(hx+r*.16,hy+r*.14);c.closePath();c.fill();
+  c.strokeStyle='#ffe8a3';c.lineWidth=Math.max(1.7,r*.05);
+  c.beginPath();
+  c.moveTo(hx-r*.08,hy-r*.14);c.quadraticCurveTo(hx-r*.26,hy-r*.46,hx-r*.02,hy-r*.4);
+  c.moveTo(hx-r*.16,hy-r*.3);c.lineTo(hx-r*.3,hy-r*.4);
+  c.moveTo(hx+r*.1,hy-r*.12);c.quadraticCurveTo(hx+r*.32,hy-r*.44,hx+r*.08,hy-r*.38);
+  c.moveTo(hx+r*.22,hy-r*.28);c.lineTo(hx+r*.34,hy-r*.38);
+  c.stroke();
+  c.strokeStyle='#fff8dc';c.lineWidth=Math.max(1.15,r*.038);
+  c.beginPath();
+  c.moveTo(hx+r*.36,hy);c.quadraticCurveTo(hx+r*.72,hy-r*.08,hx+r*.92,hy-r*.3);
+  c.moveTo(hx+r*.34,hy+r*.08);c.quadraticCurveTo(hx+r*.7,hy+r*.28,hx+r*.9,hy+r*.1);
+  c.stroke();
+  c.fillStyle='#fff';c.beginPath();c.ellipse(hx+r*.04,hy-r*.02,r*.075,r*.055,0,0,6.3);c.fill();
+  c.fillStyle='#111';c.beginPath();c.arc(hx+r*.06,hy-r*.005,Math.max(1.3,r*.038),0,6.3);c.fill();
+  c.fillStyle='#fff';c.beginPath();c.arc(hx+r*.045,hy-r*.02,Math.max(.6,r*.014),0,6.3);c.fill();
+  c.strokeStyle='#5c3b00';c.lineWidth=Math.max(1,r*.03);
+  c.beginPath();c.moveTo(hx-r*.04,hy-r*.1);c.quadraticCurveTo(hx+r*.08,hy-r*.16,hx+r*.18,hy-r*.06);c.stroke();
+  c.restore();
+  badge(c,r,'龙珠');
 }
 function drawAnimal(c,x,y,r,level,pop,t){
   const sc=pop>0?1-pop*2.2:1;
   c.save();c.translate(x,y);c.scale(sc,sc);
-  if(level>=12)drawPearl(c,r,t||0);
+  if(level>=DRAGON_LV)drawDragonBead(c,r,t||0);
   else drawFace(c,r,level);
   c.restore();
 }
