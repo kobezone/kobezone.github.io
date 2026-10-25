@@ -1,0 +1,269 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>画板填色 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.wrap{padding:6px 8px 10px}
+.stats{margin:0 0 4px}
+.modes,.tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:4px 0}
+.modes .btn,.tools .btn{min-height:52px;min-width:108px}
+.modes .btn.on,.sw.on,.br.on{outline:4px solid #222;outline-offset:2px}
+#prompt{margin:4px 0;text-align:center;font-size:1.45rem;font-weight:900;min-height:1.4em}
+.stage{position:relative;width:min(96vw,420px);margin:0 auto}
+canvas{width:100%;height:min(42vh,300px);display:block;background:#fff;border:4px solid #222;border-radius:18px;touch-action:none;box-shadow:0 5px 0 #222}
+.colors{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px}
+.sw{min-width:58px;min-height:54px;padding:4px 6px;border:3px solid #222;border-radius:14px;font-weight:900;font-size:1.05rem;color:#111;box-shadow:0 3px 0 #222}
+.sw[data-c="#212529"],.sw[data-c="#1c7ed6"],.sw[data-c="#7048e8"],.sw[data-c="#8d5524"]{color:#fff}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🎨 画板填色</h1></div>
+<div class="wrap">
+<div class="stats">
+  <div class="stat"><span>得分</span><b id="score">0</b></div>
+  <div class="stat"><span>样图</span><b id="picn">—</b></div>
+  <div class="stat"><span>最高</span><b id="best">0</b></div>
+</div>
+<div class="modes">
+  <button class="btn on" id="modeFree" type="button">自由涂鸦</button>
+  <button class="btn" id="modeFill" type="button">样图填色</button>
+</div>
+<div id="prompt">选一种颜色，在白板上画</div>
+<div class="stage">
+  <canvas id="free"></canvas>
+  <canvas id="fill" hidden></canvas>
+</div>
+<div class="colors" id="colors"></div>
+<div class="tools" id="brushes">
+  <button class="btn br" type="button" data-s="8">细笔</button>
+  <button class="btn br on" type="button" data-s="18">中笔</button>
+  <button class="btn br" type="button" data-s="34">粗笔</button>
+</div>
+<div class="tools" id="pager" hidden>
+  <button class="btn" id="prev" type="button">上一张</button>
+  <button class="btn" id="next" type="button">下一张</button>
+</div>
+<div class="tools"><button class="btn" id="restart" type="button">清空重来</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li><b>自由涂鸦</b>：在白板上随便画。先点颜色，再点细笔、中笔或粗笔。橡皮用白色。</li>
+<li><b>样图填色</b>：图是新画的简笔。上面会告诉你把哪一块涂成什么颜色，点对颜色再点那一块。</li>
+<li>涂错了可以再点。涂完一张会换下一张。</li>
+</ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const COLORS=[
+  {n:'红',c:'#e03131'},{n:'橙',c:'#f76707'},{n:'黄',c:'#fab005'},{n:'绿',c:'#2f9e44'},
+  {n:'青',c:'#1098ad'},{n:'蓝',c:'#1c7ed6'},{n:'紫',c:'#7048e8'},{n:'粉',c:'#e64980'},
+  {n:'棕',c:'#8d5524'},{n:'黑',c:'#212529'},{n:'橡皮',c:'#ffffff'}
+];
+const BY={};
+COLORS.forEach(x=>BY[x.c]=x.n);
+function circ(ctx,x,y,r){ctx.moveTo(x+r,y);ctx.arc(x,y,r,0,6.3)}
+const PICS=[
+  {name:'太阳',regions:[
+    {name:'天空',c:'#1c7ed6',hx:.16,hy:.16,path:(g,w,h)=>g.rect(0,0,w,h)},
+    {name:'草地',c:'#2f9e44',hx:.22,hy:.86,path:(g,w,h)=>g.rect(0,h*.72,w,h*.28)},
+    {name:'太阳',c:'#fab005',hx:.7,hy:.3,path:(g,w,h)=>circ(g,w*.7,h*.3,Math.min(w,h)*.16)}
+  ]},
+  {name:'小房子',regions:[
+    {name:'天空',c:'#1c7ed6',hx:.14,hy:.12,path:(g,w,h)=>g.rect(0,0,w,h)},
+    {name:'草地',c:'#2f9e44',hx:.18,hy:.9,path:(g,w,h)=>g.rect(0,h*.78,w,h*.22)},
+    {name:'墙',c:'#f76707',hx:.5,hy:.62,path:(g,w,h)=>{g.rect(w*.28,h*.42,w*.44,h*.36)}},
+    {name:'屋顶',c:'#e03131',hx:.5,hy:.3,path:(g,w,h)=>{g.moveTo(w*.2,h*.44);g.lineTo(w*.5,h*.16);g.lineTo(w*.8,h*.44);g.closePath()}},
+    {name:'门',c:'#8d5524',hx:.5,hy:.68,path:(g,w,h)=>g.rect(w*.44,h*.56,w*.12,h*.22)},
+    {name:'窗子',c:'#1098ad',hx:.36,hy:.54,path:(g,w,h)=>g.rect(w*.32,h*.48,w*.12,h*.12)}
+  ]},
+  {name:'小鱼',regions:[
+    {name:'河水',c:'#1c7ed6',hx:.16,hy:.18,path:(g,w,h)=>g.rect(0,0,w,h)},
+    {name:'鱼身',c:'#f76707',hx:.48,hy:.5,path:(g,w,h)=>{g.ellipse(w*.48,h*.5,w*.22,h*.2,0,0,6.3)}},
+    {name:'尾巴',c:'#fab005',hx:.8,hy:.5,path:(g,w,h)=>{g.moveTo(w*.66,h*.5);g.lineTo(w*.9,h*.28);g.lineTo(w*.9,h*.72);g.closePath()}}
+  ]},
+  {name:'花朵',regions:[
+    {name:'天空',c:'#1098ad',hx:.16,hy:.14,path:(g,w,h)=>g.rect(0,0,w,h*.7)},
+    {name:'泥土',c:'#8d5524',hx:.2,hy:.88,path:(g,w,h)=>g.rect(0,h*.7,w,h*.3)},
+    {name:'茎叶',c:'#2f9e44',hx:.62,hy:.62,path:(g,w,h)=>{g.rect(w*.46,h*.42,w*.08,h*.32);g.ellipse(w*.34,h*.58,w*.12,h*.06,-.4,0,6.3);g.ellipse(w*.66,h*.58,w*.12,h*.06,.4,0,6.3)}},
+    {name:'花瓣',c:'#e64980',hx:.5,hy:.12,path:(g,w,h)=>{const cx=w*.5,cy=h*.28,r=Math.min(w,h)*.09;for(let i=0;i<5;i++){const a=-1.57+i*6.28/5;circ(g,cx+Math.cos(a)*r*1.7,cy+Math.sin(a)*r*1.7,r)}}},
+    {name:'花心',c:'#fab005',hx:.5,hy:.28,path:(g,w,h)=>circ(g,w*.5,h*.28,Math.min(w,h)*.07)}
+  ]},
+  {name:'小汽车',regions:[
+    {name:'天空',c:'#1c7ed6',hx:.16,hy:.16,path:(g,w,h)=>g.rect(0,0,w,h)},
+    {name:'马路',c:'#212529',hx:.5,hy:.86,path:(g,w,h)=>g.rect(0,h*.72,w,h*.28)},
+    {name:'车身',c:'#e03131',hx:.5,hy:.58,path:(g,w,h)=>{g.roundRect?g.roundRect(w*.16,h*.4,w*.68,h*.24,12):g.rect(w*.16,h*.4,w*.68,h*.24)}},
+    {name:'车窗',c:'#1098ad',hx:.58,hy:.4,path:(g,w,h)=>{g.moveTo(w*.4,h*.42);g.lineTo(w*.52,h*.26);g.lineTo(w*.74,h*.26);g.lineTo(w*.74,h*.42);g.closePath()}},
+    {name:'轮子',c:'#212529',hx:.3,hy:.66,path:(g,w,h)=>{circ(g,w*.32,h*.64,Math.min(w,h)*.08);circ(g,w*.7,h*.64,Math.min(w,h)*.08)}}
+  ]},
+  {name:'蛋糕',regions:[
+    {name:'桌布',c:'#7048e8',hx:.12,hy:.12,path:(g,w,h)=>g.rect(0,0,w,h)},
+    {name:'盘子',c:'#1098ad',hx:.86,hy:.78,path:(g,w,h)=>g.ellipse(w*.5,h*.78,w*.36,h*.1,0,0,6.3)},
+    {name:'蛋糕',c:'#fab005',hx:.5,hy:.62,path:(g,w,h)=>g.rect(w*.28,h*.46,w*.44,h*.26)},
+    {name:'奶油',c:'#e64980',hx:.36,hy:.42,path:(g,w,h)=>{g.moveTo(w*.26,h*.48);g.quadraticCurveTo(w*.36,h*.28,w*.5,h*.46);g.quadraticCurveTo(w*.64,h*.28,w*.74,h*.48);g.closePath()}},
+    {name:'樱桃',c:'#e03131',hx:.5,hy:.28,path:(g,w,h)=>circ(g,w*.5,h*.3,Math.min(w,h)*.07)}
+  ]}
+];
+const freeCv=document.getElementById('free'),fillCv=document.getElementById('fill');
+const promptEl=document.getElementById('prompt'),scoreEl=document.getElementById('score'),picEl=document.getElementById('picn'),bestEl=document.getElementById('best');
+let mode='free',color='#e03131',size=18,drawing=false,moved=false,last=null,pi=0,score=0;
+let done=PICS.map(p=>p.regions.map(()=>false));
+const colorBox=document.getElementById('colors');
+COLORS.forEach(col=>{
+  const b=document.createElement('button');
+  b.type='button';b.className='sw';b.dataset.c=col.c;b.textContent=col.n;
+  b.style.background=col.c==='#ffffff'?'#f1f3f5':col.c;
+  b.onclick=()=>{color=col.c;paintSwatches()};
+  colorBox.appendChild(b);
+});
+function paintSwatches(){colorBox.querySelectorAll('.sw').forEach(b=>b.classList.toggle('on',b.dataset.c===color))}
+paintSwatches();
+document.querySelectorAll('.br').forEach(b=>b.onclick=()=>{
+  size=+b.dataset.s;
+  document.querySelectorAll('.br').forEach(x=>x.classList.toggle('on',x===b));
+});
+function cssBox(cv){const r=cv.getBoundingClientRect();return {w:Math.max(2,r.width),h:Math.max(2,r.height),r}}
+function fit(cv,keep){
+  const {w,h}=cssBox(cv);
+  const dpr=Math.min(devicePixelRatio||1,2);
+  const W=Math.round(w*dpr),H=Math.round(h*dpr);
+  if(cv.width===W&&cv.height===H){const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);return g}
+  const copy=document.createElement('canvas');
+  if(keep&&cv.width){copy.width=cv.width;copy.height=cv.height;copy.getContext('2d').drawImage(cv,0,0)}
+  cv.width=W;cv.height=H;
+  const g=cv.getContext('2d');
+  g.setTransform(dpr,0,0,dpr,0,0);
+  g.fillStyle='#fff';g.fillRect(0,0,w,h);
+  if(keep&&copy.width)g.drawImage(copy,0,0,copy.width,copy.height,0,0,w,h);
+  return g;
+}
+function pos(cv,e){const r=cv.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
+function stamp(p){
+  const g=fit(freeCv,true);
+  g.fillStyle=color;g.beginPath();g.arc(p.x,p.y,size/2,0,6.3);g.fill();
+}
+freeCv.addEventListener('pointerdown',e=>{
+  if(mode!=='free')return;
+  e.preventDefault();
+  try{freeCv.setPointerCapture(e.pointerId)}catch(err){}
+  drawing=true;moved=false;last=pos(freeCv,e);stamp(last);
+});
+freeCv.addEventListener('pointermove',e=>{
+  if(!drawing||mode!=='free')return;
+  const p=pos(freeCv,e);
+  const g=fit(freeCv,true);
+  g.strokeStyle=color;g.lineWidth=size;g.lineCap='round';g.lineJoin='round';
+  g.beginPath();g.moveTo(last.x,last.y);g.lineTo(p.x,p.y);g.stroke();
+  last=p;moved=true;
+});
+function stopDraw(){drawing=false}
+freeCv.addEventListener('pointerup',stopDraw);
+freeCv.addEventListener('pointercancel',stopDraw);
+function redrawFill(){
+  const g=fit(fillCv,false);
+  const {w,h}=cssBox(fillCv);
+  const pic=PICS[pi];
+  g.fillStyle='#fff';g.fillRect(0,0,w,h);
+  pic.regions.forEach((reg,i)=>{
+    g.beginPath();reg.path(g,w,h);
+    g.fillStyle=done[pi][i]?reg.c:'#fff';
+    g.fill();
+  });
+  pic.regions.forEach((reg,i)=>{
+    g.beginPath();reg.path(g,w,h);
+    const cur=currentRegion();
+    g.lineWidth=cur===i?8:4;
+    g.strokeStyle=cur===i?reg.c:'#222';
+    g.stroke();
+    if(!done[pi][i]){
+      g.beginPath();g.arc(reg.hx*w,reg.hy*h,11,0,6.3);
+      g.fillStyle=reg.c;g.fill();g.lineWidth=3;g.strokeStyle='#222';g.stroke();
+    }
+  });
+  picEl.textContent=(pi+1)+' / '+PICS.length+' '+pic.name;
+}
+function currentRegion(){
+  const row=done[pi];
+  for(let i=0;i<row.length;i++)if(!row[i])return i;
+  return -1;
+}
+function prompt(){
+  if(mode==='free'){promptEl.textContent='选一种颜色，在白板上画';picEl.textContent='涂鸦';return}
+  const i=currentRegion();
+  if(i<0){promptEl.textContent=PICS[pi].name+'涂好啦';return}
+  const reg=PICS[pi].regions[i];
+  promptEl.textContent='把'+reg.name+'涂成'+BY[reg.c];
+}
+function setMode(next){
+  mode=next;
+  document.getElementById('modeFree').classList.toggle('on',mode==='free');
+  document.getElementById('modeFill').classList.toggle('on',mode==='fill');
+  freeCv.hidden=mode!=='free';
+  fillCv.hidden=mode!=='fill';
+  document.getElementById('brushes').hidden=mode!=='free';
+  document.getElementById('pager').hidden=mode!=='fill';
+  if(mode==='fill')redrawFill();
+  prompt();
+}
+fillCv.addEventListener('pointerdown',e=>{
+  if(mode!=='fill')return;
+  e.preventDefault();
+  const p=pos(fillCv,e);
+  const g=fit(fillCv,false);
+  const {w,h}=cssBox(fillCv);
+  const regs=PICS[pi].regions;
+  let hit=-1;
+  for(let i=regs.length-1;i>=0;i--){
+    g.beginPath();regs[i].path(g,w,h);
+    if(g.isPointInPath(p.x,p.y)){hit=i;break}
+  }
+  redrawFill();
+  if(hit<0)return;
+  const reg=regs[hit];
+  if(done[pi][hit]){LTL.toast(reg.name+'已经涂好了');return}
+  if(color!==reg.c){
+    LTL.toast('再看看，'+reg.name+'要涂成'+BY[reg.c]);
+    LTL.beep(180,.08,'square',.04);
+    return;
+  }
+  done[pi][hit]=true;
+  score++;scoreEl.textContent=score;
+  if(LTL.record('paint',score))bestEl.textContent=score;
+  LTL.beep(640,.08,'triangle',.05);
+  redrawFill();prompt();
+  if(currentRegion()<0){
+    LTL.toast(PICS[pi].name+'涂好啦');
+    if(done.every(row=>row.every(Boolean))){
+      promptEl.textContent='六张样图都涂完啦';
+      LTL.beep(880,.16,'triangle',.06);
+    }
+  }
+});
+function restart(){
+  if(mode==='free'){
+    const g=fit(freeCv,false);
+    const {w,h}=cssBox(freeCv);
+    g.fillStyle='#fff';g.fillRect(0,0,w,h);
+    LTL.toast('白板擦干净了');
+    return;
+  }
+  done=PICS.map(p=>p.regions.map(()=>false));
+  score=0;scoreEl.textContent='0';pi=0;
+  redrawFill();prompt();
+}
+document.getElementById('modeFree').onclick=()=>setMode('free');
+document.getElementById('modeFill').onclick=()=>setMode('fill');
+document.getElementById('restart').onclick=restart;
+document.getElementById('prev').onclick=()=>{pi=(pi+PICS.length-1)%PICS.length;redrawFill();prompt()};
+document.getElementById('next').onclick=()=>{pi=(pi+1)%PICS.length;redrawFill();prompt()};
+bestEl.textContent=LTL.getBest('paint');
+new ResizeObserver(()=>{if(mode==='free')fit(freeCv,true);else redrawFill()}).observe(freeCv.parentElement);
+setMode('free');
+fit(freeCv,false);
+window.__PAINT={
+  setMode,setColor(c){color=c;paintSwatches()},setSize(n){size=n},
+  get mode(){return mode},get color(){return color},get score(){return score},
+  picture(){return {i:pi,name:PICS[pi].name,left:done[pi].filter(x=>!x).length,prompt:promptEl.textContent}},
+  fillAt(ix,iy){
+    const r=fillCv.getBoundingClientRect();
+    fillCv.dispatchEvent(new PointerEvent('pointerdown',{clientX:r.left+ix,clientY:r.top+iy,bubbles:true,pointerId:1,pointerType:'touch'}));
+  },
+  regionPoint(i){
+    const {w,h}=cssBox(fillCv);const reg=PICS[pi].regions[i];
+    return {x:reg.hx*w,y:reg.hy*h,c:reg.c,name:reg.name};
+  }
+};
+</script></body></html>

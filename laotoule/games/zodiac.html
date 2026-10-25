@@ -54,7 +54,7 @@
 <li>左右移动最上面那只生肖，<b>松手</b>、点「放下」或按<b>空格</b>，它就会掉下去。手机可以在框里左右拖。</li>
 <li>两只<b>一样</b>的生肖碰到一起，会合成下一只。顺序是：鼠2、牛4、虎8、兔16、龙32、蛇64、马128、羊256、猴512、鸡1024。两只鸡合成<b>龙珠</b>，分数是 <b>2048</b>，这局就赢，不用再合到 4096。</li>
 <li>掉下来的大多是鼠、牛、虎、兔。龙、蛇、马也会偶尔出现，越往后越少。羊、猴、鸡只能靠合成。</li>
-<li><b>龙珠</b>是一颗红金色的珠子，珠上画着一条中国龙（有龙身、龙须）。珠子个头和马差不多。两颗龙珠再碰到会化开，再奖励一大笔分。首页关掉声音后，庆祝也不响。</li>
+<li><b>龙珠</b>是一颗红金色的珠子，珠上画着一条中国龙（有龙身、龙须）。珠子个头和马差不多。两颗龙珠再碰到会合成一只蝴蝶，蝴蝶飞出屏幕，再奖励一大笔分。首页关掉声音后，庆祝也不响。</li>
 <li>生肖停在顶上的<b>红线</b>上方大约 2 秒，这局就结束。</li>
 <li><b>锤子</b>一局最多 100 次，次数写在按钮上。点锤子，再点一只小动物，它会直接消失，并扣掉这只分数的两倍。扣完会变成负数就不能砸，按钮会变灰。砸掉以后上面的会掉下来，照旧合成。用完要等下一局。</li>
 </ul></div>
@@ -98,7 +98,7 @@ const scoreEl=document.getElementById('score'),bestEl=document.getElementById('b
 const HAMMER_MAX=100;
 let bodies=[],score=0,over=false,aimX=WORLD_W/2,current=0,next=0,cooling=0,dangerT=0,floaters=[];
 let hammers=HAMMER_MAX,hammerOn=false,hammerSig='';
-let acc=0,last=performance.now(),celebrateOn=false,bits=[],cheer=null,celeT=0,fanfareTimers=[];
+let acc=0,last=performance.now(),celebrateOn=false,bits=[],cheer=null,celeT=0,fanfareTimers=[],celeKind='born',butterfly=null;
 const keys={};
 const cele=document.getElementById('cele'),fx=document.getElementById('fx'),celeCv=document.getElementById('celeCv');
 
@@ -181,7 +181,7 @@ function drop(){
 }
 function restart(force){
   if(!force&&score>0&&!over&&!celebrateOn&&!confirm('确定重新开始吗？'))return;
-  bodies=[];score=0;over=false;dangerT=0;cooling=0;floaters=[];cheer=null;
+  bodies=[];score=0;over=false;dangerT=0;cooling=0;floaters=[];cheer=null;butterfly=null;
   celebrateOn=false;bits=[];celeT=0;fanfareTimers.forEach(clearTimeout);fanfareTimers=[];
   cele.hidden=true;cele.classList.remove('flash');
   hammers=HAMMER_MAX;hammerOn=false;
@@ -220,7 +220,8 @@ function paintHero(){
   halo.addColorStop(.45,'rgba(224,49,49,.35)');
   halo.addColorStop(1,'rgba(255,243,191,0)');
   h.fillStyle=halo;h.beginPath();h.arc(140,118,112,0,6.3);h.fill();
-  drawAnimal(h,140,118,64,DRAGON_LV,0,t);
+  if(celeKind==='fly')drawButterfly(h,140,124,t*10,78);
+  else drawAnimal(h,140,118,64,DRAGON_LV,0,t);
 }
 function fanfare(){
   fanfareTimers.forEach(clearTimeout);
@@ -234,8 +235,9 @@ function stopCele(){
 }
 function startCele(kind){
   celebrateOn=true;hammerOn=false;paintHammer();
-  document.getElementById('celet').textContent=kind==='gone'?'两颗龙珠化开啦！':'合成龙珠啦！';
-  document.getElementById('celesub').textContent=kind==='gone'?'再奖励 '+DRAGON_BONUS+' 分':'合到 2048，过关了';
+  celeKind=kind==='fly'?'fly':'born';
+  document.getElementById('celet').textContent=kind==='fly'?'变成蝴蝶飞走啦！':'合成龙珠啦！';
+  document.getElementById('celesub').textContent=kind==='fly'?'再奖励 '+DRAGON_BONUS+' 分':'合到 2048，过关了';
   paintHero();burst();
   cele.hidden=false;cele.classList.remove('flash');void cele.offsetWidth;cele.classList.add('flash');
   fanfare();
@@ -322,7 +324,8 @@ function mergePass(){
       if(a.level>=DRAGON_LV){
         addScore(DRAGON_BONUS);
         floaters.push({x:px,y:py,text:'+'+DRAGON_BONUS,life:1.1});
-        cheer='gone';
+        butterfly={x:px,y:py,x0:px,y0:py,t:0};
+        LTL.beep(880,.12,'triangle',.06);
       }else{
         const nl=a.level+1,nb=makeBody(nl,px,py);
         nb.x=Math.max(nb.r,Math.min(WORLD_W-nb.r,px));
@@ -341,6 +344,14 @@ function mergePass(){
   if(dead.size)bodies=bodies.filter((_,i)=>!dead.has(i)).concat(born);
 }
 function update(dt){
+  if(butterfly){
+    butterfly.t+=dt;
+    butterfly.x=butterfly.x0+Math.sin(butterfly.t*7)*42;
+    butterfly.y=butterfly.y0-butterfly.t*260;
+    floaters=floaters.filter(f=>{f.y-=30*dt;f.life-=dt;return f.life>0});
+    if(butterfly.y<-60||butterfly.t>3.6){butterfly=null;startCele('fly')}
+    return;
+  }
   if(over||celebrateOn)return;
   if(!hammerOn){
   if(keys.ArrowLeft||keys.a||keys.A)aimX-=260*dt;
@@ -515,6 +526,32 @@ function drawDragonBead(c,r){
   c.restore();
   badge(c,r,'龙珠');
 }
+function drawButterfly(c,x,y,flap,s){
+  s=s||48;
+  c.save();c.translate(x,y);
+  const wing=0.34+0.66*Math.abs(Math.sin(flap));
+  c.lineJoin='round';c.lineCap='round';
+  c.fillStyle='#e03131';
+  c.beginPath();
+  c.ellipse(-s*.42*wing,-s*.1,s*.48*wing,s*.32,-.45,0,6.3);
+  c.ellipse(s*.42*wing,-s*.1,s*.48*wing,s*.32,.45,0,6.3);
+  c.fill();c.strokeStyle='#222';c.lineWidth=Math.max(1.6,s*.045);c.stroke();
+  c.fillStyle='#ffd43b';
+  c.beginPath();
+  c.ellipse(-s*.28*wing,s*.22,s*.3*wing,s*.22,.35,0,6.3);
+  c.ellipse(s*.28*wing,s*.22,s*.3*wing,s*.22,-.35,0,6.3);
+  c.fill();c.stroke();
+  c.fillStyle='#fff';
+  c.beginPath();c.arc(-s*.36*wing,-s*.1,s*.08,0,6.3);c.arc(s*.36*wing,-s*.1,s*.08,0,6.3);c.fill();
+  c.fillStyle='#5c3317';
+  c.beginPath();c.ellipse(0,s*.04,s*.075,s*.36,0,0,6.3);c.fill();
+  c.strokeStyle='#222';c.lineWidth=Math.max(1.3,s*.04);
+  c.beginPath();
+  c.moveTo(-s*.02,-s*.28);c.quadraticCurveTo(-s*.24,-s*.58,-s*.3,-s*.4);
+  c.moveTo(s*.02,-s*.28);c.quadraticCurveTo(s*.24,-s*.58,s*.3,-s*.4);
+  c.stroke();
+  c.restore();
+}
 function drawAnimal(c,x,y,r,level,pop,t){
   const sc=pop>0?1-pop*2.2:1;
   c.save();c.translate(x,y);c.scale(sc,sc);
@@ -541,11 +578,22 @@ function draw(){
   ctx.fillText(dangerT>0?'快满出来了':'危险线',12,DANGER_Y-4);
   const t=performance.now()/1000;
   for(const b of bodies)drawAnimal(ctx,b.x,b.y,b.r,b.level,Math.max(0,b.pop),t);
+  if(butterfly){
+    for(let i=1;i<=5;i++){
+      ctx.globalAlpha=Math.max(0,.4-i*.06);
+      ctx.fillStyle=i%2?'#ffd43b':'#e03131';
+      ctx.beginPath();
+      ctx.arc(butterfly.x0+Math.sin((butterfly.t-i*.08)*7)*42,butterfly.y+i*26,7-i,0,6.3);
+      ctx.fill();
+    }
+    ctx.globalAlpha=1;
+    drawButterfly(ctx,butterfly.x,butterfly.y,butterfly.t*12,56);
+  }
   if(hammerOn&&!over){
     ctx.fillStyle='#e8590c';ctx.font='800 18px sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
     ctx.fillText('点一只砸掉 · 还剩 '+hammers+' 次',WORLD_W/2,8);
   }
-  if(!over&&!hammerOn){
+  if(!over&&!hammerOn&&!butterfly&&!celebrateOn){
     const r=radiusFor(current);
     ctx.globalAlpha=.35;ctx.strokeStyle='#868e96';ctx.lineWidth=2;ctx.setLineDash([4,6]);
     ctx.beginPath();ctx.moveTo(aimX,r+6);ctx.lineTo(aimX,WORLD_H-8);ctx.stroke();ctx.setLineDash([]);ctx.globalAlpha=1;
@@ -604,6 +652,8 @@ window.__ZODIAC={
   drop,restart(force){restart(!!force)},
   randomLow,weights:DROP_W.slice(),
   celebrating(){return celebrateOn},
+  get flying(){return butterfly?{x:butterfly.x,y:butterfly.y,t:butterfly.t}:null},
+  celeTitle(){return document.getElementById('celet').textContent},
   spawn(level,x,y){const b=makeBody(level,x,y);b.pop=0;b.age=1;bodies.push(b);return {level:b.level,r:b.r,v:info(level).v}},
   clear(){bodies=[]},
   get hammers(){return hammers},get hammerOn(){return hammerOn},
