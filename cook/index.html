@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>做饭指南</title>
+  <meta name="description" content="做饭指南：按分类浏览 HowToCook 菜谱，搜索菜名，或随机挑一道。">
+  <meta name="theme-color" content="#f4efe6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#161411" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://raw.githubusercontent.com">
+  <link rel="stylesheet" href="app.css">
+  <script>
+    try {
+      var theme = localStorage.getItem('cook-theme');
+      if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+    } catch (error) {}
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <a class="brand" href="#/">
+        <span class="seal" aria-hidden="true">食</span>
+        <span>
+          <span class="brand-name">做饭指南</span>
+          <span class="tagline">程序员做饭指南 · 静态版</span>
+        </span>
+      </a>
+      <div class="tools">
+        <button class="primary" id="random" type="button">随机一道</button>
+        <button id="theme" type="button">自动</button>
+      </div>
+    </header>
+
+    <form class="search" id="search" role="search">
+      <label class="sr-only" for="q">搜索菜名</label>
+      <input id="q" type="search" placeholder="搜索菜名，例如西红柿、红烧" autocomplete="off" enterkeyhint="search">
+      <button id="clear" type="button" hidden>清除</button>
+    </form>
+
+    <main id="app">
+      <p class="status">正在加载菜谱…</p>
+      <noscript><p>需要启用 JavaScript 才能浏览菜谱。</p></noscript>
+    </main>
+
+    <footer class="site-foot">
+      <p>菜谱内容来自 <a href="https://github.com/Anduin2017/HowToCook">Anduin2017/HowToCook</a>，以 <a href="https://unlicense.org/">Unlicense</a> 发布。本站只做静态浏览，不改步骤。</p>
+      <p class="fine" id="snap"></p>
+    </footer>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

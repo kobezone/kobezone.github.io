@@ -1,0 +1,15 @@
+{
+  "name": "kobezone-cook",
+  "private": true,
+  "type": "module",
+  "description": "Build the static cook/ recipe site from Anduin2017/HowToCook dishes markdown.",
+  "scripts": {
+    "update": "node scripts/update-recipes.mjs"
+  },
+  "dependencies": {
+    "marked": "15.0.12"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
