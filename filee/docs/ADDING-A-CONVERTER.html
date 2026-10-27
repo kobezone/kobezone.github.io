@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding a converter · Filee</title>
+<meta name="description" content="Adding a converter from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="../index.html">
+    <img src="../favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="../index.html">简体</a>
+    <a href="../README.html">English</a>
+    <a href="../docs.html">文档</a>
+    <a href="design/mockup.html">界面原型</a>
+    <a href="../hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="../hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="adding-a-converter">Adding a converter</h1>
+<p>A converter is one class implementing <code>IConverter</code> (<code>src/Filee.Core/Conversion/IConverter.cs</code>).
+The route planner combines converters automatically, so a new edge can unlock many conversions at once
+(for example, adding <code>epub → pdf</code> also gives <code>epub → png</code> through PDFium).</p>
+<h2 id="1-new-format-register-it">1. New format? Register it</h2>
+<p>If the format is new, add one line to <code>FormatRegistry.Known</code> (<code>src/Filee.Core/Formats/FormatRegistry.cs</code>):</p>
+<pre><code class="language-csharp">new(&quot;epub&quot;, &quot;EPUB&quot;, FormatCategory.Document, [&quot;epub&quot;]),
+</code></pre>
+<h2 id="2-write-the-converter">2. Write the converter</h2>
+<p>Create <code>src/Filee.Engines/&lt;Area&gt;/&lt;Name&gt;Converter.cs</code>:</p>
+<pre><code class="language-csharp">// EPUB → PDF with the (hypothetical) SuperEpub library (MIT).
+
+using Filee.Core.Conversion;
+
+namespace Filee.Engines.Documents;
+
+public sealed class SuperEpubConverter : IConverter
+{
+    public string Id =&gt; &quot;superepub&quot;;                 // stable, used in settings
+    public string DisplayName =&gt; &quot;SuperEpub&quot;;
+    public int MaxParallelism =&gt; 0;                  // 0 = one per CPU core; 1 for non thread-safe engines
+
+    public IReadOnlyList&lt;ConversionEdge&gt; Edges { get; } =
+    [
+        new(&quot;epub&quot;, &quot;pdf&quot;),                          // cost 10 = normal; higher for lossy/slow paths
+    ];
+
+    public EngineStatus GetStatus() =&gt; EngineStatus.Available();
+
+    public Task&lt;IReadOnlyList&lt;string&gt;&gt; ConvertAsync(ConversionStep step, IProgress&lt;double&gt;? progress, CancellationToken ct) =&gt;
+        Task.Run&lt;IReadOnlyList&lt;string&gt;&gt;(() =&gt;
+        {
+            var output = step.Output.Allocate(&quot;pdf&quot;);     // null = skip (file exists + &quot;skip&quot; policy)
+            if (output is null)
+                return [];
+            SuperEpub.Convert(step.InputPath, output);   // honour ct in long loops
+            progress?.Report(1);
+            return [output];
+        }, ct);
+}
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Never modify <code>step.InputPath</code>.</li>
+<li>Write outputs only to paths from <code>step.Output.Allocate(...)</code>. For several outputs from one input
+(pages), pass a suffix: <code>Allocate(&quot;png&quot;, $&quot;_p{page}&quot;)</code>.</li>
+<li>Scratch files go to <code>step.WorkDirectory</code> (deleted after the job).</li>
+<li>External programs: use <code>ProcessRunner.RunAsync</code> (timeout + cancellation + no shell) and find them with
+<code>EngineEnvironment.FindBundled(&quot;&lt;folder&gt;&quot;)</code> only. Filee never uses programs installed on the system (nothing from
+<code>PATH</code>, no other application&#39;s install folder): a program is either bundled with the installer (small, pinned in
+<code>engines.json</code> and fetched by <code>build/fetch-engines.ps1</code>) or an optional download the user installs in Settings →
+Engines (an <code>EnginePackage</code> in <code>EngineDownloads.Packages</code>).</li>
+<li>Return <code>EngineStatus.Unavailable(&quot;engine.reason.not_installed&quot;)</code> when a dependency is missing; the UI then greys
+out affected slices with a reason and names the package to download. Report a version with
+<code>EngineStatus.Available(version: …)</code> (see <code>EngineVersions</code>) and add an <code>engine.&lt;id&gt;.description</code> text to the three
+<code>i18n/*.json</code> files: both are shown in Settings → Engines.</li>
+</ul>
+<h2 id="3-register-it">3. Register it</h2>
+<p>Add one line to <code>EngineRegistry.CreateAll</code> (<code>src/Filee.Engines/EngineRegistry.cs</code>).
+If it should be preferred over existing engines by default, add its id to <code>AppSettings.EnginePriority</code>.</p>
+<h2 id="4-test-it">4. Test it</h2>
+<p>Add a test to <code>tests/Filee.Engines.Tests</code>. Generate the input files in the test (see <code>EngineFixture</code>) so the test
+runs everywhere without sample documents, and skip when the engine is not available:</p>
+<pre><code class="language-csharp">[Fact]
+public async Task Epub_to_pdf()
+{
+    var job = await fx.ConvertAsync([MakeEpub()], new Preset { TargetFormat = &quot;pdf&quot; });
+    Assert.Equal(JobState.Completed, job.State);
+}
+</code></pre>
+<h2 id="5-ship-it-optional">5. Ship it (optional)</h2>
+<p>Command line tools are pinned in <code>src/Filee.Engines/Infrastructure/engines.json</code> (URL, SHA-256, size, archive kind),
+which both <code>build/fetch-engines.ps1</code> and the app read. Small tools can be bundled with the installer (add the id to
+the <code>fetch-engines.ps1 -Only</code> list in <code>.github/workflows/release.yml</code>); large ones become an optional download by
+adding an <code>EnginePackage</code> to <code>EngineDownloads.Packages</code> plus its name and description in the three <code>i18n/*.json</code>
+files. Either way, add a line to <code>THIRD-PARTY-NOTICES.md</code>.</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="../hosting.html">部署说明</a> · <a href="../LICENSE">LICENSE</a> · <a href="../THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adding a language · Filee</title>
+<meta name="description" content="Adding a language from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="../index.html">
+    <img src="../favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="../index.html">简体</a>
+    <a href="../README.html">English</a>
+    <a href="../docs.html">文档</a>
+    <a href="design/mockup.html">界面原型</a>
+    <a href="../hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="../hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="adding-a-language">Adding a language</h1>
+<ol>
+<li>Copy <code>src/Filee.App/Assets/i18n/en.json</code> to <code>&lt;code&gt;.json</code> (e.g. <code>ja.json</code>, <code>de.json</code>, <code>zh-TW.json</code>).
+The file is a flat list of <code>&quot;key&quot;: &quot;text&quot;</code> pairs.</li>
+<li>Translate the values. Keep <code>{0}</code>, <code>{1}</code> placeholders — a test checks they match English.
+Keep the text short where English is short (buttons, donut labels).</li>
+<li>Register the language in <code>AppLanguages.All</code> (<code>src/Filee.App/Services/AppLanguages.cs</code>) with its native name,
+e.g. <code>(&quot;ja&quot;, &quot;日本語&quot;)</code>; the order there is the order of the language pickers. Setup (<code>src/Filee.Setup</code>) offers it
+too: add the code to the <code>/LANG</code> list in <code>src/Filee.Setup/SetupOptions.cs</code> and a row to <code>SetupTextsTests</code>.
+If the OS culture should pick it automatically, extend <code>LocalizationService.Resolve</code>. Match the code itself and
+<code>&lt;code&gt;-*</code> only (<code>&quot;fr&quot;</code> and <code>&quot;fr-CA&quot;</code>, not North Frisian <code>&quot;frr&quot;</code>), and add rows for both to
+<code>LocalizationTests.Auto_follows_the_language_the_user_reads_the_os_in</code>.</li>
+<li><code>LocalizationTests.Languages</code> automatically checks every registered language for key and placeholder parity.</li>
+<li>If the script needs another font, add a static Noto font to <code>build/fetch-fonts.ps1</code> (pinned with its SHA-256),
+to the font list in <code>SoftPalette.FontFamilies</code> and to the Noto line in <code>THIRD-PARTY-NOTICES.md</code> (variable fonts
+are not supported by Avalonia). Add the script&#39;s system UI fonts too, Windows&#39; to <code>SoftPalette.FontFamilies</code> and
+<code>SoftPalette.SystemFontFamilies</code> (Setup draws with Windows&#39; fonts only) and macOS&#39; to <code>FontFamilies</code>, e.g.
+Leelawadee UI and Thonburi for Thai.
+A language written right to left (Arabic) mirrors every window by itself (<code>SoftPalette.ApplyFlowDirection</code>).
+Pictures and drawings that must not mirror (the donut, the crop canvas, animated images, logos) set
+<code>FlowDirection=&quot;LeftToRight&quot;</code> on themselves; custom-drawn text is shaped in the UI culture&#39;s direction, as
+<code>DonutMenu</code> does.</li>
+<li>Run <code>dotnet test</code> and look at the screenshots in <code>tests/Filee.App.Tests/bin/.../screenshots</code>
+(add your language to <code>RenderTests.Pages</code> to render a few pages).</li>
+</ol>
+<p>Missing keys fall back to English at runtime, but the test suite requires every language to be complete.</p>
+<p>Portuguese ships as <code>pt-PT</code> and <code>pt-BR</code>. Automatic selection uses <code>pt-BR</code> for Brazil (including <code>pt-Latn-BR</code>),
+and <code>pt-PT</code> for neutral <code>pt</code> and other Portuguese regions. An explicit selection always wins.
+Only the region subtag counts: a private-use suffix in <code>pt-PT-x-br</code> must not select Brazil.
+The UI language changes <code>CurrentUICulture</code>; number and date formatting continue to use the user&#39;s regional
+<code>CurrentCulture</code>. Do not change machine-readable filenames, pattern tokens or command-line switches when translating.</p>
+<p>The Windows installer embeds the same JSON files, including the <code>installer.*</code> keys. Test the language with
+<code>Filee.Setup.Tests</code> as well, and extend <code>SetupTexts.Resolve</code> when a region needs a distinct catalog. The CLI
+currently has a separate, English-only text provider.</p>
+<p>Native macOS text also needs <code>&lt;language&gt;.lproj/ServicesMenu.strings</code> and, for permission explanations,
+<code>InfoPlist.strings</code>, plus a <code>CFBundleLocalizations</code> entry in <code>installer/macos/Info.plist</code>. Keep the English service
+identifier on the left of <code>ServicesMenu.strings</code>; translate its value. The packaging loop copies all <code>.lproj</code> folders
+and validates their strings files with <code>plutil</code>. These system texts follow macOS language preferences.
+Keep technical identifiers such as the KWin <code>Filee Donut</code> window title stable.</p>
+<p>Optional, but welcome in the same or a later pull request: a translated README. Add <code>README.&lt;code&gt;.md</code> with every
+section <code>README.md</code> has, link it from the language line at the top of the other READMEs and add the language to
+their list of UI languages. The maintainers add the language to the website (filee.sh).</p>
+<h2 id="demonstration-recordings">Demonstration recordings</h2>
+<p>A slide may supply <code>localizedMedia</code> entries, for example
+<code>&quot;pt-PT&quot;: { &quot;media&quot;: &quot;pt-PT/crop.webp&quot;, &quot;poster&quot;: 57 }</code>. The code uses the exact UI language, otherwise the shared
+recording; regional variants do not borrow each other&#39;s recordings. Poster indices belong to each recording.
+The optional <code>FILEE_WHATSNEW_LANGUAGE</code> environment variable makes <code>WhatsNewMedia.Generate_2_0_0</code> generate a
+language&#39;s recordings and register them in the shared manifest. Rebuild App and Setup after generating them.
+The language-showcase slide intentionally demonstrates several languages and stays shared. Browser and flip
+are desktop recordings made outside the headless generator: retain the shared recordings until localized desktop
+scenes show the full interaction. Do not automatically replace them with abbreviated headless scenes.</p>
+<p>Compact action names can use <code>preset.&lt;name&gt;.donut</code> when the donut already shows the target format underneath.
+Keep the full action name for the preset editor; custom names always take priority. <code>.short</code> is for a group&#39;s inner
+choices, whose group supplies additional context (Rotate → Left), and is a separate contract.</p>
+<h2 id="adding-a-ui-string">Adding a UI string</h2>
+<p>Add the key to <strong>all</strong> language files in the same pull request. In XAML use
+<code>Text=&quot;{DynamicResource my.key}&quot;</code>; in code use <code>ILocalizer[&quot;my.key&quot;]</code> or <code>ILocalizer.Format(&quot;my.key&quot;, arg)</code>.</p>
+<p>Set <code>FILEE_LOCALIZATION_SCREENSHOTS=1</code> for PNG captures in <code>PortugueseRenderTests</code>. Geometry assertions
+always run. Dispose directly created <code>MainWindowViewModel</code> fixtures: production <code>WindowService</code> owns their lifetime,
+but a window constructed directly in a test does not automatically unsubscribe its model.</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="../hosting.html">部署说明</a> · <a href="../LICENSE">LICENSE</a> · <a href="../THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

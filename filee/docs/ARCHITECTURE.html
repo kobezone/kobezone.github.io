@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture · Filee</title>
+<meta name="description" content="Architecture from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="../index.html">
+    <img src="../favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="../index.html">简体</a>
+    <a href="../README.html">English</a>
+    <a href="../docs.html">文档</a>
+    <a href="design/mockup.html">界面原型</a>
+    <a href="../hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="../hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="architecture">Architecture</h1>
+<pre><code>            ┌──────────────────────────── Filee.App (Avalonia) ─────────────────────────────┐
+ global     │ TriggerService ──► GestureDetector ──► RadialController ──► RadialWindow/DonutMenu │
+ mouse/keys │   (SharpHook)        (pure state         (drag / click       (transparent,          │
+ ─────────► │                       machine)            mode)               topmost window)       │
+            │                                              │ drop / click                         │
+ Explorer   │ SingleInstance (pipe) ── --convert files ──►│                                      │
+ context    │ Home drop zone ─────────────────────────────┘                                      │
+ menu       │                                              ▼                                      │
+            │                                    ConversionService ──► ToastWindow (progress)     │
+            │ MainWindow (settings pages) ◄──► UserDataStore (JSON in %APPDATA%\Filee)            │
+            └──────────────────────────────────────────────┬──────────────────────────────────────┘
+                                                           ▼
+            ┌──────────────────────────── Filee.Core ───────────────────────────────────────────┐
+            │ JobQueue ──► RoutePlanner (Dijkstra over converter edges) ──► IConverter steps    │
+            │ FormatRegistry · Preset · OutputPathResolver · ToolbarProfile · ProfileSelector   │
+            └──────────────────────────────────────────────┬──────────────────────────────────────┘
+                                                           ▼
+            ┌──────────────────────────── Filee.Engines ────────────────────────────────────────┐
+            │ Built in: Magick (images, RAW) · PdfSharp · Pdfium · PdfPig · Svg.Skia · ICNS      │
+            │ HwpxWriter + DocxWriter over DocumentReaders (DOCX, XLSX, XLS, ODS, PPTX,          │
+            │   PDF, HTML, EPUB, MOBI, FB2, HWPX, Markdown) · Spreadsheets · OOXML variants      │
+            │   · E-mail · Data · E-books · CAD · Fonts · Subtitles · 3D models                  │
+            │ Bundled: rhwp (HWP→PDF, HWP↔HWPX) · 7-Zip (archives) · Unhwp · Markdig             │
+            │ Optional: FFmpeg · LibreOffice + H2Orestart · calibre · Ghostscript · Pandoc       │
+            └────────────────────────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2 id="flow-of-a-conversion">Flow of a conversion</h2>
+<ol>
+<li><strong>Trigger</strong> – <code>TriggerService</code> receives global input from SharpHook and feeds <code>GestureDetector</code>.
+A drag gesture (modifier + drag past the threshold) opens the donut <em>before</em> files are known.</li>
+<li><strong>Donut</strong> – <code>RadialWindow</code> is transparent, topmost and not activated, so Explorer&#39;s drag continues.
+The first <code>DragEnter</code> delivers the file list; <code>RadialViewModel</code> picks a <code>ToolbarProfile</code> by extension
+(<code>ProfileSelector</code>: the first normal profile that has every file&#39;s extension; for a mix of types the first
+mixed-selection profile whose checked extensions cover the files, else the one with nothing checked) and asks
+<code>PresetAvailability</code> which presets can run (disabled slices get a reason).</li>
+<li><strong>Drop</strong> – the slice under the cursor is a preset. <code>ConversionService.Start</code> enqueues a <code>ConversionJob</code>.
+The drop is always reported as <em>Copy</em> so Explorer never deletes the source files.</li>
+<li><strong>Plan</strong> – for every file, <code>RoutePlanner</code> finds the cheapest chain of converter edges from the source format to
+the target (at most 3 hops). Engine priority (Settings → Engines) breaks ties. Some edges are limited: tracing
+only starts from raster images (<code>ImageSourcesOnly</code>), and PDF → PPTX picture slides are only ever a route of their
+own (<code>DirectOnly</code>), never a step of a longer one.</li>
+<li><strong>Run</strong> – <code>JobQueue</code> runs steps with per-engine concurrency limits. Intermediate files live in a temp folder;
+final outputs are named by <code>OutputPathResolver</code> (pattern, folder, conflict policy; the source is never overwritten).
+Each name stays reserved while a conversion holds it. A conversion that fails or is cancelled deletes what it began
+writing, but only at a path that was its alone: nothing was there before and no other conversion was handed the
+same name (&quot;Overwrite&quot;). It frees its names and removes an output folder it made if that is left empty.
+A PDF target&#39;s finishing (watermark, page numbers, password; <code>IPdfFinisher</code>) runs after the last step, on every
+PDF a file became, and once on a merged PDF.
+<em>Replace the original</em> (<code>OutputRule.ReplaceOriginal</code>, off by default) comes after that, for a finished result of
+the source&#39;s own format and extension, or another spelling of it (<code>.jpeg</code> / <code>.jpg</code>; TXT also covers scripts and
+logs, PPT also <code>.pps</code> and <code>.pot</code>, so those need the same extension). The result is first
+moved next to the source under a temporary name, then the source goes to the Recycle Bin / Trash
+(<code>IPlatformServices.MoveToTrash</code>, in the app and the command line), then the result takes its name. Windows only
+ever recycles (IFileOperation with a sink that refuses a delete it can&#39;t recycle). When the source can&#39;t go there
+(no Recycle Bin on the drive, a file open elsewhere, a read-only file), both stay and the file&#39;s notice says why,
+with a translated reason (<code>trash.*</code>). A result &quot;Only if smaller&quot; copied from the source leaves the source alone.
+Watch folders and files from a browser never replace.
+&quot;Merge into one PDF&quot; converts each file to PDF and merges with PDFsharp.
+&quot;Compress into one archive&quot; packs the dropped files, unconverted, with the archive engine (<code>IFileCombiner</code>).
+&quot;Merge videos&quot;, &quot;Merge audio&quot; and &quot;Video from images&quot; join the files, in the order picked in the merge order
+window, into one file with FFmpeg (<code>IMediaJoiner</code>); pictures become PNG through the image engines first. Like the
+other one-file jobs, the output follows &quot;subfolder only for several files&quot;, and a join that fails or is cancelled
+is undone by the job&#39;s allocator, which deletes only paths that were the job&#39;s own.</li>
+<li><strong>Report</strong> – progress and results appear in the toast window and in Home → Recent conversions.
+Renderers check only the original source for referenced fonts. <code>ConversionStep.MissingFonts</code> reports any missing
+families to <code>FileResult.MissingFonts</code>; the toast card can offer one trusted source, while the CLI and watch jobs
+report the names without pausing conversion or installing anything.</li>
+</ol>
+<h2 id="files-dragged-from-a-web-browser">Files dragged from a web browser</h2>
+<p>A picture, a link to a file or a download dragged out of a browser opens the donut like a file from the file manager.
+A drag gesture over a browser (<code>WebBrowsers</code>, by process name) counts as over the file manager, so the default scope
+covers it; click and key gestures don&#39;t, as they read the file manager&#39;s selection.
+<code>DraggedFiles.Read</code> asks <code>BrowserDrags</code> (App, reads Avalonia&#39;s drag data) first; <code>BrowserDrag</code> (Core, pure rules)
+decides what in the drag is a file:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What the drag carries</th>
+<th>What Filee takes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Chrome / Edge, Windows</td>
+<td>the picture as a virtual file (<code>FileGroupDescriptorW</code> + <code>FileContents</code>, which Avalonia 12 gives as a storage item without a local path), a <code>.url</code> virtual file for links, <code>UniformResourceLocatorW</code>, <code>text/x-moz-url</code>, <code>HTML Format</code></td>
+<td>the picture&#39;s own bytes; for a link, its address</td>
+</tr>
+<tr>
+<td>Firefox, Windows</td>
+<td>the picture written to <code>%TEMP%</code> (<code>CF_HDROP</code>), <code>text/x-moz-url</code>, file promise formats</td>
+<td>the temporary copy (a local file in the temp folder <em>and</em> a web address on the drag)</td>
+</tr>
+<tr>
+<td>Chrome / Firefox, Linux</td>
+<td><code>text/x-moz-url</code>, <code>_NETSCAPE_URL</code>, <code>text/html</code> (Avalonia turns <code>text/uri-list</code> into local files only and drops http addresses)</td>
+<td>the address</td>
+</tr>
+<tr>
+<td>Safari / Chrome, macOS</td>
+<td>file promises (not receivable through Avalonia), <code>public.url</code>, <code>public.html</code>, sometimes picture data</td>
+<td>the address, else the picture data</td>
+</tr>
+</tbody></table>
+<p>Rules, in order: files handed over with their bytes (never <code>.url</code> shortcuts or programs); a picture (an HTML fragment
+that is one <code>&lt;img&gt;</code> and no text, or a Firefox file promise); a <code>DownloadURL</code> a page sets; links only when the address
+ends in an extension Filee converts and isn&#39;t a web page (<code>.html</code>, <code>.php</code>, none); last, picture pixels for a <code>blob:</code>
+picture. Plain text is never read. <code>data:</code> addresses are decoded.</p>
+<p>Until the conversion runs, the files stand as <strong>placeholders</strong> (<code>WebDrop</code>): paths in <code>%TEMP%\Filee\web\&lt;drop&gt;\drop\&lt;n&gt;\</code>
+named like the file will be, so the donut picks the profile by extension without touching the network. No HEAD request
+is made: a picture without an extension stands as <code>.jpg</code> and a link without one isn&#39;t offered. <code>ConversionService.Start</code>
+gives the job a <code>WebDropFetcher</code> (<code>ISourceFetcher</code>): <code>JobQueue</code> saves every source first (half of its progress), then
+converts. Failures are per file (<code>error.web_*</code>), cancelling stops a download, and the job toast/ring shows both phases.
+While files are saved, a badge pops up above the donut&#39;s progress ring and above the toast&#39;s progress bar with the
+speed and the amounts (&quot;2.4 MB/s · 12.3 / 48.0 MB&quot;, &quot;· 2 of 3 files&quot; for several): <code>FileResult.Transfer</code> holds each
+file&#39;s byte count, <code>ConversionJob.Transfer()</code> sums them, and <code>DownloadBadge</code> (App) averages the speed over the last
+second with the Engines page&#39;s <code>TransferRate</code> and units, rewritten four times a second and shown after 300 ms.</p>
+<ul>
+<li><strong>Where</strong>: Settings → General → &quot;Files dragged from a browser&quot; (<code>AppSettings.BrowserDrops</code>): the user&#39;s Downloads
+folder (<code>IPlatformServices.DownloadsFolder</code>: the shell&#39;s known folder on Windows, <code>XDG_DOWNLOAD_DIR</code> on Linux,
+<code>~/Downloads</code> on macOS) or a chosen one. &quot;Next to the source&quot; means this folder for these files
+(<code>OutputRule.SourceFolder</code>, set per job, never saved), so subfolder rules apply there and fixed folders stay fixed.</li>
+<li><strong>Save only the converted file</strong>: the original goes to the drop&#39;s work folder, which <code>Release</code> deletes when the job
+ends; leftovers from a crash are deleted at start-up after a day.</li>
+<li><strong>Downloads</strong> (<code>WebDownloader</code>): http and https only, at most 5 redirects (never from https to http or off the web),
+2 GB cap whether or not the server says the size, 30 s to answer and 30 s without data at most. No cookies or
+credentials are sent: a file behind a sign-in comes back as the sign-in page, which is refused as a web page
+(&quot;save it from the browser first&quot;). A browser&#39;s own bytes (virtual files, Firefox&#39;s copy) don&#39;t have that limit.</li>
+<li><strong>Names and safety</strong>: Content-Disposition, else the page&#39;s name, else the address; then the first bytes decide the
+extension of pictures and PDFs (<code>.jpg</code> that is WebP becomes <code>.webp</code>). Names are cut to a plain file name (no folders,
+no device names, at most 120 characters) and never replace an existing file (<code>name (2).ext</code>). Programs, installers and
+scripts are refused by extension, media type and first bytes; nothing downloaded is ever run, and every file goes
+through the same converters as any other.</li>
+</ul>
+<h2 id="donut-control">Donut control</h2>
+<p><code>Controls/DonutMenu.cs</code> draws the ring itself (no child controls) for speed. <code>DonutGeometry.cs</code> holds the pure math
+(slice angles, hit testing) and is unit tested. The same control is the live toolbar and, with <code>IsEditMode</code>, the
+editor on the <em>Donut toolbar</em> settings page (drag to reorder, ✎ / right-click to edit).
+Animations are small springs advanced per frame; <code>Motion.Enabled == false</code> (<em>Reduce animations</em>) snaps them.</p>
+<p>Every <code>ToolbarProfile</code> has two faces: <code>PresetIds</code> (the front) and <code>BackPresetIds</code> (the back; the built-in donuts get
+the less common formats and tools of their file type, see <code>BuiltInData.CreateProfiles</code>). The flip key
+(<code>DonutSettings.FlipKey</code>, Tab unless recorded otherwise in Settings → Shortcuts; <code>EffectiveFlipKey</code> refuses keys the
+donut or a keyboard shortcut uses) and the mouse wheel (<code>FlipWithWheel</code>, one flip per turn of the wheel: notches less
+than <code>DonutMenu.WheelQuietMs</code> apart are one turn) flip the open donut (<code>DonutMenu.Flip.cs</code>): the ring turns about its
+vertical axis in 200 ms, an open group&#39;s ring folding first, and halfway, edge-on, <code>FaceSwapping</code> has
+<code>RadialViewModel</code> show the other face, so slices, hit tests and drops always belong to the face that is drawn.
+<em>Reduce animations</em> swaps the faces at once. <code>RadialViewModel</code> builds both faces with the same <code>PresetAvailability</code>
+check (the back right after the front is on screen); a face with no slice for the files (or none at all) isn&#39;t
+flipped to, and only then does the hub leave out its &quot;⟳ Tab back&quot; hint (a mouse in place of the key when only the
+wheel flips). In click mode the focused window gets the key (<code>DonutMenu.HandleKey</code>) and the donut the wheel. During a
+drag the donut&#39;s window has no keyboard focus, so <code>RadialController</code> turns on <code>TriggerService.WatchFlipKey</code> while
+the drag donut shows files and flips on <code>FlipKeyPressed</code> / <code>FlipWheelTurned</code>: the global hook only listens (it
+can&#39;t hold an event back; Explorer and Finder ignore Tab during a drag) and reports one flip per key press.
+The editor&#39;s Front / Back switch (<code>ToolbarPageViewModel.EditingBack</code>) edits either list with the same drag and drop.</p>
+<p>A group is one slice that opens up to six non-group actions. Its members may be conversions or interactive tools
+(for example the PDF Edit group contains Crop and the page editor); groups cannot contain another group. The group
+editor offers both kinds, and <code>UserDataStore.EnsureConsistency</code> removes missing, duplicate, nested or excess members
+without excluding tools.</p>
+<h2 id="crop-overlay-and-pdf-page-editor">Crop overlay and PDF page editor</h2>
+<p>The image Crop tool (<code>tool-crop</code>) and PDF Crop (<code>tool-pdf-crop</code>) open <code>Views/CropOverlayWindow</code> instead of running a job:
+the files one after another,
+each cropped by hand and saved by <code>CropService</code> (the preset&#39;s output rule, the source&#39;s quality kept, animated or
+multi-frame pictures refused, the EXIF thumbnail dropped), one history entry for the run. A PDF preview is rendered
+with PDFium and the chosen rectangle changes every page&#39;s crop box in a copied document opened in modify mode, so
+text, vectors, outlines, forms, page labels and document information remain PDF objects and stay attached.</p>
+<ul>
+<li><code>CropOverlayViewModel</code> walks the queue (Enter saves and opens the next file, Skip, Esc closes), keeps a
+<code>CropQueueItem</code> per file for the strip of thumbnails (waiting, current, done, skipped, failed; a thumbnail is a
+small copy of the preview, made once) and, after the last file, shows the summary when something failed or was
+skipped. Every file starts free and whole, its portrait/landscape choice following the picture.</li>
+<li><code>Controls/CropCanvas</code> is the stage: the picture inside <code>ImagePadding</code>, the part outside the frame frosted (a copy at
+most 40 px across, drawn large) under a veil of the page colour, the frame in the accent colour with round handles,
+a rule-of-thirds grid while dragging and a size chip that follows the frame. A frame being moved snaps onto the
+picture&#39;s vertical or horizontal centre line within <code>CropMath.SnapDistance</code> (8 px) and shows that line as a dashed
+guide until the drag ends. The preview is downscaled once by
+<code>CropService.LoadPreviewAsync</code>; nothing is decoded again while dragging. Programmatic changes (reset, a ratio, a
+new picture) ease in with tweens read against the clock, so a lost frame never leaves one half done; dragging and
+arrow-key nudges follow at once, and <code>PlayAnimations</code> (from <code>Motion.Enabled</code>) turns all of it off.</li>
+<li><code>Controls/AspectDial</code> is a small donut of the ratios (free, original, 1:1, 5:4, 4:3, 3:2, 16:9): each slice a
+<code>RingSegment</code> button that answers only inside its wedge (<code>DonutGeometry.Wedge</code>, rounded by the softness), the hub
+swaps portrait and landscape. A with the pointer over the stage opens it around the pointer, as the donut opens,
+growing from its middle and kept inside the window; A without a pointer there (the keyboard) and its toolbar button
+open it over the button with a slice focused for the arrow keys. <code>AspectGlyph</code> is the dial in miniature on that
+button, and <code>CropSummaryRing</code> the end summary&#39;s donut (a slice per file).</li>
+<li><code>Controls/CropMath</code> holds the arithmetic (ratios and their portrait forms, nudging by whole pixels, the frame in
+pixels, where the size chip goes, where the dial opens) and is unit tested.</li>
+</ul>
+<p><code>tool-pdf-pages</code> opens <code>Views/PdfPageEditorWindow</code>: it previews, reorders, rotates, deletes, adds and extracts pages.
+Each source PDF&#39;s bytes and page sizes are cached once after the window has appeared; thumbnails and the large preview
+render off the UI thread. A whole-document edit keeps the original catalogue and changes <code>/Rotate</code> in modify mode.
+An actual reorder, deletion, addition or extraction builds a new PDF from selected page objects. A PDF that opens
+without a password but requires an owner password for modify mode uses the same page-copy fallback as compression;
+its outlines and form fields are not preserved by that fallback. Generated copies are writable even when the source
+has the read-only attribute; the source&#39;s bytes and attributes are left alone.</p>
+<h2 id="clip-window">Clip window</h2>
+<p>The Cut a clip tool (<code>tool-clip</code>, first on the back of the video donut) opens <code>Views/ClipWindow</code> instead of running a
+job. The window only chooses the clip; writing it is an ordinary conversion.</p>
+<ul>
+<li><code>Core/Presets/ClipCutter</code> does every edit without the window: the parts of the clip (start, end, speed, volume,
+mute), gaps left by Delete, the blade, edge trims that take back or cut away, music on A2, fades, Remove silence and
+undo / redo (one step per drag). The result is a <code>ClipEdit</code>, unit tested on its own.</li>
+<li><code>ClipWindowViewModel</code> holds the window&#39;s state: the overview of the whole video (<code>Controls/ClipTimeline</code>: 16
+frames, the loudness, the handles) and the sequence under it (<code>Controls/ClipSequence</code>: V1 pictures, A1 the video&#39;s
+sound, A2 music). Both are custom-drawn controls; their pictures and loudness are taken again only when the clip&#39;s
+ends rest.</li>
+<li>Space plays the clip as it will be written: <code>Engines/Media/ClipPreview</code> runs the same filter graph as the output,
+the pictures as raw BGRA frames over a pipe and the sound through <code>ffplay</code> (when it sits next to Filee&#39;s FFmpeg;
+without it the preview is silent). FFmpeg for the window runs below normal priority.</li>
+<li>Save calls <code>ClipTool.ConversionOf</code>, which carries the <code>ClipEdit</code> in <code>MediaOptions.Clip</code>, so the toast, cancel, the
+output rules (<code>{name}_clip</code> next to the video) and the history work as for any conversion. <code>FfmpegConverter</code>
+copies one plain stretch with <code>-ss/-to</code> and <code>-c copy</code> (<em>Fast, no re-encoding</em>), or encodes the exact cut.</li>
+<li>Anything else is one filter graph (<code>MediaEncoding.ClipGraphOf</code>): the video is read once, <code>split</code>/<code>trim</code> per piece,
+<code>setpts</code> and chained <code>atempo</code> for speed, <code>volume</code>, <code>color</code>/<code>anullsrc</code> for gaps, <code>concat</code>, the music as a second
+input (<code>atrim</code>, <code>volume</code>, <code>afade</code>, <code>adelay</code>, <code>amix</code>), then <code>fade</code>/<code>afade</code>. It is encoded with the preset&#39;s quality,
+size and codec.</li>
+</ul>
+<h2 id="spreadsheet-print-studio">Spreadsheet print studio</h2>
+<p>The <code>tool-sheet-studio</code> tool opens an independent <code>Views/SpreadsheetPrintStudioWindow</code> for each dropped XLSX workbook
+instead of starting a normal conversion job. <code>SpreadsheetPrintStudioViewModel</code> owns an ordered, non-destructive print plan: each visible
+sheet starts as one region and the user can add more regions, change paper, orientation, scale, margins, page order,
+hidden rows and manual breaks, then see the PDF that those settings will produce.</p>
+<ul>
+<li><code>SpreadsheetPrintInspector</code> reads workbook metadata and streams the large worksheet data with <code>XmlReader</code>; opening
+a large workbook neither builds nor retains an <code>XDocument</code> for every sheet.</li>
+<li><code>SpreadsheetPrintPackage</code> makes a disposable XLSX under <code>JobQueue.DefaultWorkRoot</code>. It keeps every worksheet and
+named range so cross-sheet formulas remain valid, hides the sheets not being rendered, and changes only the chosen
+sheet&#39;s print settings. A new print area is written only after the user explicitly changes or accepts the range.</li>
+<li><code>SpreadsheetPrintService</code> runs LibreOffice once for each region. Preview and export use the same disposable-workbook
+path; export then joins the region PDFs in the chosen order with PDFsharp. The ordinary XLSX → PDF donut conversion
+can still differ because route planning may select Filee&#39;s built-in spreadsheet reader instead of LibreOffice.</li>
+<li><code>PdfPreviewDocument</code> caches a PDF&#39;s bytes and page geometry. The studio asks PDFium/PDFtoImage for small thumbnails
+and only one large selected page, all decoded away from the UI thread; exporting never performs preview rendering.
+Cancellation closes LibreOffice and the temporary job folder is removed on success, error or window close.</li>
+</ul>
+<h2 id="settings-and-data">Settings and data</h2>
+<p><code>UserDataStore</code> owns <code>settings.json</code>, <code>presets.json</code>, <code>profiles.json</code> and <code>history.json</code>
+(System.Text.Json source generation, atomic writes, broken files are kept as <code>*.broken</code>).
+Bump <code>AppSettings.CurrentSchemaVersion</code> and add a step to <code>SettingsMigrations</code> when the format changes.</p>
+<h2 id="localization-and-theming">Localization and theming</h2>
+<ul>
+<li><code>LocalizationService</code> loads <code>Assets/i18n/&lt;lang&gt;.json</code> into <code>Application.Resources</code>; XAML uses
+<code>{DynamicResource key}</code>, so switching language updates the UI live.</li>
+<li><code>ThemeService</code> writes the accent colour, corner radii, fonts, the reading direction and Fluent&#39;s
+<code>SystemAccentColor*</code> into application resources. Arabic reads right to left: <code>Styles/Soft.axaml</code>&#39;s Window style
+takes <code>FlowDirection</code> from that resource, so every window mirrors; the donut, the crop canvas and animated images
+stay left to right. Light/dark surface colours are theme dictionaries in <code>Styles/Soft.axaml</code>; a user&#39;s
+<code>theme.json</code> (<code>CustomTheme</code>, see <a href="CUSTOM-THEMES.html">CUSTOM-THEMES.md</a>) overrides them with theme dictionaries in
+application resources, which are searched first.</li>
+<li>Window zoom (<code>Services/UiZoom</code>): Theme → <em>Window size</em> (− / + and <em>Reset</em>), and in any tracked window the
+platform&#39;s command key (<code>HotkeyConfiguration.CommandModifiers</code>: Ctrl, Cmd on macOS) with the mouse wheel, plus /
+minus (Shift allowed, Alt not: AltGr is Ctrl + Alt) or 0 for 100 %. 70–180 % in 10 % steps, every window at once.
+<code>UiZoom.Track(window)</code> wraps the window&#39;s content in a <code>LayoutTransformControl</code>, so layouts see the room they really
+have. Small wheel deltas (touchpads, smooth wheels, pinching on a Windows touchpad) add up to one step per whole notch.
+Windows that can&#39;t be resized grow with the zoom (their designed width × the zoom) up to their screen, cap their
+height to it and scroll; the engine setup keeps itself on screen and scrolls its own list (<code>fitsItself</code>).
+Tracked: the main window, the preset, group, rename and merge-order editors, the engine setup, LibreOffice options,
+close, sponsor, what&#39;s new and update-progress windows and <code>WindowService</code>&#39;s message dialog. Not tracked, so at
+100 %: the donut (it has its own size), the toast and the corner notices (update, engine update, feedback, format
+request, elevation), which are placed in a screen corner like system notifications, and the crop overlay, whose
+wheel zooms the crop. Drop-down lists, context menus and tooltips open in their own popup windows outside the
+transform and stay at 100 % too. The size is <code>UiScale</code> in settings.json (1 when missing, so no schema step); it is
+written by <code>UserDataStore.SaveUiScale</code> 0.6 s after the last change (and on exit), without raising <code>SettingsChanged</code>.</li>
+</ul>
+<h2 id="whats-new-slides">&quot;What&#39;s new&quot; slides</h2>
+<p>After an update, Filee shows the new version&#39;s features once as slides (an animation or picture, a title, a line or
+two). The pieces:</p>
+<ul>
+<li><code>Assets/WhatsNew/&lt;version&gt;/slides.json</code> lists the slides: <code>id</code>, <code>media</code> (a file next to it), and the i18n keys of
+<code>title</code> and <code>text</code> (<code>whats_new.&lt;version&gt;.&lt;id&gt;.title</code>, in every language file). <code>SlideDeck</code> (Controls) reads every
+manifest from the assembly&#39;s resources; a broken one is skipped.</li>
+<li><code>AnimatedImage</code> shows GIF, animated WebP or a still picture. Avalonia&#39;s <code>Image</code> shows only the first frame, so
+<code>AnimatedImageDecoder</code> decodes frames with Skia&#39;s <code>SKCodec</code>, which also says which earlier frame each one is drawn
+over (<code>RequiredFrame</code>, disposal included). The file is copied into an <code>SKData</code> and each frame is decoded straight
+into a <code>WriteableBitmap</code>&#39;s framebuffer: no managed buffer is ever handed to native code. <code>FrameTimeline</code> keeps the
+frame durations (0–10 ms counts as 100 ms, as in browsers) and the loop count. The animation pauses while the
+control is hidden or its window is minimized, shows the first frame with reduced motion (<code>AutoPlay</code>), and gives
+the decoder and bitmap back when it leaves the visual tree or its source changes.</li>
+<li><code>SlideShow</code> is the deck itself (picture, texts, position dots), built in code so <code>Filee.Setup</code> can link the same
+files for a slideshow on its progress page (<code>AutoAdvance</code>). All slides&#39; texts sit in one grid cell, only the
+current one visible, so the height is the tallest slide&#39;s and the window doesn&#39;t jump.</li>
+<li><code>WhatsNewWindow</code> adds the card, ✕, Previous / Next (&quot;Get started&quot; on the last slide), ←/→ and Esc.</li>
+<li><code>WhatsNewService</code> decides at start-up, before the first run is marked complete:<ul>
+<li>a fresh install (first run not completed) needs no slides, as the first-run setup introduces Filee; its
+version is stored as seen;</li>
+<li>otherwise <code>AppSettings.WhatsNewSeenVersion</code> (null in settings older than the slides, which means &quot;updated&quot;)
+is compared with the running version, and the newest deck after it, up to this version, is shown;</li>
+<li>the same version or a downgrade shows nothing and never lowers what was seen; an update without a deck is
+stored as seen quietly.
+The version is stored when the window opens. A start in the background (<code>--background</code> at sign-in, or the
+Explorer menu) keeps the deck until <code>WindowService.ShowMain</code> raises <code>MainShown</code>; the installer starts an updated
+Filee with <code>--background --whats-new</code>, which shows it at once. About → &quot;What&#39;s new in Filee X&quot; opens the newest
+deck again.</li>
+</ul>
+</li>
+</ul>
+<p>The <code>&lt;!-- update --&gt;</code> lines of CHANGELOG.md are the other half: the update card shows them for a version that isn&#39;t
+installed yet; the slides introduce the installed one. The demo animations are rendered by
+<code>tests/Filee.App.Tests/WhatsNewMedia.cs</code> from the real windows (see CONTRIBUTING.md, &quot;Releasing&quot;).</p>
+<h2 id="command-line-and-watch-folders">Command line and watch folders</h2>
+<ul>
+<li><code>Filee.Cli</code> (<code>filee-cli.exe</code>, run as <code>filee</code> through <code>cli\filee.cmd</code>, which Setup can put on PATH) composes the same
+pipeline as the app without any UI (<code>CliHost</code>: <code>UserDataStore</code>, <code>EngineRegistry</code>, <code>ConverterCatalog</code>, <code>JobQueue</code>)
+and reads the app&#39;s presets and engine order. It is published into the app folder, so both share one runtime and
+the bundled engines; its name can&#39;t be <code>filee.exe</code> next to <code>Filee.exe</code> on a case-insensitive file system.</li>
+<li><code>Filee.Core/Watching/FolderWatcher</code> watches one <code>WatchRule</code> with a <code>FileSystemWatcher</code> and converts a file once it
+has kept its size and time for a moment and opens without sharing (downloads and copies in progress are skipped).
+Temporary files, unknown formats and dedicated output and originals folders are ignored. A rule may also write
+into the watched folder itself. In that case, generated file versions (path, size and modification time) and
+generated result directories are recorded in <code>.filee-watch-&lt;rule hash&gt;.json</code> inside the watched root. The hidden
+state file prevents those results from becoming new inputs, including after an inbox watcher restarts; a changed
+file with an old output name is accepted again. A failure to save this state is logged because results may be
+retried after restart. Removing a rule&#39;s state file also forgets its results.
+The tray app runs one per rule (<code>WatchFolderService</code>, Settings → Watch folders, conversions in the toast and
+history); <code>filee watch</code> runs one on its own, with a stable <code>cli</code> rule identity across command restarts.</li>
+</ul>
+<h2 id="platform-code">Platform code</h2>
+<p>Everything OS-specific goes through <code>IPlatformServices</code> (<code>Filee.Core/Platform</code>). Windows lives in
+<code>Filee.Platform.Windows</code>; macOS will get its own project. Global input uses SharpHook on both.</p>
+<p>Home → Recent conversions opens a result with <code>OpenFile</code> (the shell on Windows, <code>open</code> on macOS, <code>xdg-open</code> on Linux,
+so a file is handed to its app and never started itself; only formats Filee knows are offered) and, where
+<code>SupportsOpenWith</code> (Windows), the shell&#39;s &quot;Open with&quot; dialog (<code>SHOpenWithDialog</code>, on a thread of its own because it
+blocks until closed). The cards&#39; pictures come from <code>HistoryThumbnails</code>: Skia decodes them off the UI thread, scaled
+down while decoding where the format allows, from a copy read in one go so the file isn&#39;t held open, and a small cache
+keeps them while the files are unchanged. For video files, FFmpeg extracts and scales a representative frame off the UI thread without locking the file.</p>
+<p>On macOS, files reach Filee from file managers other than Finder too (issue #160). The &quot;Convert with Filee&quot; service
+(<code>MacOSServicesProvider</code>) and the donut&#39;s drags (<code>DraggedFiles</code>) read file URLs first, then the older
+<code>NSFilenamesPboardType</code> array of paths (<code>PasteboardPaths</code>); the service also takes plain-text lines that are absolute
+paths. The donut registers those types with AppKit next to Avalonia&#39;s own, so such a drag reaches it, and a drag or
+service request without readable files is logged with the types it offered. File promises (<code>NSFilePromiseProvider</code>)
+can&#39;t be received through Avalonia; for a browser drag Filee reads the address and HTML it also offers, which the donut
+registers too (see &quot;Files dragged from a web browser&quot;). A click-mode donut opened for a later launch or the service forgives one loss of
+focus within a second of opening (<code>ActivationGrace</code>): Filee becoming the active app can take focus away from it.</p>
+<p>The donut, the toast and the notices are transparent windows. On Windows Filee keeps Avalonia&#39;s rendering defaults
+(ANGLE on Direct3D 11 composed through WinUI composition, then DirectComposition, then the window&#39;s redirection
+surface; software rendering when Direct3D 11 fails): each of them keeps per-pixel transparency. The log says what was
+picked (<code>Rendering: AngleEgl with WinUIComposition</code>), lists the graphics adapters, carries Avalonia&#39;s own errors from
+starting the GPU paths (<code>AvaloniaLogForwarder</code>), and describes each kind of transparent window the first time it
+shows (<code>TransparentWindows</code>). A system backdrop (Acrylic, Mica) or an accent blur on such a window turns its
+transparent area into a blurred rectangle (issue #269). Filee sets neither, so one found there came from another
+program: each time the window shows, a backdrop is set back to none and the accent (which can&#39;t be read back) is
+turned off. For a report that still shows the wrong thing, the <code>FILEE_RENDERING</code> environment variable picks another
+way to draw (<code>WindowsRendering</code>): <code>dcomp</code> (skip WinUI composition), <code>redirection</code> (Direct3D into the redirection
+surface) or <code>software</code> (no GPU); unset or <code>auto</code> keeps the defaults. Filee reads it at start.</p>
+<h2 id="explorer-integration">Explorer integration</h2>
+<p>Settings → General → &quot;Show “Convert with Filee” in the Explorer context menu&quot; (<code>AppSettings.ContextMenuEnabled</code>) is
+applied by <code>WindowsPlatformServices.SetContextMenu</code> at start-up and whenever settings change (installed builds only):</p>
+<ul>
+<li><strong>Classic verb</strong> <code>HKCU\Software\Classes\*\shell\Filee</code> (<code>Filee.exe --convert &quot;%1&quot;</code>, one process per file; the running
+instance collects them through <code>SingleInstance</code>) and a <strong>Send To</strong> shortcut. Per user, no admin rights. On Windows 10
+this is the entry; on Windows 11 it sits under &quot;Show more options&quot;.</li>
+<li><strong>Windows 11 top-level entry</strong> (optional): an <code>IExplorerCommand</code> in <code>FileeExplorerMenu.dll</code>
+(<code>src/Filee.ExplorerMenu</code>, plain C, no C runtime) declared by the sparse package <code>FileeExplorerMenu.msix</code>
+(<code>ExplorerMenuPackage.CreateManifest</code>: <code>desktop4:FileExplorerContextMenus</code>, <code>desktop5:ItemType Type=&quot;*&quot;</code>,
+<code>com:SurrogateServer</code>, <code>uap10:AllowExternalContent</code>, <code>AppListEntry=&quot;none&quot;</code>). Both files ship next to Filee.exe and the
+package&#39;s external location is the install folder (<code>C:\Program Files\Filee</code> by default).<ul>
+<li>The package is <strong>unsigned</strong> (publisher contains <code>OID.2.25.311729368913984317654407730594956997722=1</code>; Filee has no
+code-signing certificate). Windows only registers an unsigned package with executable content <strong>with
+administrator rights</strong> (it installs it for all users); a per-user attempt fails with 0x80073D2B &quot;an unsigned
+package cannot include Executable activations&quot;. Setup (<code>src/Filee.Setup</code>) has those rights anyway and
+registers it on Windows 11 x64 while its option is ticked. Later the General page offers &quot;Add to the main menu&quot;,
+which runs <code>Add-AppxPackage -Path … -ExternalLocation … -AllowUnsigned</code> in Windows PowerShell through one UAC
+prompt (<code>ExplorerMenuRegistration</code>). A signed package would register per user without a prompt.</li>
+<li>The manifest version (<code>ExplorerMenuPackage.ManifestVersion</code>) is independent of the app version, so app updates
+don&#39;t need a new prompt: the DLL is loaded from the install folder and updated with the app. Bump it only when the
+manifest changes; the page then offers to add the entry again (&quot;Outdated&quot;).</li>
+<li>The DLL shows the entry only for files (not folders or items inside ZIP folders) and only while
+<code>%APPDATA%\Filee\explorer-menu.txt</code> exists. The app writes the title in the UI language there while the setting is
+on and deletes it when the setting is off, so switching the setting takes effect without re-registering. While the
+package is registered the classic verb is removed (Windows lists packaged commands under &quot;Show more options&quot; too).</li>
+<li>Invoke starts <code>Filee.exe --convert &quot;&lt;path&gt;&quot;…</code> next to the DLL and returns at once. Selections longer than a
+command line go through <code>%TEMP%\Filee-convert-*.txt</code> (<code>--convert-list</code>, one path per line), which the app deletes.</li>
+<li>Updates: Setup asks the running Filee to exit (<code>Filee.exe --quit</code>), then renames a <code>FileeExplorerMenu.dll</code> that
+Explorer still has loaded into its backup folder (Windows allows renaming a loaded DLL, not replacing or deleting
+it) and has Windows delete the old copy at the next restart, so updating needs no restart. An update keeps the
+registration as it was and refreshes it. Uninstall runs <code>Filee.exe --uninstall-cleanup</code> (<code>UninstallCleanup</code>): it
+removes the package, the title file, the classic verb, the startup entry and downloaded engines; the uninstaller
+then asks whether to delete the settings too (they stay by default).</li>
+<li>Build: <code>pwsh build/build-explorer-menu.ps1</code> downloads a pinned Zig (SHA-256 checked) into <code>build/.cache</code>, compiles
+the DLL and packs the MSIX with <code>build/tools/make-explorer-package.cs</code> (Windows&#39; own packaging API, no SDK).
+Output: <code>build/.cache/explorer-menu</code>; CI builds it for the tests, <code>build/build-installer.ps1</code> builds it into the
+publish folder.</li>
+</ul>
+</li>
+</ul>
+<p>Debugging: <code>Get-AppxPackage Filee.ExplorerMenu</code> shows the registration (<code>InstallLocation</code> is the external location);
+<code>Get-AppPackageLog -ActivityID &lt;id&gt;</code> explains a failed deployment. To try a local build, copy
+<code>FileeExplorerMenu.dll</code> + <code>.msix</code> next to an installed Filee.exe and use the button, or run elevated:
+<code>Add-AppxPackage -Path FileeExplorerMenu.msix -ExternalLocation &lt;folder with Filee.exe&gt; -AllowUnsigned</code>. Explorer picks
+the entry up for new menus; if not, restart Explorer. To remove it by hand:
+<code>Get-AppxPackage Filee.ExplorerMenu | Remove-AppxPackage</code>.</p>
+<h2 id="windows-installer">Windows installer</h2>
+<p><code>Filee-&lt;version&gt;-win-Setup.exe</code> is Filee&#39;s own installer, <code>src/Filee.Setup</code> (it replaced the Inno Setup script of
+1.x). It is an Avalonia program with the app&#39;s look and translations: it links <code>Styles/Soft.axaml</code> (which therefore
+styles only Avalonia&#39;s own controls; Filee&#39;s controls are in <code>Controls.axaml</code>), <code>SoftPalette</code> (accent, radii, font
+order), <code>AppLanguages</code> and <code>Assets/i18n/*.json</code> (Setup&#39;s texts are the <code>installer.*</code> keys). To stay small it uses
+Windows&#39; own UI fonts (Segoe UI, Nirmala UI and the UI language&#39;s CJK font first; titles bold, as those CJK fonts
+have no semibold) instead of the app&#39;s embedded Noto fonts.</p>
+<ul>
+<li><p><strong>Look</strong>: one borderless 640×420 card (<code>SetupWindow</code>, its own window buttons, drag to move) whose states crossfade
+(<code>Views/StateViews.axaml</code>): Welcome (the logo assembling itself, <code>DonutLogo</code>; one Install button; an Options sheet
+sliding up with the language, folder, options and engines), Progress (the new version&#39;s &quot;What&#39;s new&quot; slides, a thin
+<code>ShimmerBar</code>), Done (<code>CheckBurst</code>, &quot;Launch Filee&quot;), Failed (&quot;Copy details&quot;) and the uninstaller&#39;s states.
+<code>SoftBackdrop</code> draws slowly drifting accent blobs behind it. The slides are the app&#39;s (<code>SlideShow</code>, <code>AnimatedImage</code>,
+<code>SlideDeck</code> and <code>Assets/WhatsNew</code>, linked): the newest deck up to the version being installed, advancing every 6 s.
+Every animation runs only while the window is visible and not minimized (<code>FrameLoop</code>) and is a still picture when
+Windows&#39; &quot;Show animations&quot; is off (<code>SetupMotion</code>). <code>/SILENT</code> shows only the progress card, without slides. After an
+update Setup starts Filee with <code>--background --whats-new</code>, so the slides show once in the app as well.</p>
+</li>
+<li><p><strong>Build</strong> (<code>build/build-installer.ps1</code>): Setup is published as one self-contained, trimmed file
+(<code>-p:FileeSetupPublish=true</code>), so it runs on Windows 10 1809+ x64 without .NET. <code>build/tools/make-setup.cs</code> appends
+the app&#39;s publish folder as the payload: <code>[program][LZMA streams of all files][manifest JSON][72-byte trailer]</code>
+(<code>SetupPayload</code>): ~48 MB segments compressed in parallel with SharpCompress&#39;s LZMA (48 MB dictionary), programs
+first through the x86 branch filter (<code>X86Filter</code>, from the LZMA SDK) as 7-Zip and Inno Setup do. The manifest lists
+every file with its size, SHA-256 and filter, the SHA-256 of the compressed data, the version and the engines to
+offer (from <code>EngineDownloads</code>). Setup.exe&#39;s signature goes after the trailer (Setup looks
+for the trailer in front of the certificate table; the manifest is padded so the file ends on the 8-byte boundary
+signtool needs), so Setup.exe is signed after packing. The Setup program is signed before: its signature stays at
+the end of the program, Setup.exe&#39;s header stops pointing to it, and the manifest&#39;s <code>programSignature</code> lets the
+uninstaller copied out of Setup.exe (<code>CopyProgramTo</code>) point to it again, so <code>uninstall.exe</code> is signed too. The code is trim- and AOT-safe
+(compiled bindings, source-generated P/Invoke and COM); Native AOT would need the MSVC linker on the build machine
+and still couldn&#39;t link SkiaSharp&#39;s native libraries in.</p>
+</li>
+<li><p><strong>Rights</strong>: Setup starts unelevated (asInvoker) and, for an install for all users, starts itself again with
+administrator rights (one UAC prompt) and waits. The elevated copy writes what to start at the end into a file
+(<code>/LAUNCHFILE</code>), and the unelevated one starts Filee from it as the signed-in user. Elevated without such a parent
+(run as administrator, a package manager), it starts Filee with Explorer&#39;s token.</p>
+</li>
+<li><p><strong>Install</strong> (<code>Installer</code>): checks the free space and the payload&#39;s hash first, closes Filee (<code>--quit</code>, then ends
+what still runs from the folder), unpacks into <code>&lt;folder&gt;\~setup-*\new</code> checking every file, checks that every
+program finds the Microsoft C++ runtime it imports (next to it or in System32; <code>RuntimeCheck</code>), then swaps the files
+in (<code>FileSwap</code>: replaced and obsolete files are renamed into a backup, which works for files in use) and writes the
+uninstall entry, the shortcuts and PATH. Any failure until then puts everything back. Filee&#39;s own settings (Explorer
+menu, start at sign-in, engines, a picked language) are handed to Filee on its command line, as before.</p>
+</li>
+<li><p><strong>Updates from 1.x</strong>: the uninstall key stays <code>{C8686E06-8327-40A2-B0F7-3DEDD61D9248}_is1</code> (Inno Setup&#39;s AppId), so
+Apps &amp; Features keeps one Filee. <code>PreviousInstall</code> reads the folder and choices of an Inno Setup installation; an
+update keeps the folder and what is registered now (desktop shortcut, PATH, the top-level menu package), removes
+<code>unins000.*</code> and every file 2.0 doesn&#39;t have, and rewrites the key without the <code>Inno Setup: …</code> values. The app
+counts as installed when <code>uninstall.exe</code> (or 1.x&#39;s <code>unins000.exe</code>) is next to it (<code>UpdateService.IsInstalled</code>).</p>
+</li>
+<li><p><strong>Uninstall</strong>: <code>uninstall.exe</code> is Setup without its payload. Run from the install folder it copies itself to
+<code>%TEMP%</code> and waits for the copy, which removes what <code>uninstall.json</code> lists (other files in the folder stay), the
+shortcuts, the PATH entry and the key. Files in use are moved out and deleted at the next restart. A program without
+a payload is the uninstaller only as <code>uninstall.exe</code>, as <code>Filee.Setup.exe</code> (a development build) or with <code>/UNINSTALL</code>
+(<code>SetupStart</code>); any other name is a Setup.exe whose download didn&#39;t finish, and it says so instead (exit code 1).</p>
+</li>
+<li><p><strong>Command line</strong>: Inno Setup&#39;s switches (<code>SetupOptions</code>, documented at the top of the file), because Filee 1.x
+updates itself with <code>/SILENT /NORESTART</code> and winget passes <code>/VERYSILENT /SUPPRESSMSGBOXES /NORESTART</code>. Exit codes as
+Inno Setup&#39;s: 0 done, 1 could not start, 2 cancelled before installing (also a declined UAC prompt), 4 failed.</p>
+</li>
+<li><p><strong>Testing</strong>: <code>Filee.Setup.Tests</code> runs installs, updates (also over a simulated 1.x installation) and uninstalls
+against <code>MemoryRegistry</code>, a fake <code>ISetupSystem</code> and scratch folders, and renders every page. <code>/SANDBOX=&lt;folder&gt;</code>
+runs the real Setup with a registry file and all folders inside <code>&lt;folder&gt;</code>; <code>build-installer.ps1 -CheckOnly</code> (CI)
+installs, updates and uninstalls that way.</p>
+</li>
+</ul>
+<h2 id="linux-installer-and-updates">Linux installer and updates</h2>
+<p>On Linux, Filee is distributed as a self-contained archive (<code>Filee-&lt;version&gt;-&lt;rid&gt;.tar.gz</code> for <code>linux-x64</code> and
+<code>linux-arm64</code>) containing the application, <code>filee-cli</code>, bundled conversion engines, application icon, <code>.desktop</code> launcher,
+and standalone shell scripts (<code>install.sh</code>, <code>uninstall.sh</code>).</p>
+<ul>
+<li><strong>Installation</strong>: <code>install.sh</code> installs for the current user into <code>~/.local/share/filee/application</code> without root,
+creating a launcher symlink at <code>~/.local/bin/filee</code> and desktop registration at
+<code>~/.local/share/applications/com.filee.app.desktop</code>. A <code>.filee-package</code> marker containing <code>com.filee.app</code> identifies
+the directory as an authentic managed installation. Running without <code>--upgrade</code> refuses to overwrite an existing
+installation.</li>
+<li><strong>In-app updates</strong> (<code>UpdateService</code>): Checks GitHub releases for matching <code>&lt;rid&gt;.tar.gz</code> and <code>&lt;rid&gt;-SHA256SUMS.txt</code>
+assets. The tarball is verified against SHA-256 before extraction. Archive extraction validates that all entries stay
+within the target directory, rejecting absolute paths, directory symlinks, and escaping links, and masks permissions to
+standard rwx bits (excluding setuid/setgid/sticky bits).</li>
+<li><strong>Transactional upgrade</strong>: <code>UpdateAsync</code> stages the payload in a private directory (<code>~/.local/share/filee/.update-*</code>),
+spawns a detached <code>/bin/sh</code> helper, and requests application shutdown (<code>App.Quit</code>). Once the old process exits, the
+helper executes <code>install.sh --upgrade</code> (which safely moves the existing installation to a backup directory, validates the
+new files, and rolls back on failure or signal interruption), and restarts Filee with <code>--background --whats-new</code>.
+Output and rollback diagnostics are appended to Filee&#39;s daily log (<code>~/.config/Filee/logs/</code>). Downloaded conversion engines
+(<code>~/.local/share/Filee/engines</code>) and user settings (<code>~/.config/Filee</code>) remain untouched.</li>
+<li><strong>Uninstallation</strong>: <code>uninstall.sh</code> removes the application directory, desktop launcher, and <code>~/.local/bin/filee</code> symlink
+after verifying the <code>.filee-package</code> marker. User settings and converted files are kept.</li>
+</ul>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="../hosting.html">部署说明</a> · <a href="../LICENSE">LICENSE</a> · <a href="../THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filee · العربية</title>
+<meta name="description" content="Filee documentation snapshot (العربية). Desktop file converter by KnifeLemon.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<p align="center">
+  <a href="https://filee.sh"><img src="docs/media/banner-en.jpg" alt="Filee: اسحب. أفلت. تم التحويل." width="100%"></a>
+</p>
+
+<p align="center" dir="rtl">
+  <b>محوّل ملفات مجاني ومفتوح المصدر تستخدمه بالسحب.</b><br>
+  اضغط باستمرار على مفتاح (<kbd>Ctrl</kbd>، أو <kbd>Option</kbd> على macOS)، واسحب الملفات وأفلتها على صيغة في القائمة الدائرية التي تظهر عند المؤشر.
+</p>
+
+<p align="center" dir="rtl">
+  <a href="https://filee.sh"><b>الموقع</b></a> ·
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><b>تنزيل</b></a> ·
+  <a href="https://www.linkedin.com/company/filee-sh/"><b>LinkedIn</b></a> ·
+  <a href="#التثبيت">التثبيت</a> ·
+  <a href="#سطر-الأوامر">سطر الأوامر</a> ·
+  <a href="#التطوير">التطوير</a>
+</p>
+
+<p align="center" dir="ltr">
+  <a href="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml"><img src="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><img src="https://img.shields.io/github/v/release/KnifeLemon/Filee?color=7F77DD&amp;label=release" alt="أحدث إصدار"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases"><img src="https://img.shields.io/github/downloads/KnifeLemon/Filee/total?color=1D9E75" alt="عدد التنزيلات"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-3C3489" alt="Windows 10 | 11">
+  <img src="https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-3C3489" alt="Linux x64 | ARM64">
+  <img src="https://img.shields.io/badge/macOS-preview-534AB7" alt="macOS (إصدار تجريبي)">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6A62C9" alt="ترخيص MIT"></a>
+</p>
+
+<p align="center" dir="ltr">
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/weekly?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the week on Trendshift" width="250" height="55"></a>
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/daily?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the day on Trendshift" width="250" height="55"></a>
+</p>
+
+<p align="center" dir="ltr">
+  <a href="README.html">English</a> ·
+  <a href="README.es.html">Español</a> ·
+  <a href="README.ja.html">日本語</a> ·
+  <a href="README.ko.html">한국어</a> ·
+  <a href="README.zh-CN.html">简体中文</a> ·
+  <a href="README.zh-TW.html">繁體中文</a> ·
+  <a href="README.pl.html">Polski</a> ·
+  <a href="README.hi.html">हिन्दी</a> ·
+  <a href="README.ru.html">Русский</a> ·
+  <b>العربية</b> ·
+  <a href="README.pt-BR.html">Português (Brasil)</a> ·
+  <a href="README.pt-PT.html">Português (Portugal)</a> ·
+  <a href="README.fr.html">Français</a> ·
+  <a href="README.th.html">ไทย</a>
+</p>
+
+<div dir="rtl">
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <b>عند المؤشر مباشرةً</b><br>
+      لا نافذة تطبيق عليك فتحها.
+      تظهر الصيغ حيث أنت، ولا يظهر منها إلا ما يناسب الملفات التي تسحبها.
+    </td>
+    <td width="33%" valign="top">
+      <b>267 صيغة دون برامج أخرى</b><br>
+      الصور وPDF وWord وExcel وPowerPoint وHWP والكتب الإلكترونية والأرشيفات والخطوط وCAD والنماذج ثلاثية الأبعاد والبيانات الجغرافية، كلها تعمل دون Office أو Hancom Office أو LibreOffice.
+    </td>
+    <td width="33%" valign="top">
+      <b>يبقى على جهازك</b><br>
+      لا يُرفع أي شيء.
+      يعمل Filee دون اتصال بالإنترنت ويحفظ النتيجة بجانب الملف الأصلي.
+    </td>
+  </tr>
+</table>
+
+<h2 id="شاهده-وهو-يعمل">شاهده وهو يعمل</h2>
+<p align="center">
+  <a href="https://filee.sh"><img src="docs/media/demo-en.webp" alt="سحب trip.jpg مع الضغط على Ctrl: تظهر عند المؤشر قائمة دائرية بالصيغ، ويُفلَت الملف على PNG، فتكتمل حلقة التقدم ويظهر trip.png" width="820"></a><br>
+  <sub>شاهد الفيديو (27 ثانية) وجرّب العرض التفاعلي على <a href="https://filee.sh">filee.sh</a></sub>
+</p>
+
+<h2 id="التثبيت">التثبيت</h2>
+<p>نزّله من صفحة <a href="https://github.com/KnifeLemon/Filee/releases/latest">الإصدارات</a>.</p>
+<ul>
+<li><strong>Windows 10/11</strong>: شغّل <code>Filee-&lt;version&gt;-win-Setup.exe</code>، أو فكّ ضغط <code>win-Portable.zip</code> وشغّل <code>Filee.exe</code>.<ul>
+<li>برنامج الإعداد خاص بـ Filee، ويعمل بلغات Filee، ولا يحتاج إلى أي شيء آخر على الكمبيوتر.</li>
+<li>يمكنه إضافة قائمة مستكشف الملفات، والتشغيل عند تسجيل الدخول، والأمر <code>filee</code>، والمحركات الاختيارية.</li>
+<li>وتقبل عمليات التثبيت الصامت مفاتيح Inno Setup نفسها (<code>/VERYSILENT /SUPPRESSMSGBOXES</code>).</li>
+</ul>
+</li>
+<li><strong>macOS 13 أو أحدث</strong> (إصدار تجريبي): فكّ ضغط حزمة <code>osx-arm64</code> أو <code>osx-x64</code> وشغّل <code>./install.sh</code>.<ul>
+<li>أو افتح ملف <code>.dmg</code> واسحب Filee إلى مجلد التطبيقات (يضيف <code>install.sh</code> وحده الأمر <code>filee</code>).</li>
+<li>لم تُوثّق Apple هذا الإصدار بعد (notarization)، لذا اسمح بالتشغيل الأول من إعدادات النظام ← الخصوصية والأمن ← <strong>فتح على أي حال</strong>.</li>
+</ul>
+</li>
+<li><strong>Linux x64/ARM64</strong> (Ubuntu 22.04 أو أحدث): فكّ ضغط الحزمة وشغّل <code>./install.sh</code> (لا يحتاج إلى root، ويحتاج إلى Python 3).<ul>
+<li>تعمل إيماءات السحب على X11.
+أما على Wayland فاستخدم منطقة الإفلات وقائمة النقر بالزر الأيمن في مدير الملفات.</li>
+</ul>
+</li>
+</ul>
+<p>يعرض Filee الإصدارات الجديدة في قائمته ويحدّث نفسه، مع الإبقاء على إعداداتك ومحركاتك.
+وبعد التحديث تعرض بضع شرائح ما الجديد فيه.</p>
+<p><strong>لا يعمل Filee على Windows (لا نافذة ولا رسالة خطأ)؟</strong>
+يحدث هذا على Windows 10 لم يُحدَّث منذ مدة طويلة، في جهاز يدعم معالجه حماية المكدس المفروضة بالأجهزة (CET).
+يشغّل Windows هذه الحماية لكنه يفتقد جزءًا يحتاجه ‎.NET، فيتوقف Filee وبرنامج الإعداد فورًا.</p>
+<ul>
+<li><strong>المستحسن:</strong> ثبّت تحديثات Windows المتاحة (أحدث تحديث تراكمي).</li>
+<li><strong>إن تعذّر التحديث:</strong> فإيقاف الحماية لـ Filee وحده يفي بالغرض عادةً.
+شغّل ما يلي في PowerShell بصلاحيات المسؤول:</li>
+</ul>
+</div>
+
+<pre><code class="language-powershell">Set-ProcessMitigation -Name Filee.exe -Disable UserShadowStack
+Set-ProcessMitigation -Name filee-cli.exe -Disable UserShadowStack
+</code></pre>
+<div dir="rtl">
+
+<p>افعل الشيء نفسه مع اسم ملف برنامج الإعداد (مثل <code>Filee-&lt;version&gt;-win-Setup.exe</code>)، أو استخدم ملف ZIP المحمول الذي يكفيه هذان السطران.
+وللتراجع، احذف هذه الإدخالات من أمن Windows ← التحكم في التطبيقات والمستعرض ← إعدادات الحماية من الاستغلال ← إعدادات البرنامج.</p>
+<h2 id="الميزات">الميزات</h2>
+<ul>
+<li><strong>قائمة دائرية عند المؤشر</strong>: اضغط باستمرار على مفتاح، واسحب الملفات وأفلتها على صيغة.
+لا تظهر إلا الصيغ التي تناسب الملفات.</li>
+<li><strong>مباشرةً من المتصفح</strong>: اسحب بالطريقة نفسها صورة أو رابط ملف أو تنزيلًا من Chrome أو Edge أو Firefox أو Safari.<ul>
+<li>يحفظه Filee في مجلد التنزيلات (أو يحتفظ بالملف المحوّل وحده) ثم يحوّله.</li>
+<li>تُنزَّل الروابط دون استخدام تسجيل الدخول في متصفحك.</li>
+</ul>
+</li>
+<li><strong>شريط أدوات دائري لكل نوع ملف</strong>، ترتّبه بالسحب والإفلات، مع إعدادات مسبقة لما يلي:<ul>
+<li>الجودة والحجم والدقة (DPI)</li>
+<li>صفحات PDF وضغطه</li>
+<li>الفيديو والصوت</li>
+<li>مجلد الحفظ وأسماء الملفات</li>
+</ul>
+</li>
+<li><strong>وجهان لكل قائمة دائرية</strong>: اضغط <kbd>Tab</kbd> أو أدر عجلة الماوس أثناء فتحها لتقلبها إلى الصيغ والأدوات الأقل استخدامًا.</li>
+<li><strong>الاقتصاص قبل التحويل</strong>: يفتح خيار «اقتصاص» الصور واحدةً تلو الأخرى.
+اسحب الإطار واختر نسبة الأبعاد، فلا يُحفظ إلا ذلك الجزء.</li>
+<li><strong>ملفات كثيرة دفعةً واحدة</strong>، بالتوازي.
+ويعثر Filee تلقائيًا على مسارات التحويل متعددة الخطوات (HWP → HWPX → DOCX).</li>
+<li><strong>مراقبة المجلدات</strong>: يُحوَّل كل ملف يصل إلى المجلد المراقَب.</li>
+<li><strong>التحويلات الأخيرة</strong> في الصفحة الرئيسية، لكل نتيجة صورة مصغّرة: افتح الملف، أو افتحه باستخدام تطبيق آخر.</li>
+<li><strong>طرق أخرى</strong>: قائمة النقر بالزر الأيمن، واختصار لوحة المفاتيح، ومنطقة الإفلات، و<a href="#%D8%B3%D8%B7%D8%B1-%D8%A7%D9%84%D8%A3%D9%88%D8%A7%D9%85%D8%B1">الأمر <code>filee</code></a>.</li>
+<li>مظهر فاتح وداكن، باللون المميّز وشفافية الشريط الدائري اللذين تختارهما، وباللغات: English · Español · 日本語 · 한국어 · 简体中文 · 繁體中文 · Polski · हिन्दी · Русский · العربية (من اليمين إلى اليسار) · Português (Brasil) · Français · नेपाली · ไทย · Türkçe · Português (Portugal) · Deutsch.</li>
+</ul>
+<h2 id="لقطات-الشاشة">لقطات الشاشة</h2>
+<table>
+  <tr>
+    <td width="50%"><img src="docs/media/page-toolbar-en.png" alt="محرر شريط الأدوات الدائري مع ملفات التعريف والإعدادات المسبقة"></td>
+    <td width="50%"><img src="docs/media/page-home-en.png" alt="الصفحة الرئيسية مع منطقة الإفلات والتحويلات الأخيرة"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>رتّب القائمة الدائرية بالسحب والإفلات، بملف تعريف لكل نوع ملف</sub></td>
+    <td align="center"><sub>الرئيسية: منطقة الإفلات والتحويلات الأخيرة</sub></td>
+  </tr>
+</table>
+
+<h2 id="الصيغ">الصيغ</h2>
+<table>
+<thead>
+<tr>
+<th>من</th>
+<th>إلى</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>الصور</strong>: JPG, PNG, WEBP, AVIF, TIFF, BMP, GIF, APNG, ICO, ICNS, JPEG XL, JPEG 2000, PSD/PSB, TGA, PPM, HEIC, QOI, DDS, PCX, MNG, CUR وغيرها؛<br>وللقراءة: GIMP XCF، وصور RAW من الكاميرات (CR2, CR3, NEF, ARW, DNG وغيرها)، وDICOM وOpenEXR وHDR وFITS (صور فلكية)، وJPEG XR (على Windows)، وLive Photo من iPhone (LIVP)</td>
+<td>أيٌّ منها (HEIC⁵)، PDF، SVG (بالتتبّع)، تغيير الحجم، تدرّج رمادي؛<br>صور Live/Motion Photo (iPhone وAndroid) إلى الفيديو الذي تحمله (MP4, MOV⁵)، ومن فيديو إلى Live Photo (iPhone) أو Motion Photo (Android)⁵، ميزة تجريبية</td>
+</tr>
+<tr>
+<td><strong>الرسومات المتجهية</strong>: SVG, SVGZ, EMF, WMF, AI<br>EPS, PS¹<br>CDR, VSD, CGM, ODG, FODG²</td>
+<td>PDF (متجهي)، PNG وصور أخرى،<br>SVG ↔ SVGZ، SVG → DXF/DWG، PDF → EPS/PS¹، SVG → EMF, WMF, ODG²</td>
+</tr>
+<tr>
+<td><strong>PDF</strong></td>
+<td>DOCX, HWPX, TXT, PNG, JPG, TIFF, CBZ، PPTX (صورة لكل صفحة)، SVG²؛<br>الدمج (بترتيب تختاره أولًا)، التقسيم، نطاقات الصفحات، الضغط (ملفات PDF أصغر)</td>
+</tr>
+<tr>
+<td><strong>المستندات</strong>: DOCX, DOCM, DOTX, EML, Outlook MSG؛<br>وOFD للقراءة (الفواتير الإلكترونية والمستندات الرسمية الصينية)<br>DOC, ODT, FODT, OTT, RTF, WPS, WPD, Pages, ClarisWorks, MacWrite, T602 وغيرها²</td>
+<td>PDF, DOCX, HWPX, EPUB, TXT, HTML؛<br>MSG → EML<br>ODT, FODT, OTT²</td>
+</tr>
+<tr>
+<td><strong>جداول البيانات</strong>: XLSX, XLSM, XLS, XLT, ODS, CSV, TSV<br>OTS, FODS, Numbers, ET²</td>
+<td>PDF, XLSX, ODS, CSV, TSV, JSON, HWPX, HTML<br>XLT, OTS²</td>
+</tr>
+<tr>
+<td><strong>العروض التقديمية</strong>: PPTX, PPTM, POTX, POTM, PPSX<br>PPT, ODP, OTP, FODP, Keynote²</td>
+<td>PDF, PNG, JPG, DOCX, HWPX<br>OTP²</td>
+</tr>
+<tr>
+<td><strong>HWP</strong>: HWP, HWPX</td>
+<td>PDF, PNG, DOCX, HWPX ↔ HWP, TXT, Markdown, HTML</td>
+</tr>
+<tr>
+<td><strong>النصوص</strong>: TXT وLOG، والشيفرة المصدرية للسكربتات (PY, PAC, BAT, COMMAND؛ تُقرأ ولا تُشغَّل أبدًا)، وMarkdown وHTML؛<br>وMHTML للقراءة (صفحات الويب المحفوظة)<br>reStructuredText, LaTeX, Org, AsciiDoc, Typst, MediaWiki, DocBook, Jupyter, Textile, man, OPML³</td>
+<td>TXT بترميز UTF-8، PDF, DOCX, HWPX, EPUB<br>فيما بينها، شرائح PPTX³</td>
+</tr>
+<tr>
+<td><strong>الكتب الإلكترونية</strong>: EPUB, KEPUB, MOBI, AZW3, AZW, AZW4, FB2, CBZ, CBR, CB7, HTMLZ, TXTZ<br>LIT, LRF, CHM, PDB وغيرها⁴</td>
+<td>PDF, EPUB، KEPUB (Kobo)، DOCX, TXT, HTML, HWPX<br>MOBI, AZW3⁴</td>
+</tr>
+<tr>
+<td><strong>الفيديو</strong>⁵: MP4, MOV, MKV, WEBM, AVI, WMV, FLV, MPEG، وVideo CD (DAT)، وTS, M2TS, 3GP, OGV, VOB وغيرها</td>
+<td>MP4 (H.264, HEVC, AV1)، WEBM, MOV, MKV, AVI, GIF, APNG, MP3, M4A، دقة 720p،<br>الترجمة (SRT, ASS, WebVTT)</td>
+</tr>
+<tr>
+<td><strong>الصوت</strong>⁵: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, WMA, AIFF, AMR, APE, WavPack, TTA، وDSD (DSF, DFF)، وDTS, AC3, E-AC3 وغيرها</td>
+<td>MP3، M4A (AAC, ALAC)، WAV, FLAC, OGG, OPUS, AAC, WavPack, TTA, W64, AC3, E-AC3</td>
+</tr>
+<tr>
+<td><strong>الترجمة</strong>: SRT, ASS/SSA, WebVTT، SAMI (SMI)، LRC, TTML, MicroDVD, SCC</td>
+<td>فيما بينها بترميز UTF-8 (تُقرأ ملفات CP949 الكورية بشكل صحيح)</td>
+</tr>
+<tr>
+<td><strong>الأرشيفات</strong>: ZIP، وANSYS Workbench (WBPZ)، و7Z, RAR, TAR, TAR.GZ, TAR.BZ2, TAR.XZ, GZ, ISO, CAB, DMG, ALZ, EGG وغيرها</td>
+<td>الاستخراج، ZIP, 7Z, TAR, TAR.GZ؛<br>وجمع أي ملفات في ZIP واحد</td>
+</tr>
+<tr>
+<td><strong>CAD</strong>: DWG, DXF</td>
+<td>PDF, SVG, PNG, DWG ↔ DXF</td>
+</tr>
+<tr>
+<td><strong>الخطوط</strong>: TTF, OTF, WOFF, WOFF2, EOT؛<br>FON (خطوط نقطية من Windows) للقراءة</td>
+<td>تحويل فيما بينها؛<br>FON → ملف خط واحد لكل حجم</td>
+</tr>
+<tr>
+<td><strong>البيانات</strong>: JSON, JSON Lines, YAML, TOML, XML<br>vCard, iCalendar</td>
+<td>فيما بينها، وإلى CSV وXLSX (للجداول)؛<br>vCard, iCalendar ↔ CSV</td>
+</tr>
+<tr>
+<td><strong>النماذج ثلاثية الأبعاد</strong>: GLB, glTF, STL, OBJ (+ MTL), 3MF, PLY؛<br>وFBX للقراءة</td>
+<td>فيما بينها، معاينة PNG</td>
+</tr>
+<tr>
+<td><strong>البيانات الجغرافية المتجهية</strong>: Shapefile, GeoJSON, KML, KMZ, GPX<br>ملفات CSV فيها إحداثيات؛<br>وGarmin FIT للقراءة</td>
+<td>فيما بينها، وإلى CSV / XLSX / JSON؛<br>وتُحوَّل البيانات المُسقَطة (UTM, Web Mercator, Lambert, Albers) إلى خطوط الطول والعرض في WGS 84</td>
+</tr>
+</tbody></table>
+<p>الصيغ غير المعلَّمة تعمل مباشرةً، دون Office أو Hancom Office أو LibreOffice.
+أما المعلَّمة فتحتاج إلى محرك اختياري لا يُنزَّل إلا عند الحاجة: ¹ Ghostscript، ² LibreOffice، ³ Pandoc، ⁴ calibre، ⁵ FFmpeg (<a href="docs/ENGINES.html">التفاصيل</a>).</p>
+<h2 id="سطر-الأوامر">سطر الأوامر</h2>
+<p>يستخدم الأمر <code>filee</code> المحركات والإعدادات المسبقة نفسها التي يستخدمها التطبيق (يضيفه برنامج الإعداد أو <code>install.sh</code>).</p>
+</div>
+
+<pre><code>filee convert photo.heic --to jpg
+filee convert *.png --to webp --quality 80 -o converted
+filee watch D:\Inbox --to pdf --move-originals
+</code></pre>
+<div dir="rtl">
+
+<p>جميع الأوامر والخيارات: <a href="https://filee.sh/cli/">filee.sh/cli</a> أو <code>filee help</code>.</p>
+<h2 id="التطوير">التطوير</h2>
+<p>ابنِه باستخدام .NET 10 SDK على Windows أو macOS أو Linux:</p>
+</div>
+
+<pre><code class="language-bash">git clone https://github.com/KnifeLemon/Filee.git
+cd Filee
+pwsh build/fetch-engines.ps1 -Only rhwp,pandoc   # optional engines
+dotnet run --project src/Filee.App
+dotnet test
+</code></pre>
+<div dir="rtl">
+
+<p><a href="docs/ARCHITECTURE.html">البنية</a> · <a href="docs/ENGINES.html">المحركات</a> · <a href="docs/ADDING-A-CONVERTER.html">إضافة محوّل</a> · <a href="docs/ADDING-A-LANGUAGE.html">إضافة لغة</a> · <a href="CONTRIBUTING.html">المساهمة</a></p>
+<p>طلبات الدمج (pull requests) مرحّب بها.
+وإذا وفّر عليك Filee بعض النقرات، فنجمة ⭐ تساعد الآخرين على العثور عليه.</p>
+<h2 id="سياسة-توقيع-الشيفرة">سياسة توقيع الشيفرة</h2>
+<p>يطوّر Filee وينشره <strong>Myeonggu Kim</strong> (<a href="https://github.com/KnifeLemon">KnifeLemon</a>).</p>
+<ul>
+<li>تُوقَّع إصدارات Windows بشهادة توقيع شيفرة للمشاريع مفتوحة المصدر من <a href="https://www.certum.eu/">Certum</a> صادرة باسم Myeonggu Kim.<ul>
+<li>الإصدارات حتى 2.0.0 غير موقَّعة.</li>
+</ul>
+</li>
+</ul>
+<p>السياسة الكاملة وسياسة الخصوصية في <a href="README.html#code-signing-policy">README الإنجليزي</a>.
+لا يرفع Filee ملفاتك ولا يرسل أي بيانات استخدام.</p>
+<h2 id="ادعم-المشروع">ادعم المشروع</h2>
+<p>Filee مجاني وسيبقى مجانيًا.
+إذا أردت دعمه، فاختر الطريقة التي تناسبك (<a href="https://fairy.hada.io/@filee">Fairy</a> يقبل البطاقات الكورية وخدمات الدفع السريع).</p>
+<p><strong>اسمك أو شعارك هنا.</strong>
+يُدرَج الداعمون الشهريون هنا بأسمائهم، ويحصل الرعاة على شعارهم هنا وفي صفحة «حول التطبيق» في Filee.
+ويمكن لمن يدعم مرة واحدة أن يطلب إدراج اسمه أيضًا.</p>
+</div>
+
+<!-- sponsors: src/Filee.App/Assets/Sponsors/sponsors.json -->
+
+<p align="center" dir="ltr">
+  <a href="https://github.com/sponsors/KnifeLemon"><img src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&amp;logo=githubsponsors&amp;logoColor=white" alt="GitHub Sponsors"></a>
+  <a href="https://patreon.com/KnifeLemon"><img src="https://img.shields.io/badge/Patreon-000000?style=for-the-badge&amp;logo=patreon&amp;logoColor=white" alt="Patreon"></a>
+  <a href="https://ko-fi.com/knifelemon"><img src="https://img.shields.io/badge/Ko--fi-FF6433?style=for-the-badge&amp;logo=kofi&amp;logoColor=white" alt="Ko-fi"></a>
+  <a href="https://paypal.me/knifelemon"><img src="https://img.shields.io/badge/PayPal-002991?style=for-the-badge&amp;logo=paypal&amp;logoColor=white" alt="PayPal"></a>
+  <a href="https://fairy.hada.io/@filee"><img src="https://img.shields.io/badge/Fairy-2E9E6B?style=for-the-badge" alt="Fairy"></a>
+</p>
+
+<div dir="rtl">
+
+<h2 id="الترخيص">الترخيص</h2>
+<p>MIT، © 2026 Myeonggu Kim (KnifeLemon) والمساهمون في Filee.
+تحتفظ مكونات الجهات الخارجية المضمّنة بتراخيصها الخاصة، وهي مدرجة في <a href="THIRD-PARTY-NOTICES.html">THIRD-PARTY-NOTICES.md</a>.</p>
+</div>
+
+<p align="center">
+  <a href="https://star-history.com/#KnifeLemon/Filee&amp;Date"><img src="https://api.star-history.com/svg?repos=KnifeLemon/Filee&amp;type=Date" alt="Star history" width="600"></a>
+</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>部署说明 · Filee</title>
+<meta name="description" content="KnifeLemon/Filee 在 kobezone.github.io/filee/ 的静态文档快照、版本和标识 HTQGP2E 的说明。">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+
+<main class="doc" id="content">
+<h1>部署说明</h1>
+<p>这个目录把 <a href="https://github.com/KnifeLemon/Filee">KnifeLemon/Filee</a> 发布到 GitHub Pages 的 <code>/filee/</code>。</p>
+<h2>怎么打开</h2>
+<ul>
+  <li>线上（合并到 <code>master</code> 之后）：<a href="https://kobezone.github.io/filee/">https://kobezone.github.io/filee/</a></li>
+  <li>简体文档：<a href="index.html">index.html</a></li>
+  <li>英文文档：<a href="README.html">README.html</a></li>
+  <li>全部页面：<a href="docs.html">文档目录</a></li>
+  <li>界面原型：<a href="docs/design/mockup.html">docs/design/mockup.html</a>。可以在浏览器里把格式拖到圆环上、调整顺序、编辑预设。</li>
+  <li>桌面安装包：<a href="https://github.com/KnifeLemon/Filee/releases/latest">GitHub Releases</a>。本目录不放 exe、dmg 和压缩包。</li>
+</ul>
+<h2>本地预览</h2>
+<p>在本仓库根目录启动静态服务，然后打开 <a href="http://127.0.0.1:8765/filee/">http://127.0.0.1:8765/filee/</a>。</p>
+<pre><code>python3 -m http.server 8765</code></pre>
+<h2>来源与版本</h2>
+<ul>
+  <li>仓库：<a href="https://github.com/KnifeLemon/Filee">https://github.com/KnifeLemon/Filee</a></li>
+  <li>默认分支：<code>main</code></li>
+  <li>本次快照：<a href="https://github.com/KnifeLemon/Filee/commit/ccac2a579f24941078bd498d77b2bff2b3c21ba6"><code>ccac2a579f24941078bd498d77b2bff2b3c21ba6</code></a>（2026-10-28 07:37 +0900）</li>
+  <li>提交说明：Merge pull request #617 from KnifeLemon/claude/project-thread-6bzsdd</li>
+  <li>最新发行版：<a href="https://github.com/KnifeLemon/Filee/releases/tag/v2.1.0">v2.1.0</a>，commit <code>e830916e7f02526bff6b7576edc22e51ecf9c126</code>（2026-10-24T23:30:48Z）。文档快照取 <code>main</code>，比这个发行版新。</li>
+</ul>
+<h2>构建方式</h2>
+<p>仓库用 .NET 构建桌面程序（<code>Filee.slnx</code>，<code>dotnet run --project src/Filee.App</code>）。根目录没有 <code>package.json</code>，发行附件是各系统安装包。可以在浏览器里直接打开的上游页面是 <code>docs/design/mockup.html</code>。</p>
+<p>本目录发布各语言 README 和 <code>docs/</code> 的 HTML、截图、<code>docs/themes</code> 示例、许可证和界面原型。C# 源码、测试和安装脚本留在上游该 commit；文档里指向源码的链接打开 GitHub 上的对应文件。被 README 链接到的 <code>installer/linux/INSTALL.txt</code> 会一并放进本目录。</p>
+<h2>子路径 /filee/</h2>
+<p>文档页是多页 HTML，站内地址使用相对路径，例如 <code>docs/media/banner-zh-CN.jpg</code> 和 <code>../site.css</code>。页面放在 <code>/filee/</code> 时，浏览器向这个子路径请求资源。这里没有单页应用的路由 base，也没有把资源写成站点根路径 <code>/assets/...</code>。</p>
+<h2>标识 HTQGP2E</h2>
+<p>这次部署收到的口令是 <code>HTQGP2E</code>。在上游 <code>ccac2a57</code> 的 README、配置和构建脚本里查找过访问码、房间码和构建参数，没有这个值，构建命令也不接收它。</p>
+<p>打开 <code>/filee/</code> 直接进入文档，页面上没有输入框。HTQGP2E 记在本页和 <a href="snapshot.json">snapshot.json</a> 的 <code>accessCode</code> 字段，用来和这次部署对照。</p>
+<h2>许可证与署名</h2>
+<p>Filee 以 MIT 发布，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。许可证全文在 <a href="LICENSE">LICENSE</a>。随附组件见 <a href="THIRD-PARTY-NOTICES.html">THIRD-PARTY-NOTICES</a>。</p>
+<p>界面原型的图标来自 Tabler Icons 3.50.0（Paweł Kuna，MIT）。字体和许可证在 <a href="assets/icons/LICENSE">assets/icons/LICENSE</a>。这里只保留原型用到的图标类，字体文件用上游的 <code>tabler-icons.woff2</code>。</p>
+<h2>重新生成</h2>
+<p>脚本在 <code>tools/render.mjs</code>。准备好上游检出，并安装 <code>marked@15</code> 和 <code>github-slugger@2</code> 后运行：</p>
+<pre><code>FILEE_SRC=/path/to/Filee FILEE_OUT=/path/to/filee node filee/tools/render.mjs</code></pre>
+<p>本站的 <code>cook/</code> 和 <code>laotoule/</code> 不在这次发布的范围内。</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GNOME Wayland · Filee</title>
+<meta name="description" content="GNOME Wayland from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="../index.html">
+    <img src="../favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="../index.html">简体</a>
+    <a href="../README.html">English</a>
+    <a href="../docs.html">文档</a>
+    <a href="design/mockup.html">界面原型</a>
+    <a href="../hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="../hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="gnome-wayland">GNOME Wayland</h1>
+<p>Filee supports drag gestures on GNOME Wayland through the <strong>Filee donut at the cursor</strong> GNOME Shell extension.</p>
+<p>The extension provides the pointer state required by Filee without access to <code>/dev/input</code>, membership in the <code>input</code> group, or running Filee as root.</p>
+<blockquote>
+<p>This integration is experimental and has been tested on Fedora 44 with GNOME Shell 50.</p>
+</blockquote>
+<h2 id="setup">Setup</h2>
+<p>Install Filee normally:</p>
+<pre><code class="language-sh">./install.sh
+</code></pre>
+<p>On a GNOME session, <code>install.sh</code> puts the extension in <code>~/.local/share/gnome-shell/extensions/filee-donut@filee.sh</code> and asks GNOME to enable it. Then:</p>
+<ol>
+<li>Open the <strong>Extensions</strong> application.</li>
+<li>Enable <strong>Filee donut at the cursor</strong>.</li>
+<li>Log out and back in if the extension does not appear.</li>
+<li>Start Filee and make sure gesture detection is enabled under <strong>Triggers</strong>.</li>
+</ol>
+<p>Do not run Filee with <code>sudo</code>.</p>
+<h2 id="usage">Usage</h2>
+<p>With the default gesture:</p>
+<ol>
+<li>Open <strong>Files / Nautilus</strong>.</li>
+<li>Hold <strong>Ctrl</strong> and drag a file.</li>
+<li>Move the file over the desired format in the Filee wheel.</li>
+<li>Release it to start the conversion.</li>
+</ol>
+<p>The wheel stays in place while selecting a format.</p>
+<p>Pausing Filee, disabling the gesture or extension, excluding the application, or dropping outside the wheel leaves the normal file-manager behavior unchanged.</p>
+<p>Custom modifiers and excluded applications continue to work through Filee&#39;s existing gesture settings.</p>
+<h2 id="updates">Updates</h2>
+<p>Updating Filee, in the app or with <code>./install.sh --upgrade</code>, also updates the extension when Filee installed it. GNOME Shell keeps running the version it loaded at login, so log out and back in after an update. If the running extension and Filee don&#39;t match, the <strong>Triggers</strong> page says so.</p>
+<p><code>install.sh</code> replaces only an extension folder that Filee installed. If the folder came from somewhere else, a first install stops and an upgrade leaves it as it is. <code>uninstall.sh</code> removes the extension when Filee installed it.</p>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li>GNOME integration is currently experimental.</li>
+<li>GNOME Shell 45–50 are declared as supported, but not every version has been tested.</li>
+<li>Global Tab and mouse-wheel state are not available for switching wheel faces during a drag.</li>
+<li>Global selection shortcuts and hold gestures are not available.</li>
+<li>Filee runs through XWayland by default. With the experimental native Wayland backend (<code>FILEE_USE_WAYLAND=1</code>), the extension recognizes the donut by Filee&#39;s process; this combination has had less testing.</li>
+<li>Multi-monitor setups and fractional scaling may require additional testing.</li>
+</ul>
+<p>KDE Plasma and Hyprland use a different setup; see <code>INSTALL.txt</code>.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p>If the wheel does not appear:</p>
+<ul>
+<li>Make sure Filee is not paused.</li>
+<li>Check that the drag gesture is enabled under <strong>Triggers</strong>.</li>
+<li>Make sure <strong>Filee donut at the cursor</strong> is enabled.</li>
+<li>Make sure Files / Nautilus is not excluded.</li>
+<li>Do not run Filee with <code>sudo</code>.</li>
+<li>If the extension was installed or updated recently, log out and back in.</li>
+</ul>
+<p>To check the extension:</p>
+<pre><code class="language-sh">gnome-extensions info filee-donut@filee.sh
+</code></pre>
+<p>To check the communication socket:</p>
+<pre><code class="language-sh">ls -l &quot;$XDG_RUNTIME_DIR/filee-gnome/pointer.sock&quot;
+</code></pre>
+<p>When connected successfully, Filee&#39;s log (<code>~/.config/Filee/logs/</code>) contains:</p>
+<pre><code class="language-text">GNOME pointer extension connected
+</code></pre>
+<p>If the <strong>Triggers</strong> page says the extension belongs to another version of Filee, log out and back in so GNOME Shell loads the installed extension. If the message stays, reinstall Filee.</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="../hosting.html">部署说明</a> · <a href="../LICENSE">LICENSE</a> · <a href="../THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contributing to Filee · Filee</title>
+<meta name="description" content="Contributing to Filee from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="contributing-to-filee">Contributing to Filee</h1>
+<p>Thanks for helping! Filee is built to be easy to extend: most contributions touch one file plus a test.</p>
+<h2 id="setup">Setup</h2>
+<ol>
+<li>Install the .NET 10 SDK (the exact feature band is pinned in <code>global.json</code>, newer patches roll forward).</li>
+<li><code>pwsh build/fetch-fonts.ps1</code> (optional, for the Noto Sans UI fonts).</li>
+<li><code>pwsh build/fetch-engines.ps1 -Only rhwp,pandoc</code> (optional: rhwp renders HWP/HWPX, and everything converted
+through HWPX — DOCX, XLSX, CSV, PPTX, Markdown — to PDF, and converts HWP ↔ HWPX; Pandoc adds HTML / Markdown ↔
+DOCX. XLSX ↔ CSV and anything → HWPX work without either). Without <code>-Only</code> it also downloads LibreOffice with
+H2Orestart and Java (~420 MB), which only older formats such as DOC, XLS and PPT need. Engines in the
+repository&#39;s <code>engines/</code> folder are picked up by debug builds; users download the large ones from the app.
+Filee can also discover supported engines on <code>PATH</code> and in their standard installation folders. Settings &gt;
+Engines lets you choose a specific copy. Microsoft Office is not used.</li>
+<li><code>dotnet run --project src/Filee.App</code>, <code>dotnet test</code>.</li>
+</ol>
+<p>To try a build next to the Filee you use every day (testing, measuring memory), set <code>FILEE_DATA_DIR</code> to an empty
+folder first. Settings, logs and downloaded engines then live there, the copy is its own single instance (later
+launches with the same variable, <code>--quit</code> included, reach it and never your installed Filee), and it registers no
+startup entry, context menu or Explorer menu.</p>
+<p>Any IDE works (Visual Studio 2022+, Rider, VS Code with C# Dev Kit).</p>
+<h2 id="linux-and-macos-development">Linux and macOS development</h2>
+<p>Linux packages (x64, ARM64) are released like Windows; macOS stays a preview until it is notarized. Install .NET 10
+and PowerShell 7, then build on the target OS. Supported package targets are <code>linux-x64</code>, <code>linux-arm64</code>, <code>osx-x64</code> and <code>osx-arm64</code>.</p>
+<pre><code class="language-sh">pwsh build/fetch-fonts.ps1
+pwsh build/fetch-portable-engines.ps1 -Runtime linux-x64 -Destination engines
+dotnet test Filee.slnx -c Release
+pwsh build/build-portable.ps1 -Runtime linux-x64
+</code></pre>
+<p>Use the matching runtime on a Mac or ARM64 Linux machine. Packaging runs on Linux/macOS so archives retain
+executable permissions. Each archive contains the app, CLI, rhwp, 7-Zip, installation instructions and per-user
+install/uninstall scripts. <code>Filee-&lt;version&gt;-&lt;rid&gt;-SHA256SUMS.txt</code> verifies the archive. macOS bundles use
+<code>com.filee.app</code> and a development ad-hoc signature by default; public distribution still needs Developer ID signing
+and notarization. <code>-SigningIdentity</code> can supply a signing identity, but does not perform notarization.</p>
+<p>Linux release packages must run on Ubuntu 22.04 (glibc 2.35). CI builds rhwp from source on Ubuntu 22.04
+(<code>build/build-linux-native.py</code>) and passes it with <code>-RhwpOverride</code>; a local package without it needs the glibc of the
+machine that built it. Check a package with
+<code>python3 build/check-elf-glibc.py --max 2.35 &lt;unpacked package&gt;</code>. See <a href="docs/ENGINES.html#linux-builds-for-older-glibc">docs/ENGINES.md</a>.</p>
+<ul>
+<li><strong>Linux:</strong> drag gestures require X11 by default. Install the Avalonia desktop dependencies (fontconfig, FreeType, X11,
+Xrandr, Xi, Xtst, Xt, XkbCommon, ICE and SM) and CJK fonts for document comparisons. File actions are installed for
+Thunar, Nautilus, Nemo and Dolphin. The first enabled keyboard shortcut uses Thunar&#39;s native custom action;
+close Thunar before changing or pausing that shortcut and reopen it afterwards. Global selected-file queries
+and hold gestures are not supported. Wayland can use file actions, the drop zone, watch folders and CLI.
+On KDE Plasma 6 and Hyprland, the drag gesture can also run there, experimentally with <code>FILEE_WAYLAND_GESTURES=1</code>. It needs
+the user in the <code>input</code> group (libuiohook&#39;s libinput back end) and a compositor positioning mechanism (the KWin script in
+<code>installer/linux/kwin</code> or a Hyprland floating window rule). Native Wayland support (<code>Avalonia.Wayland</code>) is also available
+as an opt-in via <code>FILEE_USE_WAYLAND=1</code>. See <code>installer/linux/INSTALL.txt</code>.
+On GNOME Wayland, the bundled Shell extension supplies pointer state through a private Unix socket; no input
+group is required. See <a href="docs/GNOME-WAYLAND.html">docs/GNOME-WAYLAND.md</a> for setup, limits and troubleshooting.</li>
+<li><strong>macOS:</strong> grant Filee Accessibility permission for gestures and Finder Automation permission for selection.
+Keep the development <code>.app</code> at a stable path while testing these permissions. Finder integration is a Quick
+Action under Services; auto-start uses a per-user LaunchAgent.</li>
+<li><strong>Engines:</strong> packages are selected by OS and architecture. Linux LibreOffice/Ghostscript and macOS
+FFmpeg/Ghostscript currently use system or user-selected installations. Linux ARM64 has no Unhwp native binary.
+The macOS LibreOffice package does not include H2Orestart; native rhwp/Unhwp provide the supported HWP routes.
+Use Settings &gt; Engines to inspect actual availability before comparing formats.</li>
+</ul>
+<p>The reusable <code>portable.yml</code> workflow builds and tests all four targets and starts the Linux packages on Ubuntu 22.04.
+Native platform tests skip on other OSes.
+Before releasing a port&#39;s packages, verify the installed package, CLI conversion, Finder/Thunar selection with Unicode
+and spaced paths, drag and keyboard gestures, permissions denied/granted, Retina/scaling, tray, login startup,
+engine downloads, watch folders, and uninstall. CI GUI startup alone does not validate these interactions.</p>
+<p>The website lives in the adjacent <code>../filee-web</code> repository. Its downloads must match real release assets and
+keep macOS marked as a preview until it is notarized.</p>
+<h2 id="where-things-live">Where things live</h2>
+<p>Read <a href="docs/ARCHITECTURE.html">docs/ARCHITECTURE.md</a> first. In short:</p>
+<ul>
+<li><strong>New file format or engine</strong> → <code>src/Filee.Engines</code>, see <a href="docs/ADDING-A-CONVERTER.html">docs/ADDING-A-CONVERTER.md</a>.</li>
+<li><strong>New language</strong> → <code>src/Filee.App/Assets/i18n</code>, see <a href="docs/ADDING-A-LANGUAGE.html">docs/ADDING-A-LANGUAGE.md</a>.</li>
+<li><strong>UI</strong> → <code>src/Filee.App/Views</code> (XAML) + <code>ViewModels</code> (CommunityToolkit.Mvvm).</li>
+<li><strong>Domain rules</strong> (routes, output names, settings) → <code>src/Filee.Core</code> — no UI or OS code here.</li>
+</ul>
+<h2 id="code-style">Code style</h2>
+<ul>
+<li><code>dotnet format</code> must pass (CI runs <code>dotnet format --verify-no-changes</code>). <code>.editorconfig</code> has the rules.</li>
+<li>Comments are in English so every contributor can read them.<ul>
+<li>Every file starts with a short comment saying what it is for.</li>
+<li>Public types and members get <code>///</code> XML docs.</li>
+<li>Explain <em>why</em> for anything non-obvious (workarounds, engine quirks) — see <code>LibreOfficeConverter.cs</code> for the tone.</li>
+</ul>
+</li>
+<li>Keep UI strings out of code: add a key to every <code>i18n/*.json</code> file (a test checks they match).</li>
+<li>Prefer small, focused pull requests.</li>
+</ul>
+<h2 id="tests">Tests</h2>
+<ul>
+<li><code>tests/Filee.Core.Tests</code> – pure logic (fast).</li>
+<li><code>tests/Filee.Engines.Tests</code> – real conversions on generated input files. Tests needing an engine that is not
+installed skip automatically. XLSX and PPTX inputs are generated by <code>OfficeBuilders.cs</code>, DOCX by
+<code>DocxBuilder.cs</code>.</li>
+<li><code>tests/Filee.App.Tests</code> – gesture state machine, donut geometry, translations and headless UI rendering.
+Screenshots of every page land in <code>tests/Filee.App.Tests/bin/&lt;config&gt;/net10.0/screenshots</code> — attach them to
+UI pull requests.</li>
+</ul>
+<h2 id="pull-requests">Pull requests</h2>
+<ol>
+<li>Fork, create a branch, make your change with tests.</li>
+<li><code>dotnet format &amp;&amp; dotnet test</code>.</li>
+<li>Open a PR and fill in the template. Screenshots for UI changes, please.</li>
+</ol>
+<h2 id="releasing-maintainers">Releasing (maintainers)</h2>
+<p>Bump <code>&lt;Version&gt;</code> in <code>Directory.Build.props</code>, merge, then push a tag <code>vX.Y.Z</code>. <code>.github/workflows/release.yml</code> runs the
+tests and <code>build/build-installer.ps1 -Portable</code>: it publishes the app (<code>-p:FileeRelease=true</code>, which lets it register
+Explorer and startup entries), adds the Explorer menu extension and the bundled rhwp and 7-Zip, compiles
+<code>src/Filee.Setup</code> (Filee&#39;s own installer) and appends the app to it. It drafts the release with the Linux and macOS
+packages and release notes generated from the merged pull requests, and keeps the tested Windows build unsigned (the
+artifact <code>windows-unsigned</code>).</p>
+<p>Then, on a PC signed in to SimplySign Desktop (Certum&#39;s cloud certificate; its key needs the phone app&#39;s token), sign
+the Windows files and add them to the draft:</p>
+<pre><code>pwsh build/sign-release.ps1 -Version X.Y.Z -CertificateThumbprint &lt;sha1&gt;
+</code></pre>
+<p>It signs every unsigned program in the build and the Setup program, packs and signs <code>Filee-X.Y.Z-win-Setup.exe</code>, zips
+the portable copy, checks the signed Setup in a sandbox install and uploads the files with their SHA-256 sums. It also
+copies them to the download mirror <code>https://dl.filee.sh/X.Y.Z/</code> (Cloudflare R2; needs <code>npx wrangler login</code> once),
+which the Microsoft Store listing points at because GitHub&#39;s download links redirect. Look over the draft and publish
+it (or pass <code>-Publish</code>). <code>build/sign-windows.ps1</code> signs any folder or file on its own.</p>
+<h3 id="whats-new-slides-for-a-release">&quot;What&#39;s new&quot; slides for a release</h3>
+<p>A release with features worth showing gets slides, which Filee shows once after updating to it (see
+<a href="docs/ARCHITECTURE.html#whats-new-slides">docs/ARCHITECTURE.md</a>). A release without slides shows nothing.</p>
+<ol>
+<li><p>Write the CHANGELOG section with its <code>&lt;!-- update --&gt;</code> lines first: the slides are the visual version of it.
+Pick 5–7 features; put the small ones together on a last &quot;And more&quot; slide.</p>
+</li>
+<li><p>Add <code>src/Filee.App/Assets/WhatsNew/&lt;version&gt;/slides.json</code> (copy the previous one): per slide an <code>id</code>, the
+<code>media</code> file and the i18n keys <code>whats_new.&lt;version with _&gt;.&lt;id&gt;.title</code> / <code>.text</code>.</p>
+</li>
+<li><p>Add the keys to <strong>every</strong> <code>src/Filee.App/Assets/i18n/*.json</code> (a title and one or two short sentences; Chinese
+without fullwidth <code>；</code> / <code>：</code>).</p>
+</li>
+<li><p>Add a <code>Generate_&lt;version&gt;</code> method to <code>tests/Filee.App.Tests/WhatsNewMedia.cs</code> with a scene per slide (real
+windows driven frame by frame; start each clip on a frame that explains the slide on its own, since reduced
+motion shows only that one) and run it:</p>
+<pre><code>dotnet build tests/Filee.App.Tests
+tests/Filee.App.Tests/bin/Debug/net10.0/Filee.App.Tests.exe -method &quot;Filee.App.Tests.WhatsNewMedia.*&quot; -explicit only
+</code></pre>
+<p><code>FILEE_WHATSNEW_ONLY=crop,theme</code> renders only those clips. Each file must stay under 400 KB (the test checks it,
+and <code>WhatsNewTests</code> checks all of them together stay under 2 MB); look at the first frames in
+<code>bin/.../screenshots/whatsnew-*.png</code> and at the window in <code>whatsnew-window-*.png</code>.</p>
+</li>
+<li><p>Run <code>dotnet test</code>: <code>WhatsNewTests</code> checks that every slide&#39;s media and keys exist.</p>
+</li>
+</ol>
+<p>To try it in the app, build with the new version (<code>dotnet run --project src/Filee.App -p:Version=X.Y.Z</code>) against a
+data folder whose settings say an older version was seen (<code>&quot;whatsNewSeenVersion&quot;: &quot;1.0.0&quot;</code>, <code>FILEE_DATA_DIR</code>), or
+open About → &quot;What&#39;s new&quot;.</p>
+<p>To try the installer locally run <code>pwsh build/build-installer.ps1</code> (output in <code>Releases/</code>; it fetches the bundled
+engines, the C++ runtime and the Zig toolchain for the Explorer menu into <code>build/.cache</code>; run <code>build/fetch-fonts.ps1</code>
+first). <code>pwsh build/build-installer.ps1 -CheckOnly</code> builds Setup around a stub app and installs, updates and
+uninstalls it in a sandbox. To run the real Setup without touching your PC, give it a scratch folder:
+<code>Filee-X.Y.Z-win-Setup.exe /SANDBOX=D:\scratch</code> (registry, Program Files, Start menu, desktop, PATH and <code>%APPDATA%</code>
+all go into that folder; no administrator rights are asked for and Filee is not started). Setup&#39;s texts are the
+<code>installer.*</code> keys of the app&#39;s translation files; its engine page uses the app&#39;s engine names. See
+<a href="docs/ARCHITECTURE.html#windows-installer">Architecture</a>.</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>
