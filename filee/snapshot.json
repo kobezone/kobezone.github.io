@@ -1,0 +1,27 @@
+{
+  "name": "Filee",
+  "source": "https://github.com/KnifeLemon/Filee",
+  "defaultBranch": "main",
+  "commit": "ccac2a579f24941078bd498d77b2bff2b3c21ba6",
+  "commitDate": "2026-10-28T07:37:00+09:00",
+  "commitMessage": "Merge pull request #617 from KnifeLemon/claude/project-thread-6bzsdd",
+  "latestRelease": {
+    "tag": "v2.1.0",
+    "commit": "e830916e7f02526bff6b7576edc22e51ecf9c126",
+    "published": "2026-10-24T23:30:48Z"
+  },
+  "license": "MIT",
+  "copyright": "© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors",
+  "build": {
+    "kind": "static-snapshot",
+    "npmBuild": false,
+    "spa": false,
+    "basePath": "/filee/",
+    "notes": "Upstream is a .NET desktop app. This directory publishes rendered documentation, screenshots, and the design mockup. In-site URLs are relative so GitHub Pages serves them under /filee/."
+  },
+  "accessCode": {
+    "value": "HTQGP2E",
+    "usedByUpstream": false,
+    "howToUse": "Upstream README, configuration, and build scripts do not reference HTQGP2E. Open /filee/ directly; the page has no prompt. The value is recorded here so this deployment can be matched to the supplied code."
+  }
+}

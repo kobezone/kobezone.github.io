@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filee · Polski</title>
+<meta name="description" content="Filee documentation snapshot (Polski). Desktop file converter by KnifeLemon.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<p align="center">
+  <a href="https://filee.sh/pl/"><img src="docs/media/banner-en.jpg" alt="Filee: Przeciągnij. Upuść. Gotowe." width="100%"></a>
+</p>
+
+<p align="center">
+  <b>Darmowy konwerter plików open source, którego używasz, przeciągając.</b><br>
+  Przytrzymaj klawisz (<kbd>Ctrl</kbd>, na macOS <kbd>Option</kbd>), przeciągnij pliki i upuść je na format w pierścieniu, który otworzy się przy kursorze.
+</p>
+
+<p align="center">
+  <a href="https://filee.sh/pl/"><b>Strona</b></a> ·
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><b>Pobierz</b></a> ·
+  <a href="https://www.linkedin.com/company/filee-sh/"><b>LinkedIn</b></a> ·
+  <a href="#instalacja">Instalacja</a> ·
+  <a href="#wiersz-poleceń">Wiersz poleceń</a> ·
+  <a href="#dla-programistów">Dla programistów</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml"><img src="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><img src="https://img.shields.io/github/v/release/KnifeLemon/Filee?color=7F77DD&amp;label=release" alt="Najnowsza wersja"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases"><img src="https://img.shields.io/github/downloads/KnifeLemon/Filee/total?color=1D9E75" alt="Pobrania"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-3C3489" alt="Windows 10 | 11">
+  <img src="https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-3C3489" alt="Linux x64 | ARM64">
+  <img src="https://img.shields.io/badge/macOS-preview-534AB7" alt="macOS w wersji zapoznawczej">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6A62C9" alt="Licencja MIT"></a>
+</p>
+
+<p align="center">
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/weekly?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the week on Trendshift" width="250" height="55"></a>
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/daily?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the day on Trendshift" width="250" height="55"></a>
+</p>
+
+<p align="center">
+  <a href="README.html">English</a> ·
+  <a href="README.es.html">Español</a> ·
+  <a href="README.ja.html">日本語</a> ·
+  <a href="README.ko.html">한국어</a> ·
+  <a href="README.zh-CN.html">简体中文</a> ·
+  <a href="README.zh-TW.html">繁體中文</a> ·
+  <b>Polski</b> ·
+  <a href="README.hi.html">हिन्दी</a> ·
+  <a href="README.ru.html">Русский</a> ·
+  <a href="README.ar.html">العربية</a> ·
+  <a href="README.pt-BR.html">Português (Brasil)</a> ·
+  <a href="README.pt-PT.html">Português (Portugal)</a> ·
+  <a href="README.fr.html">Français</a> ·
+  <a href="README.th.html">ไทย</a>
+</p>
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <b>Tuż przy kursorze</b><br>
+      Nie trzeba otwierać okna aplikacji.
+      Formaty pojawiają się tam, gdzie już jesteś, i tylko te, które pasują do przeciąganych plików.
+    </td>
+    <td width="33%" valign="top">
+      <b>267 formatów bez dodatkowych programów</b><br>
+      Obrazy, PDF, Word, Excel, PowerPoint, HWP, e-booki, archiwa, czcionki, CAD, modele 3D i dane geoprzestrzenne działają bez pakietu Office, Hancom Office i LibreOffice.
+    </td>
+    <td width="33%" valign="top">
+      <b>Wszystko zostaje na Twoim komputerze</b><br>
+      Nic nie jest wysyłane.
+      Filee działa offline i zapisuje wynik obok oryginału.
+    </td>
+  </tr>
+</table>
+
+<h2 id="zobacz-jak-to-działa">Zobacz, jak to działa</h2>
+<p align="center">
+  <a href="https://filee.sh/pl/"><img src="docs/media/demo-en.webp" alt="Przeciąganie trip.jpg z wciśniętym Ctrl: przy kursorze otwiera się pierścień formatów, plik zostaje upuszczony na PNG, pierścień postępu się zamyka i pojawia się trip.png" width="820"></a><br>
+  <sub>Obejrzyj 27-sekundowy film i wypróbuj interaktywne demo na <a href="https://filee.sh/pl/">filee.sh</a></sub>
+</p>
+
+<h2 id="instalacja">Instalacja</h2>
+<p>Pobierz z <a href="https://github.com/KnifeLemon/Filee/releases/latest">Releases</a>.</p>
+<ul>
+<li><strong>Windows 10/11</strong>: uruchom <code>Filee-&lt;version&gt;-win-Setup.exe</code> albo rozpakuj <code>win-Portable.zip</code> i uruchom <code>Filee.exe</code>.<ul>
+<li>Setup to własny instalator Filee, mówi w językach Filee i nie potrzebuje na komputerze niczego więcej.</li>
+<li>Może dodać menu Eksploratora, uruchamianie po zalogowaniu, polecenie <code>filee</code> i opcjonalne silniki.</li>
+<li>Instalacja cicha przyjmuje przełączniki Inno Setup (<code>/VERYSILENT /SUPPRESSMSGBOXES</code>).</li>
+</ul>
+</li>
+<li><strong>macOS 13+</strong> (wersja zapoznawcza): rozpakuj pakiet <code>osx-arm64</code> lub <code>osx-x64</code> i uruchom <code>./install.sh</code>.<ul>
+<li>Albo otwórz plik <code>.dmg</code> i przeciągnij Filee do Programów (polecenie <code>filee</code> dodaje tylko <code>install.sh</code>).</li>
+<li>Aplikacja nie jest jeszcze notaryzowana, więc przy pierwszym uruchomieniu zezwól na nią w Ustawienia systemowe → Prywatność i ochrona → <strong>Otwórz mimo to</strong>.</li>
+</ul>
+</li>
+<li><strong>Linux x64/ARM64</strong> (Ubuntu 22.04+): rozpakuj pakiet i uruchom <code>./install.sh</code> (bez uprawnień roota, wymaga Pythona 3).<ul>
+<li>Gesty przeciągania wymagają X11.
+W Waylandzie korzystaj ze strefy upuszczania i menu kontekstowego menedżera plików.</li>
+</ul>
+</li>
+</ul>
+<p>Filee pokazuje nowe wersje w swoim menu i sam się aktualizuje, zachowując Twoje ustawienia i silniki.
+Po aktualizacji kilka slajdów pokazuje, co nowego.</p>
+<p><strong>Windows: Filee się nie uruchamia (nie ma okna ani błędu)?</strong>
+Dzieje się tak w Windows 10, który od dawna nie był aktualizowany, na komputerze z procesorem obsługującym wymuszaną sprzętowo ochronę stosu (CET).
+Windows włącza tę ochronę, ale brakuje mu elementu potrzebnego platformie .NET, więc Filee i Setup od razu się zamykają.</p>
+<ul>
+<li><strong>Zalecane:</strong> zainstaluj dostępne aktualizacje Windows (najnowszą aktualizację zbiorczą).</li>
+<li><strong>Jeśli aktualizacja nie jest możliwa:</strong> zwykle wystarczy wyłączyć ochronę tylko dla Filee.
+Uruchom w PowerShell jako administrator:</li>
+</ul>
+<pre><code class="language-powershell">Set-ProcessMitigation -Name Filee.exe -Disable UserShadowStack
+Set-ProcessMitigation -Name filee-cli.exe -Disable UserShadowStack
+</code></pre>
+<p>To samo zrób z nazwą pliku Setup (np. <code>Filee-&lt;version&gt;-win-Setup.exe</code>) albo użyj przenośnego pliku ZIP, któremu wystarczą te dwa wiersze.
+Aby to cofnąć, usuń te wpisy w Zabezpieczenia Windows → Kontrola aplikacji i przeglądarki → Ustawienia ochrony przed lukami w zabezpieczeniach → Ustawienia programu.</p>
+<h2 id="funkcje">Funkcje</h2>
+<ul>
+<li><strong>Pierścień przy kursorze</strong>: przytrzymaj klawisz, przeciągnij pliki i upuść je na format.
+Pojawiają się tylko formaty pasujące do tych plików.</li>
+<li><strong>Prosto z przeglądarki</strong>: tak samo przeciągnij obraz, link do pliku lub pobieranie z Chrome, Edge, Firefoksa albo Safari.<ul>
+<li>Filee zapisuje plik w folderze Pobrane (albo zostawia tylko przekonwertowany plik) i go konwertuje.</li>
+<li>Linki pobiera bez logowania z Twojej przeglądarki.</li>
+</ul>
+</li>
+<li><strong>Osobny pasek-pierścień dla każdego typu plików</strong>, układany metodą przeciągnij i upuść, z ustawieniami wstępnymi:<ul>
+<li>jakości, rozmiaru, DPI</li>
+<li>stron i kompresji PDF</li>
+<li>wideo i audio</li>
+<li>folderu docelowego i nazw plików</li>
+</ul>
+</li>
+<li><strong>Dwie strony każdego pierścienia</strong>: gdy jest otwarty, naciśnij <kbd>Tab</kbd> lub obróć kółko myszy, aby go odwrócić do rzadziej używanych formatów i narzędzi.</li>
+<li><strong>Kadrowanie przed konwersją</strong>: wycinek Kadruj otwiera obrazy po kolei.
+Przeciągnij ramkę, wybierz proporcje, a zapisana zostanie tylko ta część.</li>
+<li><strong>Wiele plików naraz</strong>, równolegle.
+Konwersje wymagające kilku kroków (HWP → HWPX → DOCX) Filee znajduje sam.</li>
+<li><strong>Obserwowane foldery</strong> konwertują każdy plik, który do nich trafi.</li>
+<li><strong>Ostatnie konwersje</strong> na ekranie Start, każda z miniaturą: otwórz wynik albo otwórz go za pomocą innej aplikacji.</li>
+<li><strong>Inne sposoby</strong>: menu kontekstowe, skrót klawiszowy, strefa upuszczania i <a href="#wiersz-polece%C5%84">polecenie <code>filee</code></a>.</li>
+<li>Jasny i ciemny motyw z własnym kolorem akcentu i kryciem pierścienia, w językach English, Español, 日本語, 한국어, 简体中文, 繁體中文, Polski, हिन्दी, Русский, العربية (od prawej do lewej), Português (Brasil), Français, नेपाली, ไทย, Türkçe, Português (Portugal) i Deutsch.</li>
+</ul>
+<h2 id="zrzuty-ekranu">Zrzuty ekranu</h2>
+<table>
+  <tr>
+    <td width="50%"><img src="docs/media/page-toolbar-en.png" alt="Edytor paska-pierścienia z profilami i ustawieniami wstępnymi"></td>
+    <td width="50%"><img src="docs/media/page-home-en.png" alt="Ekran startowy ze strefą upuszczania i ostatnimi konwersjami"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Układaj pierścień metodą przeciągnij i upuść, jeden profil na typ plików</sub></td>
+    <td align="center"><sub>Start: strefa upuszczania i ostatnie konwersje</sub></td>
+  </tr>
+</table>
+
+<h2 id="formaty">Formaty</h2>
+<table>
+<thead>
+<tr>
+<th>Z</th>
+<th>Do</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Obrazy</strong>: JPG, PNG, WEBP, AVIF, TIFF, BMP, GIF, APNG, ICO, ICNS, JPEG XL, JPEG 2000, PSD/PSB, TGA, PPM, HEIC, QOI, DDS, PCX, MNG, CUR, …;<br>GIMP XCF, RAW z aparatów (CR2, CR3, NEF, ARW, DNG, …), DICOM, OpenEXR, HDR, FITS, JPEG XR (Windows), Live Photo z iPhone&#39;a (LIVP) tylko odczyt</td>
+<td>dowolny z nich (HEIC⁵), PDF, SVG (wektoryzacja), zmiana rozmiaru, skala szarości;<br>Live/Motion Photo (iPhone, Android) → ich wideo (MP4, MOV⁵), a wideo → Live Photo (iPhone) lub Motion Photo (Android)⁵, eksperymentalnie</td>
+</tr>
+<tr>
+<td><strong>Grafika wektorowa</strong>: SVG, SVGZ, EMF, WMF, AI<br>EPS, PS¹<br>CDR, VSD, CGM, ODG, FODG²</td>
+<td>PDF (wektorowy), PNG i inne obrazy,<br>SVG ↔ SVGZ, SVG → DXF/DWG, PDF → EPS/PS¹, SVG → EMF, WMF, ODG²</td>
+</tr>
+<tr>
+<td><strong>PDF</strong></td>
+<td>DOCX, HWPX, TXT, PNG, JPG, TIFF, CBZ, PPTX (każda strona jako obraz), SVG²;<br>łączenie (w kolejności, którą najpierw wybierzesz), dzielenie, zakresy stron, kompresja (mniejsze pliki PDF)</td>
+</tr>
+<tr>
+<td><strong>Dokumenty</strong>: DOCX, DOCM, DOTX, EML, Outlook MSG;<br>OFD (chińskie e-faktury, dokumenty urzędowe) tylko odczyt<br>DOC, ODT, FODT, OTT, RTF, WPS, WPD, Pages, ClarisWorks, MacWrite, T602, …²</td>
+<td>PDF, DOCX, HWPX, EPUB, TXT, HTML;<br>MSG → EML<br>ODT, FODT, OTT²</td>
+</tr>
+<tr>
+<td><strong>Arkusze</strong>: XLSX, XLSM, XLS, XLT, ODS, CSV, TSV<br>OTS, FODS, Numbers, ET²</td>
+<td>PDF, XLSX, ODS, CSV, TSV, JSON, HWPX, HTML<br>XLT, OTS²</td>
+</tr>
+<tr>
+<td><strong>Prezentacje</strong>: PPTX, PPTM, POTX, POTM, PPSX<br>PPT, ODP, OTP, FODP, Keynote²</td>
+<td>PDF, PNG, JPG, DOCX, HWPX<br>OTP²</td>
+</tr>
+<tr>
+<td><strong>HWP</strong>: HWP, HWPX</td>
+<td>PDF, PNG, DOCX, HWPX ↔ HWP, TXT, Markdown, HTML</td>
+</tr>
+<tr>
+<td><strong>Tekst</strong>: TXT, LOG, kod skryptów (PY, PAC, BAT, COMMAND; tylko odczyt, nigdy uruchamianie), Markdown, HTML;<br>MHTML (zapisane strony WWW) tylko odczyt<br>reStructuredText, LaTeX, Org, AsciiDoc, Typst, MediaWiki, DocBook, Jupyter, Textile, man, OPML³</td>
+<td>TXT w UTF-8, PDF, DOCX, HWPX, EPUB<br>między sobą, slajdy PPTX³</td>
+</tr>
+<tr>
+<td><strong>E-booki</strong>: EPUB, KEPUB, MOBI, AZW3, AZW, AZW4, FB2, CBZ, CBR, CB7, HTMLZ, TXTZ<br>LIT, LRF, CHM, PDB, …⁴</td>
+<td>PDF, EPUB, KEPUB (Kobo), DOCX, TXT, HTML, HWPX<br>MOBI, AZW3⁴</td>
+</tr>
+<tr>
+<td><strong>Wideo</strong>⁵: MP4, MOV, MKV, WEBM, AVI, WMV, FLV, MPEG, Video CD (DAT), TS, M2TS, 3GP, OGV, VOB, …</td>
+<td>MP4 (H.264, HEVC, AV1), WEBM, MOV, MKV, AVI, GIF, APNG, MP3, M4A, 720p,<br>napisy (SRT, ASS, WebVTT)</td>
+</tr>
+<tr>
+<td><strong>Audio</strong>⁵: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, WMA, AIFF, AMR, APE, WavPack, TTA, DSD (DSF, DFF), DTS, AC3, E-AC3, …</td>
+<td>MP3, M4A (AAC, ALAC), WAV, FLAC, OGG, OPUS, AAC, WavPack, TTA, W64, AC3, E-AC3</td>
+</tr>
+<tr>
+<td><strong>Napisy</strong>: SRT, ASS/SSA, WebVTT, SAMI (SMI), LRC, TTML, MicroDVD, SCC</td>
+<td>między sobą, w UTF-8 (koreańskie pliki CP949 są odczytywane poprawnie)</td>
+</tr>
+<tr>
+<td><strong>Archiwa</strong>: ZIP, ANSYS Workbench (WBPZ), 7Z, RAR, TAR, TAR.GZ, TAR.BZ2, TAR.XZ, GZ, ISO, CAB, DMG, ALZ, EGG, …</td>
+<td>rozpakowanie, ZIP, 7Z, TAR, TAR.GZ;<br>dowolne pliki → jeden ZIP</td>
+</tr>
+<tr>
+<td><strong>CAD</strong>: DWG, DXF</td>
+<td>PDF, SVG, PNG, DWG ↔ DXF</td>
+</tr>
+<tr>
+<td><strong>Czcionki</strong>: TTF, OTF, WOFF, WOFF2, EOT;<br>FON (bitmapowe czcionki Windows) tylko odczyt</td>
+<td>konwersja między sobą;<br>FON → plik na rozmiar</td>
+</tr>
+<tr>
+<td><strong>Dane</strong>: JSON, JSON Lines, YAML, TOML, XML<br>vCard, iCalendar</td>
+<td>między sobą, CSV i XLSX (tabele);<br>vCard, iCalendar ↔ CSV</td>
+</tr>
+<tr>
+<td><strong>Modele 3D</strong>: GLB, glTF, STL, OBJ (+ MTL), 3MF, PLY;<br>FBX tylko odczyt</td>
+<td>między sobą, podgląd PNG</td>
+</tr>
+<tr>
+<td><strong>Dane geoprzestrzenne (wektorowe)</strong>: Shapefile, GeoJSON, KML, KMZ, GPX<br>CSV ze współrzędnymi;<br>Garmin FIT tylko odczyt</td>
+<td>między sobą oraz CSV / XLSX / JSON;<br>dane w odwzorowaniach (UTM, Web Mercator, Lambert, Albers) wychodzą jako długość / szerokość geograficzna WGS 84</td>
+</tr>
+</tbody></table>
+<p>Formaty bez oznaczenia działają od razu, bez pakietu Office, Hancom Office i LibreOffice.
+Oznaczone wymagają opcjonalnego silnika, pobieranego tylko wtedy, gdy jest potrzebny: ¹ Ghostscript, ² LibreOffice, ³ Pandoc, ⁴ calibre, ⁵ FFmpeg (<a href="docs/ENGINES.html">szczegóły</a>).</p>
+<h2 id="wiersz-poleceń">Wiersz poleceń</h2>
+<p>Polecenie <code>filee</code> korzysta z tych samych silników i ustawień wstępnych co aplikacja (dodaje je instalator lub <code>install.sh</code>).</p>
+<pre><code>filee convert photo.heic --to jpg
+filee convert *.png --to webp --quality 80 -o converted
+filee watch D:\Inbox --to pdf --move-originals
+</code></pre>
+<p>Wszystkie polecenia i opcje: <a href="https://filee.sh/pl/cli/">filee.sh/pl/cli</a> lub <code>filee help</code>.</p>
+<h2 id="dla-programistów">Dla programistów</h2>
+<p>Zbuduj projekt za pomocą .NET 10 SDK w systemie Windows, macOS lub Linux:</p>
+<pre><code class="language-bash">git clone https://github.com/KnifeLemon/Filee.git
+cd Filee
+pwsh build/fetch-engines.ps1 -Only rhwp,pandoc   # optional engines
+dotnet run --project src/Filee.App
+dotnet test
+</code></pre>
+<p><a href="docs/ARCHITECTURE.html">Architektura</a> · <a href="docs/ENGINES.html">Silniki</a> · <a href="docs/ADDING-A-CONVERTER.html">Dodawanie konwertera</a> · <a href="docs/ADDING-A-LANGUAGE.html">Dodawanie języka</a> · <a href="CONTRIBUTING.html">Jak pomóc</a></p>
+<p>Pull requesty są mile widziane.
+Jeśli Filee oszczędza Ci kilka kliknięć, ⭐ pomoże innym go znaleźć.</p>
+<h2 id="zasady-podpisywania-kodu">Zasady podpisywania kodu</h2>
+<p>Filee tworzy i publikuje <strong>Myeonggu Kim</strong> (<a href="https://github.com/KnifeLemon">KnifeLemon</a>).</p>
+<ul>
+<li>Wydania dla Windows są podpisywane certyfikatem <a href="https://www.certum.eu/">Certum</a> do podpisywania kodu open source, wystawionym na Myeonggu Kim.<ul>
+<li>Wydania do 2.0.0 włącznie nie są podpisane.</li>
+</ul>
+</li>
+</ul>
+<p>Pełne zasady i politykę prywatności znajdziesz w <a href="README.html#code-signing-policy">angielskim README</a>.
+Filee nie wysyła Twoich plików ani danych o użytkowaniu.</p>
+<h2 id="wsparcie">Wsparcie</h2>
+<p>Filee jest darmowy i taki zostanie.
+Jeśli chcesz go wesprzeć, wybierz sposób, który Ci odpowiada (<a href="https://fairy.hada.io/@filee">Fairy</a> obsługuje koreańskie karty i szybkie płatności).</p>
+<p><strong>Tu może być Twoje imię lub logo.</strong>
+Osoby wspierające co miesiąc wymieniamy tutaj z imienia, a sponsorzy mają swoje logo tutaj i na stronie „O programie” w Filee.
+Jeśli wspierasz jednorazowo, też możesz poprosić o wpis.</p>
+<!-- sponsors: src/Filee.App/Assets/Sponsors/sponsors.json -->
+
+<p align="center">
+  <a href="https://github.com/sponsors/KnifeLemon"><img src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&amp;logo=githubsponsors&amp;logoColor=white" alt="GitHub Sponsors"></a>
+  <a href="https://patreon.com/KnifeLemon"><img src="https://img.shields.io/badge/Patreon-000000?style=for-the-badge&amp;logo=patreon&amp;logoColor=white" alt="Patreon"></a>
+  <a href="https://ko-fi.com/knifelemon"><img src="https://img.shields.io/badge/Ko--fi-FF6433?style=for-the-badge&amp;logo=kofi&amp;logoColor=white" alt="Ko-fi"></a>
+  <a href="https://paypal.me/knifelemon"><img src="https://img.shields.io/badge/PayPal-002991?style=for-the-badge&amp;logo=paypal&amp;logoColor=white" alt="PayPal"></a>
+  <a href="https://fairy.hada.io/@filee"><img src="https://img.shields.io/badge/Fairy-2E9E6B?style=for-the-badge" alt="Fairy"></a>
+</p>
+
+<h2 id="licencja">Licencja</h2>
+<p>MIT, © 2026 Myeonggu Kim (KnifeLemon) i współtwórcy Filee.
+Dołączone komponenty innych firm mają własne licencje, wymienione w <a href="THIRD-PARTY-NOTICES.html">THIRD-PARTY-NOTICES.md</a>.</p>
+<p align="center">
+  <a href="https://star-history.com/#KnifeLemon/Filee&amp;Date"><img src="https://api.star-history.com/svg?repos=KnifeLemon/Filee&amp;type=Date" alt="Star history" width="600"></a>
+</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filee · 日本語</title>
+<meta name="description" content="Filee documentation snapshot (日本語). Desktop file converter by KnifeLemon.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<p align="center">
+  <a href="https://filee.sh"><img src="docs/media/banner-en.jpg" alt="Filee：ドラッグ。ドロップ。変換完了。" width="100%"></a>
+</p>
+
+<p align="center">
+  <b>ドラッグで使う、無料のオープンソースのファイル変換ツール。</b><br>
+  キー（<kbd>Ctrl</kbd>、macOSでは<kbd>Option</kbd>）を押しながらファイルをドラッグし、カーソル位置に開くドーナツメニューの形式にドロップするだけ。
+</p>
+
+<p align="center">
+  <a href="https://filee.sh"><b>ウェブサイト</b></a> ·
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><b>ダウンロード</b></a> ·
+  <a href="https://www.linkedin.com/company/filee-sh/"><b>LinkedIn</b></a> ·
+  <a href="#インストール">インストール</a> ·
+  <a href="#コマンドライン">コマンドライン</a> ·
+  <a href="#開発">開発</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml"><img src="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><img src="https://img.shields.io/github/v/release/KnifeLemon/Filee?color=7F77DD&amp;label=release" alt="最新リリース"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases"><img src="https://img.shields.io/github/downloads/KnifeLemon/Filee/total?color=1D9E75" alt="ダウンロード数"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-3C3489" alt="Windows 10 | 11">
+  <img src="https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-3C3489" alt="Linux x64 | ARM64">
+  <img src="https://img.shields.io/badge/macOS-preview-534AB7" alt="macOS プレビュー版">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6A62C9" alt="MITライセンス"></a>
+</p>
+
+<p align="center">
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/weekly?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the week on Trendshift" width="250" height="55"></a>
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/daily?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the day on Trendshift" width="250" height="55"></a>
+</p>
+
+<p align="center">
+  <a href="README.html">English</a> ·
+  <a href="README.es.html">Español</a> ·
+  <b>日本語</b> ·
+  <a href="README.ko.html">한국어</a> ·
+  <a href="README.zh-CN.html">简体中文</a> ·
+  <a href="README.zh-TW.html">繁體中文</a> ·
+  <a href="README.pl.html">Polski</a> ·
+  <a href="README.hi.html">हिन्दी</a> ·
+  <a href="README.ru.html">Русский</a> ·
+  <a href="README.ar.html">العربية</a> ·
+  <a href="README.pt-BR.html">Português (Brasil)</a> ·
+  <a href="README.pt-PT.html">Português (Portugal)</a> ·
+  <a href="README.fr.html">Français</a> ·
+  <a href="README.th.html">ไทย</a>
+</p>
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <b>カーソルのすぐそばで</b><br>
+      アプリのウィンドウを開く必要はありません。
+      いま作業している場所に、ドラッグ中のファイルに合う形式だけが表示されます。
+    </td>
+    <td width="33%" valign="top">
+      <b>267形式、ほかのソフトは不要</b><br>
+      画像、PDF、Word、Excel、PowerPoint、HWP、電子書籍、アーカイブ、フォント、CAD、3Dモデル、地理空間データを、Office、Hancom Office、LibreOfficeなしで変換できます。
+    </td>
+    <td width="33%" valign="top">
+      <b>すべて手元のPCで完結</b><br>
+      何もアップロードしません。
+      Fileeはオフラインで動作し、変換結果を元のファイルと同じ場所に保存します。
+    </td>
+  </tr>
+</table>
+
+<h2 id="動作の様子">動作の様子</h2>
+<p align="center">
+  <a href="https://filee.sh"><img src="docs/media/demo-en.webp" alt="Ctrlを押しながらtrip.jpgをドラッグすると、カーソル位置に形式のドーナツメニューが開き、PNGにドロップすると進行状況のリングが一周してtrip.pngができあがる" width="820"></a><br>
+  <sub>27秒の動画とインタラクティブなデモは<a href="https://filee.sh">filee.sh</a>で</sub>
+</p>
+
+<h2 id="インストール">インストール</h2>
+<p><a href="https://github.com/KnifeLemon/Filee/releases/latest">Releases</a>からダウンロードしてください。</p>
+<ul>
+<li><strong>Windows 10/11</strong>：<code>Filee-&lt;version&gt;-win-Setup.exe</code>を実行するか、<code>win-Portable.zip</code>を展開して<code>Filee.exe</code>を実行します。<ul>
+<li>セットアップはFilee独自のインストーラーで、Fileeと同じ言語で表示され、PCにほかのソフトは必要ありません。</li>
+<li>エクスプローラーのメニュー、サインイン時の起動、<code>filee</code>コマンド、追加の変換エンジンを選べます。</li>
+<li>サイレントインストールにはInno Setupと同じスイッチ（<code>/VERYSILENT /SUPPRESSMSGBOXES</code>）が使えます。</li>
+</ul>
+</li>
+<li><strong>macOS 13以降</strong>（プレビュー版）：<code>osx-arm64</code>または<code>osx-x64</code>のパッケージを展開し、<code>./install.sh</code>を実行します。<ul>
+<li>または<code>.dmg</code>を開いてFileeを「アプリケーション」へドラッグします（<code>filee</code>コマンドは<code>install.sh</code>で追加されます）。</li>
+<li>まだ公証を受けていないため、初回起動時は「システム設定」→「プライバシーとセキュリティ」→「<strong>このまま開く</strong>」で許可してください。</li>
+</ul>
+</li>
+<li><strong>Linux x64/ARM64</strong>（Ubuntu 22.04以降）：パッケージを展開して<code>./install.sh</code>を実行します（root権限は不要、Python 3が必要）。<ul>
+<li>ドラッグ操作にはX11が必要です。
+Waylandでは、ドロップ領域とファイルマネージャーの右クリックメニューを使ってください。</li>
+</ul>
+</li>
+</ul>
+<p>新しいバージョンが出るとメニューでお知らせし、設定とエンジンはそのままでFilee自身が更新します。
+更新後は、新機能を数枚のスライドで紹介します。</p>
+<p><strong>Windows：Fileeが起動しない（ウィンドウもエラーも出ない）場合</strong>
+長い間更新していないWindows 10を、ハードウェア強制スタック保護（CET）に対応したプロセッサーのPCで使っていると起こります。
+Windowsはこの保護を有効にしますが、.NETに必要な機能が欠けているため、Fileeとセットアップがすぐに終了します。</p>
+<ul>
+<li><strong>推奨</strong>：Windows Updateで利用できる更新プログラム（最新の累積更新プログラム）をインストールしてください。</li>
+<li><strong>更新できない場合</strong>：Fileeだけこの保護をオフにすると、たいていは起動します。
+管理者として開いたPowerShellで次を実行します。</li>
+</ul>
+<pre><code class="language-powershell">Set-ProcessMitigation -Name Filee.exe -Disable UserShadowStack
+Set-ProcessMitigation -Name filee-cli.exe -Disable UserShadowStack
+</code></pre>
+<p>セットアップも、そのファイル名（例：<code>Filee-&lt;version&gt;-win-Setup.exe</code>）で同じように実行してください。
+ポータブル版のZIPなら上の2行だけで済みます。
+元に戻すには、「Windows セキュリティ」→「アプリとブラウザー コントロール」→「Exploit Protection の設定」→「プログラム設定」で該当する項目を削除します。</p>
+<h2 id="機能">機能</h2>
+<ul>
+<li><strong>カーソル位置にドーナツメニュー</strong>：キーを押しながらファイルをドラッグし、形式の上にドロップするだけ。
+ファイルに合う形式だけが表示されます。</li>
+<li><strong>ブラウザーから直接</strong>：Chrome、Edge、Firefox、Safariから画像、ファイルへのリンク、ダウンロードも同じようにドラッグできます。<ul>
+<li>Fileeはダウンロードフォルダーに保存して（変換後のファイルだけを残すこともできます）変換します。</li>
+<li>リンクはブラウザーのログイン情報を使わずにダウンロードします。</li>
+</ul>
+</li>
+<li><strong>ファイルの種類ごとのドーナツメニュー</strong>はドラッグ＆ドロップで並べ替えられ、次の項目をプリセットで設定できます：<ul>
+<li>品質、サイズ、DPI</li>
+<li>PDFのページと圧縮</li>
+<li>動画と音声</li>
+<li>保存先、ファイル名</li>
+</ul>
+</li>
+<li><strong>ドーナツメニューの裏面</strong>：開いている間に<kbd>Tab</kbd>キーを押すかマウスホイールを回すと裏返り、使用頻度の低い形式やツールが表示されます。</li>
+<li><strong>変換の前にトリミング</strong>：「トリミング」で画像を1枚ずつ開けます。
+枠をドラッグして比率を選ぶと、その部分だけを保存します。</li>
+<li><strong>複数のファイルをまとめて</strong>並列で変換します。
+複数の手順が必要な変換（HWP → HWPX → DOCX）も、経路を自動で見つけます。</li>
+<li><strong>監視フォルダー</strong>に入ったファイルを、すべて自動で変換します。</li>
+<li><strong>最近の変換</strong>はホームにサムネイル付きで表示され、変換結果を開いたり、別のアプリで開いたりできます。</li>
+<li><strong>ほかの使い方</strong>：右クリックメニュー、キーボードショートカット、ドロップ領域、<a href="#%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%83%A9%E3%82%A4%E3%83%B3"><code>filee</code>コマンド</a>。</li>
+<li>ライトテーマとダークテーマ。
+アクセントカラーとドーナツメニューの不透明度も選べます。
+English、Español、日本語、한국어、简体中文、繁體中文、Polski、हिन्दी、Русский、العربية（右から左へ表示）、Português (Brasil)、Français、नेपाली、ไทย、Türkçe、Português (Portugal)、Deutschに対応。</li>
+</ul>
+<h2 id="スクリーンショット">スクリーンショット</h2>
+<table>
+  <tr>
+    <td width="50%"><img src="docs/media/page-toolbar-en.png" alt="プロファイルとプリセットを使ったドーナツメニューの編集画面"></td>
+    <td width="50%"><img src="docs/media/page-home-en.png" alt="ドロップ領域と最近の変換が表示されたホーム画面"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>ファイルの種類ごとのプロファイルで、ドーナツメニューをドラッグ＆ドロップで編集</sub></td>
+    <td align="center"><sub>ホーム：ドロップ領域と最近の変換</sub></td>
+  </tr>
+</table>
+
+<h2 id="対応形式">対応形式</h2>
+<table>
+<thead>
+<tr>
+<th>変換元</th>
+<th>変換先</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>画像</strong>：JPG、PNG、WEBP、AVIF、TIFF、BMP、GIF、APNG、ICO、ICNS、JPEG XL、JPEG 2000、PSD/PSB、TGA、PPM、HEIC、QOI、DDS、PCX、MNG、CUR など。<br>GIMP XCF、カメラRAW（CR2、CR3、NEF、ARW、DNG など）、DICOM、OpenEXR、HDR、FITS、JPEG XR（Windows）、iPhoneのLive Photo（LIVP）は読み込みのみ</td>
+<td>上記の形式どうし（HEIC⁵）、PDF、SVG（トレース）、リサイズ、グレースケール。<br>Live Photo/モーションフォト（iPhone、Android）→ その動画（MP4、MOV⁵）、動画 → Live Photo（iPhone）またはモーションフォト（Android）⁵（試験的）</td>
+</tr>
+<tr>
+<td><strong>ベクター画像</strong>：SVG、SVGZ、EMF、WMF、AI<br>EPS、PS¹<br>CDR、VSD、CGM、ODG、FODG²</td>
+<td>PDF（ベクター）、PNGなどの画像、<br>SVG ↔ SVGZ、SVG → DXF/DWG、PDF → EPS/PS¹、SVG → EMF、WMF、ODG²</td>
+</tr>
+<tr>
+<td><strong>PDF</strong></td>
+<td>DOCX、HWPX、TXT、PNG、JPG、TIFF、CBZ、PPTX（各ページを1枚の画像として）、SVG²。<br>結合（先に順番を選べます）、分割、ページ範囲、圧縮（PDFを軽量化）</td>
+</tr>
+<tr>
+<td><strong>文書</strong>：DOCX、DOCM、DOTX、EML、Outlook MSG。<br>OFD（中国の電子インボイス、公文書）は読み込みのみ<br>DOC、ODT、FODT、OTT、RTF、WPS、WPD、Pages、ClarisWorks、MacWrite、T602 など²</td>
+<td>PDF、DOCX、HWPX、EPUB、TXT、HTML。<br>MSG → EML<br>ODT、FODT、OTT²</td>
+</tr>
+<tr>
+<td><strong>表計算</strong>：XLSX、XLSM、XLS、XLT、ODS、CSV、TSV<br>OTS、FODS、Numbers、ET²</td>
+<td>PDF、XLSX、ODS、CSV、TSV、JSON、HWPX、HTML<br>XLT、OTS²</td>
+</tr>
+<tr>
+<td><strong>プレゼンテーション</strong>：PPTX、PPTM、POTX、POTM、PPSX<br>PPT、ODP、OTP、FODP、Keynote²</td>
+<td>PDF、PNG、JPG、DOCX、HWPX<br>OTP²</td>
+</tr>
+<tr>
+<td><strong>HWP</strong>：HWP、HWPX</td>
+<td>PDF、PNG、DOCX、HWPX ↔ HWP、TXT、Markdown、HTML</td>
+</tr>
+<tr>
+<td><strong>テキスト</strong>：TXT、LOG、スクリプトのソース（PY、PAC、BAT、COMMAND。実行はせず読み込むだけ）、Markdown、HTML。<br>MHTML（保存したウェブページ）は読み込みのみ<br>reStructuredText、LaTeX、Org、AsciiDoc、Typst、MediaWiki、DocBook、Jupyter、Textile、man、OPML³</td>
+<td>UTF-8のTXT、PDF、DOCX、HWPX、EPUB<br>相互変換、PPTXスライド³</td>
+</tr>
+<tr>
+<td><strong>電子書籍</strong>：EPUB、KEPUB、MOBI、AZW3、AZW、AZW4、FB2、CBZ、CBR、CB7、HTMLZ、TXTZ<br>LIT、LRF、CHM、PDB など⁴</td>
+<td>PDF、EPUB、KEPUB（Kobo）、DOCX、TXT、HTML、HWPX<br>MOBI、AZW3⁴</td>
+</tr>
+<tr>
+<td><strong>動画</strong>⁵：MP4、MOV、MKV、WEBM、AVI、WMV、FLV、MPEG、ビデオCD（DAT）、TS、M2TS、3GP、OGV、VOB など</td>
+<td>MP4（H.264、HEVC、AV1）、WEBM、MOV、MKV、AVI、GIF、APNG、MP3、M4A、720p、<br>字幕（SRT、ASS、WebVTT）</td>
+</tr>
+<tr>
+<td><strong>音声</strong>⁵：MP3、M4A、AAC、WAV、FLAC、OGG、OPUS、WMA、AIFF、AMR、APE、WavPack、TTA、DSD（DSF、DFF）、DTS、AC3、E-AC3 など</td>
+<td>MP3、M4A（AAC、ALAC）、WAV、FLAC、OGG、OPUS、AAC、WavPack、TTA、W64、AC3、E-AC3</td>
+</tr>
+<tr>
+<td><strong>字幕</strong>：SRT、ASS/SSA、WebVTT、SAMI（SMI）、LRC、TTML、MicroDVD、SCC</td>
+<td>相互変換、UTF-8で保存（CP949の韓国語ファイルも正しく読み込み）</td>
+</tr>
+<tr>
+<td><strong>アーカイブ</strong>：ZIP、ANSYS Workbench（WBPZ）、7Z、RAR、TAR、TAR.GZ、TAR.BZ2、TAR.XZ、GZ、ISO、CAB、DMG、ALZ、EGG など</td>
+<td>展開、ZIP、7Z、TAR、TAR.GZ。<br>複数のファイル → 1つのZIP</td>
+</tr>
+<tr>
+<td><strong>CAD</strong>：DWG、DXF</td>
+<td>PDF、SVG、PNG、DWG ↔ DXF</td>
+</tr>
+<tr>
+<td><strong>フォント</strong>：TTF、OTF、WOFF、WOFF2、EOT；<br>FON（Windowsビットマップフォント）は読み込みのみ</td>
+<td>相互変換；<br>FON → サイズごとに1ファイル</td>
+</tr>
+<tr>
+<td><strong>データ</strong>：JSON、JSON Lines、YAML、TOML、XML<br>vCard、iCalendar</td>
+<td>相互変換、CSVとXLSX（表形式のデータ）。<br>vCard、iCalendar ↔ CSV</td>
+</tr>
+<tr>
+<td><strong>3Dモデル</strong>：GLB、glTF、STL、OBJ（+ MTL）、3MF、PLY。<br>FBXは読み込みのみ</td>
+<td>相互変換、PNGプレビュー</td>
+</tr>
+<tr>
+<td><strong>地理空間ベクターデータ</strong>：Shapefile、GeoJSON、KML、KMZ、GPX<br>座標付きのCSV。<br>Garmin FITは読み込みのみ</td>
+<td>相互変換、CSV/XLSX/JSON。<br>投影座標系（UTM、Webメルカトル、ランベルト、アルベルス）のデータはWGS 84の経度/緯度で出力</td>
+</tr>
+</tbody></table>
+<p>印のない形式は、Office、Hancom Office、LibreOfficeなしですぐに使えます。
+印のある形式には追加の変換エンジンが必要で、必要なときにだけダウンロードされます：¹ Ghostscript、² LibreOffice、³ Pandoc、⁴ calibre、⁵ FFmpeg（<a href="docs/ENGINES.html">詳細</a>）。</p>
+<h2 id="コマンドライン">コマンドライン</h2>
+<p><code>filee</code>コマンドは、アプリと同じエンジンとプリセットを使います（セットアップまたは<code>install.sh</code>で追加されます）。</p>
+<pre><code>filee convert photo.heic --to jpg
+filee convert *.png --to webp --quality 80 -o converted
+filee watch D:\Inbox --to pdf --move-originals
+</code></pre>
+<p>すべてのコマンドとオプションは、<a href="https://filee.sh/cli/">filee.sh/cli</a>または<code>filee help</code>で確認できます。</p>
+<h2 id="開発">開発</h2>
+<p>Windows、macOS、Linuxで、.NET 10 SDKを使ってビルドします。</p>
+<pre><code class="language-bash">git clone https://github.com/KnifeLemon/Filee.git
+cd Filee
+pwsh build/fetch-engines.ps1 -Only rhwp,pandoc   # optional engines
+dotnet run --project src/Filee.App
+dotnet test
+</code></pre>
+<p><a href="docs/ARCHITECTURE.html">アーキテクチャ</a> · <a href="docs/ENGINES.html">エンジン</a> · <a href="docs/ADDING-A-CONVERTER.html">コンバーターの追加</a> · <a href="docs/ADDING-A-LANGUAGE.html">言語の追加</a> · <a href="CONTRIBUTING.html">コントリビューション</a></p>
+<p>プルリクエスト歓迎です。
+Fileeで手間が省けたら、⭐をつけていただけると、ほかの人がFileeを見つけやすくなります。</p>
+<h2 id="コード署名ポリシー">コード署名ポリシー</h2>
+<p>Fileeは<strong>Myeonggu Kim</strong>（<a href="https://github.com/KnifeLemon">KnifeLemon</a>）が開発・公開しています。</p>
+<ul>
+<li>Windows版のリリースには、Myeonggu Kim名義で発行された<a href="https://www.certum.eu/">Certum</a>のオープンソース向けコード署名証明書で署名しています。<ul>
+<li>2.0.0までのリリースは署名されていません。</li>
+</ul>
+</li>
+</ul>
+<p>ポリシーの詳細とプライバシーポリシーは<a href="README.html#code-signing-policy">英語版README</a>をご覧ください。
+Fileeはファイルをアップロードせず、利用データも送信しません。</p>
+<h2 id="支援">支援</h2>
+<p>Fileeは無料で、これからも無料です。
+応援していただける場合は、ご都合のよい方法をお選びください（<a href="https://fairy.hada.io/@filee">Fairy</a>は韓国のカードと簡単決済に対応しています）。</p>
+<p><strong>ここにあなたのお名前やロゴを。</strong>
+毎月支援してくださる方はここにお名前を、スポンサーの方はこことFileeの「Fileeについて」ページにロゴを掲載します。
+一度だけ支援してくださった方も、ご希望があれば掲載します。</p>
+<!-- sponsors: src/Filee.App/Assets/Sponsors/sponsors.json -->
+
+<p align="center">
+  <a href="https://github.com/sponsors/KnifeLemon"><img src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&amp;logo=githubsponsors&amp;logoColor=white" alt="GitHub Sponsors"></a>
+  <a href="https://patreon.com/KnifeLemon"><img src="https://img.shields.io/badge/Patreon-000000?style=for-the-badge&amp;logo=patreon&amp;logoColor=white" alt="Patreon"></a>
+  <a href="https://ko-fi.com/knifelemon"><img src="https://img.shields.io/badge/Ko--fi-FF6433?style=for-the-badge&amp;logo=kofi&amp;logoColor=white" alt="Ko-fi"></a>
+  <a href="https://paypal.me/knifelemon"><img src="https://img.shields.io/badge/PayPal-002991?style=for-the-badge&amp;logo=paypal&amp;logoColor=white" alt="PayPal"></a>
+  <a href="https://fairy.hada.io/@filee"><img src="https://img.shields.io/badge/Fairy-2E9E6B?style=for-the-badge" alt="Fairy"></a>
+</p>
+
+<h2 id="ライセンス">ライセンス</h2>
+<p>MIT、© 2026 Myeonggu Kim (KnifeLemon) およびFileeのコントリビューター。
+同梱のサードパーティ製コンポーネントはそれぞれのライセンスに従います。
+一覧は<a href="THIRD-PARTY-NOTICES.html">THIRD-PARTY-NOTICES.md</a>にあります。</p>
+<p align="center">
+  <a href="https://star-history.com/#KnifeLemon/Filee&amp;Date"><img src="https://api.star-history.com/svg?repos=KnifeLemon/Filee&amp;type=Date" alt="Star history" width="600"></a>
+</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

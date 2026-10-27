@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom themes · Filee</title>
+<meta name="description" content="Custom themes from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="../index.html">
+    <img src="../favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="../index.html">简体</a>
+    <a href="../README.html">English</a>
+    <a href="../docs.html">文档</a>
+    <a href="design/mockup.html">界面原型</a>
+    <a href="../hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="../hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="custom-themes">Custom themes</h1>
+<p>Filee&#39;s own colours can be replaced with a <code>theme.json</code> file in the folder that holds <code>settings.json</code>:</p>
+<ul>
+<li>Windows: <code>%APPDATA%\Filee\theme.json</code></li>
+<li>Linux: <code>~/.config/Filee/theme.json</code></li>
+<li>macOS: <code>~/Library/Application Support/Filee/theme.json</code></li>
+<li>With <code>FILEE_DATA_DIR</code> set: <code>theme.json</code> in that folder</li>
+</ul>
+<pre><code class="language-jsonc">{
+  &quot;dark&quot;: {
+    &quot;page&quot;: &quot;#101820&quot;,          // window background
+    &quot;surface&quot;: &quot;#18222C&quot;,       // cards and donut slices
+    &quot;surfaceAlt&quot;: &quot;#22303C&quot;,    // badges, small buttons, preview boxes
+    &quot;border&quot;: &quot;#1CFFFFFF&quot;,      // card and control outlines
+    &quot;text&quot;: &quot;#E8E4D8&quot;,
+    &quot;textSecondary&quot;: &quot;#A8B0B8&quot;, // hints and captions
+    &quot;danger&quot;: &quot;#F09595&quot;,
+    &quot;success&quot;: &quot;#5DCAA5&quot;,
+    &quot;warning&quot;: &quot;#EF9F27&quot;
+  },
+  &quot;light&quot;: {
+    &quot;page&quot;: &quot;#F4F6F8&quot;
+  }
+}
+</code></pre>
+<ul>
+<li><code>dark</code> and <code>light</code> are both optional, and so is every colour in them. Anything left out keeps Filee&#39;s colour.</li>
+<li>Colours are <code>#RRGGBB</code> or <code>#AARRGGBB</code>. Unknown names and other values are ignored and written to the log, and so is
+a file with no usable colour (for example <code>&quot;Dark&quot;</code> with a capital D) or one over 64 KB.</li>
+<li>The accent colour, corner radius and light/dark choice stay in <strong>Settings &gt; Theme</strong>.</li>
+<li>Filee reads the file when it starts and whenever a setting is saved. Restart Filee, or change any setting, after
+editing it. Deleting the file brings the built-in colours back.</li>
+</ul>
+<p>Keep <code>text</code> and <code>textSecondary</code> readable on <code>page</code>, <code>surface</code> and <code>surfaceAlt</code>: they are drawn on all three.</p>
+<p>Keep <code>dark</code> colours dark and <code>light</code> colours light. In Filee&#39;s default Soft style, text boxes,
+drop-downs, check boxes, menus and tooltips come from Avalonia&#39;s Fluent theme and keep its standard
+light/dark look; they do not follow <code>theme.json</code>. Plain buttons use <code>surface</code> for their normal background
+and <code>surfaceAlt</code> on hover. Under the Material You style,
+text boxes, drop-downs and check boxes follow the dynamic tonal surface colors and corner radii
+from <code>theme.json</code> and the accent colour. A white <code>page</code> in the <code>dark</code> variant would put white-on-white
+controls on it.</p>
+<h2 id="ready-to-use-examples">Ready-to-use examples</h2>
+<p>These examples adapt familiar palettes to Filee&#39;s surface, text and status colours. The accent colour stays the one
+you chose in <strong>Settings &gt; Theme</strong>, and the control-style limits above still apply.</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Light</th>
+<th>Dark</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="themes/catppuccin.json">Catppuccin</a></td>
+<td>Latte</td>
+<td>Mocha</td>
+</tr>
+<tr>
+<td><a href="themes/nord.json">Nord</a></td>
+<td>Snow Storm-based colours</td>
+<td>Polar Night-based colours</td>
+</tr>
+<tr>
+<td><a href="themes/dracula.json">Dracula</a></td>
+<td>Alucard Classic</td>
+<td>Dracula Classic</td>
+</tr>
+<tr>
+<td><a href="themes/monokai.json">Monokai</a></td>
+<td>Filee&#39;s built-in light colours</td>
+<td>Classic Monokai</td>
+</tr>
+</tbody></table>
+<p>They are application-specific adaptations, not official ports. Some secondary text and status colours are adjusted
+for readability on the example surfaces; see the <a href="themes/NOTICE.html">sources, adjustments and license notices</a>.
+Accent-derived colours, focus and other control states still depend on your settings and style.</p>
+<h3 id="apply-an-example">Apply an example</h3>
+<ol>
+<li>Quit Filee, including its tray/menu-bar process.</li>
+<li>Find your data folder using the paths at the top of this page. If <code>theme.json</code> already exists, save a copy under
+another name outside that folder before replacing it.</li>
+<li>Open one of the JSON links above, choose <strong>Raw</strong>, and save the JSON as <code>theme.json</code> in your data folder. Make sure
+the file is named <code>theme.json</code>, rather than <code>theme.json.txt</code>.</li>
+<li>Start Filee. Choose <strong>Light</strong>, <strong>Dark</strong> or <strong>System</strong> in <strong>Settings &gt; Theme</strong> to use the corresponding variant.</li>
+</ol>
+<p>Each example replaces the whole <code>theme.json</code> file. To keep parts of your own theme, merge the desired colour entries
+into its existing <code>light</code> and <code>dark</code> objects instead. Monokai defines only <code>dark</code>: in Light mode, or when System
+follows a light appearance, Filee uses its built-in light colours.</p>
+<h3 id="restore-your-previous-colours">Restore your previous colours</h3>
+<p>Quit Filee and move the example <code>theme.json</code> out of the data folder. To restore your previous custom theme, put your
+backup back as <code>theme.json</code>; to use Filee&#39;s built-in colours, leave that file absent. Start Filee again. The accent
+and your other appearance settings stay as chosen in <strong>Settings &gt; Theme</strong>.</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="../hosting.html">部署说明</a> · <a href="../LICENSE">LICENSE</a> · <a href="../THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

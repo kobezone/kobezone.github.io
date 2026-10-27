@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Filee · Русский</title>
+<meta name="description" content="Filee documentation snapshot (Русский). Desktop file converter by KnifeLemon.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<p align="center">
+  <a href="https://filee.sh"><img src="docs/media/banner-en.jpg" alt="Filee: Перетащите. Отпустите. Готово." width="100%"></a>
+</p>
+
+<p align="center">
+  <b>Бесплатный конвертер файлов с открытым кодом, которым пользуются перетаскиванием.</b><br>
+  Зажмите клавишу (<kbd>Ctrl</kbd>, на macOS <kbd>Option</kbd>), перетащите файлы и отпустите их на нужный формат в круговом меню, которое откроется у курсора.
+</p>
+
+<p align="center">
+  <a href="https://filee.sh"><b>Сайт</b></a> ·
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><b>Скачать</b></a> ·
+  <a href="https://www.linkedin.com/company/filee-sh/"><b>LinkedIn</b></a> ·
+  <a href="#установка">Установка</a> ·
+  <a href="#командная-строка">Командная строка</a> ·
+  <a href="#для-разработчиков">Для разработчиков</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml"><img src="https://github.com/KnifeLemon/Filee/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases/latest"><img src="https://img.shields.io/github/v/release/KnifeLemon/Filee?color=7F77DD&amp;label=release" alt="Последний выпуск"></a>
+  <a href="https://github.com/KnifeLemon/Filee/releases"><img src="https://img.shields.io/github/downloads/KnifeLemon/Filee/total?color=1D9E75" alt="Загрузки"></a>
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-3C3489" alt="Windows 10 | 11">
+  <img src="https://img.shields.io/badge/Linux-x64%20%7C%20ARM64-3C3489" alt="Linux x64 | ARM64">
+  <img src="https://img.shields.io/badge/macOS-preview-534AB7" alt="macOS — предварительная версия">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6A62C9" alt="Лицензия MIT"></a>
+</p>
+
+<p align="center">
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/weekly?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the week on Trendshift" width="250" height="55"></a>
+  <a href="https://trendshift.io/repositories/276987"><img src="https://trendshift.io/api/badge/trendshift/repositories/276987/daily?language=C%23&amp;v=2" alt="Filee: #1 C# repository of the day on Trendshift" width="250" height="55"></a>
+</p>
+
+<p align="center">
+  <a href="README.html">English</a> ·
+  <a href="README.es.html">Español</a> ·
+  <a href="README.ja.html">日本語</a> ·
+  <a href="README.ko.html">한국어</a> ·
+  <a href="README.zh-CN.html">简体中文</a> ·
+  <a href="README.zh-TW.html">繁體中文</a> ·
+  <a href="README.pl.html">Polski</a> ·
+  <a href="README.hi.html">हिन्दी</a> ·
+  <b>Русский</b> ·
+  <a href="README.ar.html">العربية</a> ·
+  <a href="README.pt-BR.html">Português (Brasil)</a> ·
+  <a href="README.pt-PT.html">Português (Portugal)</a> ·
+  <a href="README.fr.html">Français</a> ·
+  <a href="README.th.html">ไทย</a>
+</p>
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <b>Прямо у курсора</b><br>
+      Не нужно открывать окно программы.
+      Форматы появляются там, где вы уже работаете, и только те, что подходят перетаскиваемым файлам.
+    </td>
+    <td width="33%" valign="top">
+      <b>267 форматов без лишних программ</b><br>
+      Изображения, PDF, Word, Excel, PowerPoint, HWP, электронные книги, архивы, шрифты, чертежи CAD, 3D-модели и геоданные работают без Office, Hancom Office и LibreOffice.
+    </td>
+    <td width="33%" valign="top">
+      <b>Всё остаётся на вашем компьютере</b><br>
+      Ничего не загружается в сеть.
+      Filee работает офлайн и сохраняет результат рядом с исходным файлом.
+    </td>
+  </tr>
+</table>
+
+<h2 id="как-это-работает">Как это работает</h2>
+<p align="center">
+  <a href="https://filee.sh"><img src="docs/media/demo-en.webp" alt="Файл trip.jpg перетаскивают с зажатой клавишей Ctrl: у курсора открывается круговое меню форматов, файл отпускают на PNG, кольцо прогресса замыкается и появляется trip.png" width="820"></a><br>
+  <sub>Посмотрите 27-секундное видео и попробуйте интерактивное демо на <a href="https://filee.sh">filee.sh</a></sub>
+</p>
+
+<h2 id="установка">Установка</h2>
+<p>Скачайте со страницы <a href="https://github.com/KnifeLemon/Filee/releases/latest">Releases</a>.</p>
+<ul>
+<li><strong>Windows 10/11</strong>: запустите <code>Filee-&lt;version&gt;-win-Setup.exe</code> или распакуйте <code>win-Portable.zip</code> и запустите <code>Filee.exe</code>.<ul>
+<li>Setup — собственный установщик Filee: он говорит на тех же языках, что и Filee, и ничего не требует от компьютера.</li>
+<li>Он может добавить пункт в меню Проводника, автозапуск при входе в систему, команду <code>filee</code> и дополнительные движки.</li>
+<li>Для тихой установки подходят ключи Inno Setup (<code>/VERYSILENT /SUPPRESSMSGBOXES</code>).</li>
+</ul>
+</li>
+<li><strong>macOS 13+</strong> (предварительная версия): распакуйте пакет <code>osx-arm64</code> или <code>osx-x64</code> и запустите <code>./install.sh</code>.<ul>
+<li>Или откройте <code>.dmg</code> и перетащите Filee в «Программы» (команду <code>filee</code> добавляет только <code>install.sh</code>).</li>
+<li>Сборка пока не нотаризована, поэтому при первом запуске разрешите её в Системных настройках → Конфиденциальность и безопасность → <strong>Всё равно открыть</strong>.</li>
+</ul>
+</li>
+<li><strong>Linux x64/ARM64</strong> (Ubuntu 22.04+): распакуйте пакет и запустите <code>./install.sh</code> (права root не нужны, требуется Python 3).<ul>
+<li>Жесты перетаскивания работают только в X11.
+В Wayland пользуйтесь зоной перетаскивания и контекстным меню файлового менеджера.</li>
+</ul>
+</li>
+</ul>
+<p>Filee сообщает о новых версиях в своём меню и обновляется сам, сохраняя ваши настройки и движки.
+После обновления несколько слайдов расскажут, что нового.</p>
+<p><strong>Windows: Filee не запускается (ни окна, ни ошибки)?</strong>
+Так бывает в давно не обновлявшейся Windows 10 на ПК, процессор которого поддерживает аппаратную защиту стека (CET).
+Windows включает эту защиту, но в ней нет компонента, нужного .NET, поэтому Filee и Setup сразу закрываются.</p>
+<ul>
+<li><strong>Рекомендуется:</strong> установите доступные обновления Windows (последнее накопительное обновление).</li>
+<li><strong>Если обновить Windows нельзя:</strong> обычно достаточно отключить защиту только для Filee.
+Выполните в PowerShell от имени администратора:</li>
+</ul>
+<pre><code class="language-powershell">Set-ProcessMitigation -Name Filee.exe -Disable UserShadowStack
+Set-ProcessMitigation -Name filee-cli.exe -Disable UserShadowStack
+</code></pre>
+<p>То же сделайте с именем файла Setup (например, <code>Filee-&lt;version&gt;-win-Setup.exe</code>) или возьмите портативный ZIP: ему хватит этих двух строк.
+Чтобы отменить это, удалите эти записи в «Безопасность Windows» → «Управление приложениями/браузером» → «Параметры защиты от эксплойтов» → «Параметры программ».</p>
+<h2 id="возможности">Возможности</h2>
+<ul>
+<li><strong>Круговое меню у курсора</strong>: зажмите клавишу, перетащите файлы и отпустите их на формат.
+Показываются только форматы, подходящие этим файлам.</li>
+<li><strong>Прямо из браузера</strong>: так же перетаскиваются картинка, ссылка на файл или загрузка из Chrome, Edge, Firefox или Safari.<ul>
+<li>Filee сохраняет файл в папку «Загрузки» (или оставляет только сконвертированный) и конвертирует его.</li>
+<li>Ссылки скачиваются без входа в аккаунт из вашего браузера.</li>
+</ul>
+</li>
+<li><strong>Своё круговое меню для каждого типа файлов</strong>, настраивается перетаскиванием, с пресетами для:<ul>
+<li>качества, размера, DPI</li>
+<li>страниц и сжатия PDF</li>
+<li>видео и аудио</li>
+<li>папки сохранения и имён файлов</li>
+</ul>
+</li>
+<li><strong>У каждого кругового меню две стороны</strong>: когда меню открыто, нажмите <kbd>Tab</kbd> или прокрутите колесо мыши, чтобы перевернуть его к редким форматам и инструментам.</li>
+<li><strong>Обрезка перед конвертацией</strong>: сектор «Обрезать» открывает картинки по одной.
+Перетащите рамку, выберите пропорции, и сохранится только эта часть.</li>
+<li><strong>Много файлов сразу</strong>, параллельно.
+Конвертации в несколько шагов (HWP → HWPX → DOCX) Filee находит сам.</li>
+<li><strong>Папки наблюдения</strong> конвертируют каждый файл, который в них попадает.</li>
+<li><strong>Недавние конвертации</strong> на главной, у каждой миниатюра: результат можно открыть («Открыть файл») или открыть в другой программе («Открыть с помощью»).</li>
+<li><strong>Другие способы</strong>: контекстное меню, горячая клавиша, зона перетаскивания и <a href="#%D0%BA%D0%BE%D0%BC%D0%B0%D0%BD%D0%B4%D0%BD%D0%B0%D1%8F-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B0">команда <code>filee</code></a>.</li>
+<li>Светлая и тёмная темы со своим акцентным цветом и непрозрачностью кругового меню, интерфейс на языках English, Español, 日本語, 한국어, 简体中文, 繁體中文, Polski, हिन्दी, Русский, العربية (справа налево), Português (Brasil), Français, नेपाली, ไทย, Türkçe, Português (Portugal) и Deutsch.</li>
+</ul>
+<h2 id="скриншоты">Скриншоты</h2>
+<table>
+  <tr>
+    <td width="50%"><img src="docs/media/page-toolbar-en.png" alt="Редактор кругового меню с профилями и пресетами"></td>
+    <td width="50%"><img src="docs/media/page-home-en.png" alt="Главный экран с зоной перетаскивания и недавними конвертациями"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Настраивайте круговое меню перетаскиванием, по профилю на каждый тип файлов</sub></td>
+    <td align="center"><sub>Главная: зона перетаскивания и недавние конвертации</sub></td>
+  </tr>
+</table>
+
+<h2 id="форматы">Форматы</h2>
+<table>
+<thead>
+<tr>
+<th>Из</th>
+<th>В</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Изображения</strong>: JPG, PNG, WEBP, AVIF, TIFF, BMP, GIF, APNG, ICO, ICNS, JPEG XL, JPEG 2000, PSD/PSB, TGA, PPM, HEIC, QOI, DDS, PCX, MNG, CUR, …;<br>GIMP XCF, RAW с камер (CR2, CR3, NEF, ARW, DNG, …), DICOM, OpenEXR, HDR, FITS, JPEG XR (Windows), Live Photo iPhone (LIVP) только чтение</td>
+<td>любой из них (HEIC⁵), PDF, SVG (трассировка), изменение размера, оттенки серого;<br>Live/Motion Photo (iPhone, Android) → их видео (MP4, MOV⁵), а видео → Live Photo (iPhone) или Motion Photo (Android)⁵, экспериментально</td>
+</tr>
+<tr>
+<td><strong>Векторная графика</strong>: SVG, SVGZ, EMF, WMF, AI<br>EPS, PS¹<br>CDR, VSD, CGM, ODG, FODG²</td>
+<td>PDF (векторный), PNG и другие изображения,<br>SVG ↔ SVGZ, SVG → DXF/DWG, PDF → EPS/PS¹, SVG → EMF, WMF, ODG²</td>
+</tr>
+<tr>
+<td><strong>PDF</strong></td>
+<td>DOCX, HWPX, TXT, PNG, JPG, TIFF, CBZ, PPTX (каждая страница картинкой), SVG²;<br>объединение (в выбранном заранее порядке), разделение, диапазоны страниц, сжатие (PDF меньше по размеру)</td>
+</tr>
+<tr>
+<td><strong>Документы</strong>: DOCX, DOCM, DOTX, EML, Outlook MSG;<br>OFD (китайские электронные счета, официальные документы) только чтение<br>DOC, ODT, FODT, OTT, RTF, WPS, WPD, Pages, ClarisWorks, MacWrite, T602, …²</td>
+<td>PDF, DOCX, HWPX, EPUB, TXT, HTML;<br>MSG → EML<br>ODT, FODT, OTT²</td>
+</tr>
+<tr>
+<td><strong>Таблицы</strong>: XLSX, XLSM, XLS, XLT, ODS, CSV, TSV<br>OTS, FODS, Numbers, ET²</td>
+<td>PDF, XLSX, ODS, CSV, TSV, JSON, HWPX, HTML<br>XLT, OTS²</td>
+</tr>
+<tr>
+<td><strong>Презентации</strong>: PPTX, PPTM, POTX, POTM, PPSX<br>PPT, ODP, OTP, FODP, Keynote²</td>
+<td>PDF, PNG, JPG, DOCX, HWPX<br>OTP²</td>
+</tr>
+<tr>
+<td><strong>HWP</strong>: HWP, HWPX</td>
+<td>PDF, PNG, DOCX, HWPX ↔ HWP, TXT, Markdown, HTML</td>
+</tr>
+<tr>
+<td><strong>Текст</strong>: TXT, LOG, исходники скриптов (PY, PAC, BAT, COMMAND; только чтение, без запуска), Markdown, HTML;<br>MHTML (сохранённые веб-страницы) только чтение<br>reStructuredText, LaTeX, Org, AsciiDoc, Typst, MediaWiki, DocBook, Jupyter, Textile, man, OPML³</td>
+<td>TXT в UTF-8, PDF, DOCX, HWPX, EPUB<br>друг в друга, слайды PPTX³</td>
+</tr>
+<tr>
+<td><strong>Электронные книги</strong>: EPUB, KEPUB, MOBI, AZW3, AZW, AZW4, FB2, CBZ, CBR, CB7, HTMLZ, TXTZ<br>LIT, LRF, CHM, PDB, …⁴</td>
+<td>PDF, EPUB, KEPUB (Kobo), DOCX, TXT, HTML, HWPX<br>MOBI, AZW3⁴</td>
+</tr>
+<tr>
+<td><strong>Видео</strong>⁵: MP4, MOV, MKV, WEBM, AVI, WMV, FLV, MPEG, Video CD (DAT), TS, M2TS, 3GP, OGV, VOB, …</td>
+<td>MP4 (H.264, HEVC, AV1), WEBM, MOV, MKV, AVI, GIF, APNG, MP3, M4A, 720p,<br>субтитры (SRT, ASS, WebVTT)</td>
+</tr>
+<tr>
+<td><strong>Аудио</strong>⁵: MP3, M4A, AAC, WAV, FLAC, OGG, OPUS, WMA, AIFF, AMR, APE, WavPack, TTA, DSD (DSF, DFF), DTS, AC3, E-AC3, …</td>
+<td>MP3, M4A (AAC, ALAC), WAV, FLAC, OGG, OPUS, AAC, WavPack, TTA, W64, AC3, E-AC3</td>
+</tr>
+<tr>
+<td><strong>Субтитры</strong>: SRT, ASS/SSA, WebVTT, SAMI (SMI), LRC, TTML, MicroDVD, SCC</td>
+<td>друг в друга, в UTF-8 (корейские файлы в CP949 читаются правильно)</td>
+</tr>
+<tr>
+<td><strong>Архивы</strong>: ZIP, ANSYS Workbench (WBPZ), 7Z, RAR, TAR, TAR.GZ, TAR.BZ2, TAR.XZ, GZ, ISO, CAB, DMG, ALZ, EGG, …</td>
+<td>распаковка, ZIP, 7Z, TAR, TAR.GZ;<br>любые файлы → один ZIP</td>
+</tr>
+<tr>
+<td><strong>CAD</strong>: DWG, DXF</td>
+<td>PDF, SVG, PNG, DWG ↔ DXF</td>
+</tr>
+<tr>
+<td><strong>Шрифты</strong>: TTF, OTF, WOFF, WOFF2, EOT;<br>FON (растровые шрифты Windows) только чтение</td>
+<td>преобразование друг в друга;<br>FON → один файл на размер</td>
+</tr>
+<tr>
+<td><strong>Данные</strong>: JSON, JSON Lines, YAML, TOML, XML<br>vCard, iCalendar</td>
+<td>друг в друга, CSV и XLSX (таблицы);<br>vCard, iCalendar ↔ CSV</td>
+</tr>
+<tr>
+<td><strong>3D-модели</strong>: GLB, glTF, STL, OBJ (+ MTL), 3MF, PLY;<br>FBX только чтение</td>
+<td>друг в друга, превью в PNG</td>
+</tr>
+<tr>
+<td><strong>Геоданные (векторные)</strong>: Shapefile, GeoJSON, KML, KMZ, GPX<br>CSV с координатами;<br>Garmin FIT только чтение</td>
+<td>друг в друга и CSV / XLSX / JSON;<br>данные в проекциях (UTM, Web Mercator, Ламберта, Альберса) переводятся в долготу / широту WGS 84</td>
+</tr>
+</tbody></table>
+<p>Форматы без пометки работают сразу, без Office, Hancom Office и LibreOffice.
+Для помеченных нужен дополнительный движок, который скачивается только при необходимости: ¹ Ghostscript, ² LibreOffice, ³ Pandoc, ⁴ calibre, ⁵ FFmpeg (<a href="docs/ENGINES.html">подробнее</a>).</p>
+<h2 id="командная-строка">Командная строка</h2>
+<p>Команда <code>filee</code> использует те же движки и пресеты, что и приложение (её добавляет установщик или <code>install.sh</code>).</p>
+<pre><code>filee convert photo.heic --to jpg
+filee convert *.png --to webp --quality 80 -o converted
+filee watch D:\Inbox --to pdf --move-originals
+</code></pre>
+<p>Все команды и параметры: <a href="https://filee.sh/cli/">filee.sh/cli</a> или <code>filee help</code>.</p>
+<h2 id="для-разработчиков">Для разработчиков</h2>
+<p>Соберите проект с .NET 10 SDK на Windows, macOS или Linux:</p>
+<pre><code class="language-bash">git clone https://github.com/KnifeLemon/Filee.git
+cd Filee
+pwsh build/fetch-engines.ps1 -Only rhwp,pandoc   # optional engines
+dotnet run --project src/Filee.App
+dotnet test
+</code></pre>
+<p><a href="docs/ARCHITECTURE.html">Архитектура</a> · <a href="docs/ENGINES.html">Движки</a> · <a href="docs/ADDING-A-CONVERTER.html">Как добавить конвертер</a> · <a href="docs/ADDING-A-LANGUAGE.html">Как добавить язык</a> · <a href="CONTRIBUTING.html">Участие в разработке</a></p>
+<p>Пул-реквесты приветствуются.
+Если Filee экономит вам пару кликов, поставьте ⭐: так другие смогут его найти.</p>
+<h2 id="подпись-кода">Подпись кода</h2>
+<p>Filee разрабатывает и публикует <strong>Myeonggu Kim</strong> (<a href="https://github.com/KnifeLemon">KnifeLemon</a>).</p>
+<ul>
+<li>Выпуски для Windows подписываются сертификатом <a href="https://www.certum.eu/">Certum</a> для подписи кода open source, выданным на имя Myeonggu Kim.<ul>
+<li>Выпуски до 2.0.0 включительно не подписаны.</li>
+</ul>
+</li>
+</ul>
+<p>Полные правила и политику конфиденциальности смотрите в <a href="README.html#code-signing-policy">английском README</a>.
+Filee не отправляет ни ваши файлы, ни данные об использовании.</p>
+<h2 id="поддержать-проект">Поддержать проект</h2>
+<p>Filee бесплатный и останется бесплатным.
+Если хотите его поддержать, выберите удобный способ (<a href="https://fairy.hada.io/@filee">Fairy</a> принимает корейские карты и платёжные сервисы).</p>
+<p><strong>Здесь может быть ваше имя или логотип.</strong>
+Тех, кто поддерживает проект ежемесячно, мы перечисляем здесь по имени, а логотипы спонсоров размещаем здесь и в разделе «О программе» в Filee.
+Если вы помогли разово, тоже можете попросить добавить вас в список.</p>
+<!-- sponsors: src/Filee.App/Assets/Sponsors/sponsors.json -->
+
+<p align="center">
+  <a href="https://github.com/sponsors/KnifeLemon"><img src="https://img.shields.io/badge/GitHub%20Sponsors-EA4AAA?style=for-the-badge&amp;logo=githubsponsors&amp;logoColor=white" alt="GitHub Sponsors"></a>
+  <a href="https://patreon.com/KnifeLemon"><img src="https://img.shields.io/badge/Patreon-000000?style=for-the-badge&amp;logo=patreon&amp;logoColor=white" alt="Patreon"></a>
+  <a href="https://ko-fi.com/knifelemon"><img src="https://img.shields.io/badge/Ko--fi-FF6433?style=for-the-badge&amp;logo=kofi&amp;logoColor=white" alt="Ko-fi"></a>
+  <a href="https://paypal.me/knifelemon"><img src="https://img.shields.io/badge/PayPal-002991?style=for-the-badge&amp;logo=paypal&amp;logoColor=white" alt="PayPal"></a>
+  <a href="https://fairy.hada.io/@filee"><img src="https://img.shields.io/badge/Fairy-2E9E6B?style=for-the-badge" alt="Fairy"></a>
+</p>
+
+<h2 id="лицензия">Лицензия</h2>
+<p>MIT, © 2026 Myeonggu Kim (KnifeLemon) и участники проекта Filee.
+Сторонние компоненты в комплекте распространяются под собственными лицензиями, перечисленными в <a href="THIRD-PARTY-NOTICES.html">THIRD-PARTY-NOTICES.md</a>.</p>
+<p align="center">
+  <a href="https://star-history.com/#KnifeLemon/Filee&amp;Date"><img src="https://api.star-history.com/svg?repos=KnifeLemon/Filee&amp;type=Date" alt="Star history" width="600"></a>
+</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>

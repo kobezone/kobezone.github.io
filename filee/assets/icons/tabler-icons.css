@@ -1,0 +1,11 @@
+/* Tabler Icons 3.50.0, MIT, Copyright (c) 2020-2026 Paweł Kuna. See LICENSE. */
+@font-face{font-family:"tabler-icons";font-style:normal;font-weight:400;src:url("./tabler-icons.woff2") format("woff2")}
+.ti{font-family:"tabler-icons" !important;speak:none;font-style:normal;font-weight:normal;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.ti-circle-dashed:before{content:"\ed27"}
+.ti-player-play:before{content:"\ed46"}
+.ti-plus:before{content:"\eb0b"}
+.ti-drag-drop:before{content:"\eb89"}
+.ti-arrow-back-up:before{content:"\eb77"}
+.ti-arrows-sort:before{content:"\eb5a"}
+.ti-pencil:before{content:"\eb04"}
+.ti-grip-vertical:before{content:"\ec01"}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security policy · Filee</title>
+<meta name="description" content="Security policy from KnifeLemon/Filee ccac2a57.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<a class="skip" href="#content">跳到正文</a>
+<div class="wrap">
+<header class="top" dir="ltr">
+  <a class="brand" href="index.html">
+    <img src="favicon.svg" alt="" width="28" height="28">
+    <span><strong>Filee</strong><small>静态文档 · /filee/</small></span>
+  </a>
+  <nav aria-label="站点">
+    <a href="index.html">简体</a>
+    <a href="README.html">English</a>
+    <a href="docs.html">文档</a>
+    <a href="docs/design/mockup.html">界面原型</a>
+    <a href="hosting.html">部署说明</a>
+    <a href="https://github.com/KnifeLemon/Filee">上游</a>
+    <a href="https://github.com/KnifeLemon/Filee/releases/latest">下载</a>
+  </nav>
+</header>
+<p class="slim" dir="ltr">静态快照 · <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> <code>ccac2a57</code> · 文档与界面原型 · 标识 <code>HTQGP2E</code> 上游未引用，打开页面不用输入 · <a href="hosting.html">部署说明</a></p>
+<main class="doc" id="content">
+<h1 id="security-policy">Security policy</h1>
+<h2 id="supported-versions">Supported versions</h2>
+<p>Only the <a href="https://github.com/KnifeLemon/Filee/releases/latest">latest release</a> gets security fixes. Filee checks for
+updates, and an installed copy updates in place, so please check that the problem is still there in the latest
+release before you report it.</p>
+<h2 id="reporting-a-vulnerability">Reporting a vulnerability</h2>
+<p>Please don&#39;t open a public issue for a security problem.</p>
+<p>Report it privately with <strong><a href="https://github.com/KnifeLemon/Filee/security/advisories/new">Report a vulnerability</a></strong> on
+the repository&#39;s Security tab.</p>
+<p>Include the Filee version, your operating system, what an attacker can do and the steps or file that show it. If a
+crafted file triggers it, attach the file, or say how to make one.</p>
+<p>You&#39;ll get a reply as soon as possible. Once the fix is released, the advisory is published and you&#39;re credited
+unless you&#39;d rather not be. A release that fixes a security problem is marked <em>required</em>, so every copy shows it
+each time it starts until it is updated.</p>
+<h2 id="scope">Scope</h2>
+<p>In scope:</p>
+<ul>
+<li>Filee itself: the app, the CLI, Setup, the context menu and Explorer menu, watch folders.</li>
+<li>Files that make Filee do more than convert them, such as writing outside the output folder, running code, or
+reading files they shouldn&#39;t.</li>
+<li>How Filee downloads and checks updates and engines.</li>
+</ul>
+<p>Out of scope:</p>
+<ul>
+<li>Bugs in the engines (FFmpeg, LibreOffice, Ghostscript, Pandoc, rhwp, 7-Zip and others). Report those to their
+projects. Tell us too if Filee should update the pinned version.</li>
+<li>SmartScreen or Gatekeeper warnings: releases up to 2.0.0 aren&#39;t code-signed, SmartScreen can still warn about a new
+signed release for a while, and macOS builds are ad-hoc signed and not notarized (see
+<a href="README.html#code-signing-policy">Code signing policy</a>).</li>
+<li>Attacks that need someone who can already run programs as you on your computer.</li>
+</ul>
+<h2 id="how-downloads-are-checked">How downloads are checked</h2>
+<ul>
+<li><strong>Updates:</strong> an installed copy downloads the new installer from GitHub Releases and checks it against the release&#39;s
+<code>SHA256SUMS</code> file before it runs it. It also checks that Windows trusts the installer&#39;s Authenticode signature and
+that the publisher who signed the installed Filee signed it; an installer signed by anyone else is discarded.</li>
+<li><strong>Engines:</strong> every engine comes from the official location pinned in
+<a href="https://github.com/KnifeLemon/Filee/blob/ccac2a579f24941078bd498d77b2bff2b3c21ba6/src/Filee.Engines/Infrastructure/engines.json"><code>engines.json</code></a>, with its SHA-256 and size. A download that doesn&#39;t
+match is discarded.</li>
+<li><strong>Release files:</strong> each release lists the SHA-256 of every package in <code>Filee-&lt;version&gt;-SHA256SUMS.txt</code>.</li>
+</ul>
+<p>Filee converts files on your own computer and never uploads them. See the
+<a href="README.html#privacy-policy">Privacy policy</a>.</p>
+
+</main>
+<footer class="site-foot" dir="ltr">
+  <p>文档文字与截图来自 <a href="https://github.com/KnifeLemon/Filee/tree/ccac2a579f24941078bd498d77b2bff2b3c21ba6">KnifeLemon/Filee</a> @ <code>ccac2a57</code>，MIT，© 2026 Myeonggu Kim (KnifeLemon) and Filee contributors。</p>
+  <p>本页由 kobezone.github.io 按该快照静态发布。<a href="hosting.html">部署说明</a> · <a href="LICENSE">LICENSE</a> · <a href="THIRD-PARTY-NOTICES.html">第三方声明</a></p>
+</footer>
+</div>
+</body>
+</html>
