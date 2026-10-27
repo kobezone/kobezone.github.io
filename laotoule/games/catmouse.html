@@ -1,0 +1,197 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>猫抓老鼠 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.wrap{padding:6px 8px 8px}
+.hud{text-align:center;font-size:1.35rem;font-weight:900;margin:0 0 2px}
+.hud b{color:#c92a2a}
+.rule{margin:0 auto 4px;max-width:420px;background:#fff;border:3px solid #222;border-radius:14px;padding:4px 8px;font-size:1.08rem;font-weight:800;line-height:1.3;text-align:center}
+.hint{text-align:center;font-size:1.05rem;font-weight:800;margin:0 0 4px;color:#7a3e00}
+.stage{position:relative;width:min(94vw,420px);margin:0 auto}
+#board{display:grid;gap:3px;width:100%;margin:0 auto;padding:3px;background:#222;border:4px solid #222;border-radius:14px;touch-action:none;user-select:none}
+.cell{position:relative;aspect-ratio:1;border:0;border-radius:6px;padding:0;display:flex;align-items:center;justify-content:center}
+.cell.a{background:#fffaf0}.cell.b{background:#ffe08a}
+.cell.wall{background:#2b2b2b}
+.cell svg{width:84%;height:84%;display:block}
+.cell .mark{position:absolute;inset:10%;width:auto;height:auto}
+.cell .piece{position:relative;z-index:1}
+.dpad{grid-template-columns:repeat(3,58px);grid-template-rows:repeat(2,50px);gap:6px;margin:6px auto}
+.dpad .btn{min-height:50px;padding:0;font-size:1.45rem}
+.tools{display:flex;justify-content:center;margin:6px 0 0}
+.tools .btn{min-height:48px}
+#ovt{font-size:1.7rem;font-weight:900;color:#222}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🐱 猫抓老鼠</h1></div>
+<div class="wrap">
+<div class="hud">第 <b id="lv">1</b> 关 · 还剩 <b id="left">14</b> 步</div>
+<p class="rule">点旁边一格，或滑动、按方向。猫每次走一格，不能穿墙。<br>老鼠会躲开，同色的洞能钻到另一头。步数内走到同一格就抓住。</p>
+<div class="hint" id="hint"></div>
+<div class="stage">
+  <div id="board"></div>
+  <div class="overlay" id="ov"><div id="ovt">抓住啦！</div><button class="btn" id="next" type="button">下一关</button></div>
+</div>
+<div class="dpad"><span></span><button class="btn blue" type="button" data-d="0,-1">⬆</button><span></span><button class="btn blue" type="button" data-d="-1,0">⬅</button><button class="btn blue" type="button" data-d="0,1">⬇</button><button class="btn blue" type="button" data-d="1,0">➡</button></div>
+<div class="tools"><button class="btn" id="restart" type="button">重来本关</button></div>
+<div class="stats"><div class="stat"><span>最高</span><b id="best">0</b></div></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>你是猫。点紧挨着的空格，或在棋盘上滑动，也可以按方向键。</li>
+<li>黑格是墙，走不过去。红洞和蓝洞各通各的，老鼠钻进去会从另一头出来。</li>
+<li>步数用完还没抓到，可以重来这一关。</li>
+</ul></div>
+</div>
+<script src="../common.js"></script>
+<script>
+const DIRS=[[0,-1],[1,0],[0,1],[-1,0]];
+const LEVELS=[
+  {steps:14,speed:1,slip:false,hint:'顺着老鼠走。红洞的两头是通的。',rows:['C..#.','##.#.','a...a','##.#.','...M.']},
+  {steps:12,speed:1,slip:false,hint:'棋盘多了一行，步数更紧。',rows:['C..#.','##.#.','a...a','##.#.','.....','..M..']},
+  {steps:14,speed:1,slip:false,hint:'红洞、蓝洞各通各的。',rows:['b.C#.','##.#.','a...a','##.#.','..M.b']},
+  {steps:12,speed:2,slip:false,hint:'这关老鼠一回合跑两格。',rows:['C..#.','##.#.','a...a','##.#.','M....']}
+];
+const CAT='<svg class="piece" viewBox="0 0 64 64" aria-label="猫"><polygon points="12,30 20,8 30,28" fill="#f08c00" stroke="#222" stroke-width="3"/><polygon points="52,30 44,8 34,28" fill="#f08c00" stroke="#222" stroke-width="3"/><circle cx="32" cy="36" r="18" fill="#ffb703" stroke="#222" stroke-width="3"/><circle cx="25" cy="34" r="3" fill="#222"/><circle cx="39" cy="34" r="3" fill="#222"/><path d="M32 38 l-4 5 h8 z" fill="#e03131"/><path d="M12 36 h10 M42 36 h10 M14 44 h8 M42 44 h8" stroke="#222" stroke-width="2" stroke-linecap="round"/></svg>';
+const MOUSE='<svg class="piece" viewBox="0 0 64 64" aria-label="老鼠"><path d="M50 42 q14 6 4 18" fill="none" stroke="#495057" stroke-width="4" stroke-linecap="round"/><ellipse cx="30" cy="40" rx="16" ry="13" fill="#f1f3f5" stroke="#222" stroke-width="3"/><circle cx="20" cy="24" r="9" fill="#f1f3f5" stroke="#222" stroke-width="3"/><circle cx="38" cy="22" r="9" fill="#f1f3f5" stroke="#222" stroke-width="3"/><circle cx="20" cy="24" r="4" fill="#ffc9c9"/><circle cx="38" cy="22" r="4" fill="#ffc9c9"/><circle cx="26" cy="38" r="2.4" fill="#222"/><circle cx="36" cy="38" r="2.4" fill="#222"/><circle cx="31" cy="44" r="3.2" fill="#e64980"/></svg>';
+function holeSVG(letter){
+  const c=letter==='b'?'#1c7ed6':'#e03131';
+  return `<svg class="mark" viewBox="0 0 64 64" aria-label="洞"><circle cx="32" cy="32" r="22" fill="#111" stroke="${c}" stroke-width="8"/><circle cx="32" cy="32" r="8" fill="#4dabf7"/></svg>`;
+}
+const WALL='<svg viewBox="0 0 64 64" aria-label="墙"><rect width="64" height="64" fill="#343a40"/><path d="M0 22 h64 M0 44 h64 M22 0 v22 M42 22 v22 M16 44 v20" stroke="#adb5bd" stroke-width="3"/></svg>';
+function manh(ax,ay,bx,by){return Math.abs(ax-bx)+Math.abs(ay-by)}
+function parse(rows){
+  const h=rows.length,w=rows[0].length,walls=new Set(),holes={};
+  let cat,mouse;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+    const ch=rows[y][x];
+    if(ch==='#')walls.add(x+','+y);
+    else if(ch==='C')cat={x,y};
+    else if(ch==='M')mouse={x,y};
+    else if(ch!=='.')(holes[ch]||=[]).push({x,y});
+  }
+  return {w,h,walls,holes,cat,mouse};
+}
+function otherHole(holes,x,y){
+  for(const pair of Object.values(holes)){
+    if(pair[0].x===x&&pair[0].y===y)return pair[1];
+    if(pair[1].x===x&&pair[1].y===y)return pair[0];
+  }
+  return null;
+}
+function consider(level,mouse,cat,dx,dy){
+  const {w,h,walls,holes}=level;
+  const nx=mouse.x+dx,ny=mouse.y+dy;
+  if(nx<0||ny<0||nx>=w||ny>=h||walls.has(nx+','+ny))return null;
+  const hole=otherHole(holes,nx,ny);
+  const lx=hole?hole.x:nx,ly=hole?hole.y:ny;
+  if(lx===cat.x&&ly===cat.y)return null;
+  return {dx,dy,x:lx,y:ly,hole:!!hole,d:manh(lx,ly,cat.x,cat.y)};
+}
+function mouseStep(level,mouse,cat){
+  const ahead=(mouse.dx||mouse.dy)?consider(level,mouse,cat,mouse.dx,mouse.dy):null;
+  if(ahead){
+    if(level.slip){
+      const alts=DIRS.map(([dx,dy])=>consider(level,mouse,cat,dx,dy)).filter(o=>o&&o.hole&&o.d>ahead.d);
+      if(alts.length){alts.sort((a,b)=>b.d-a.d);return alts[0]}
+    }
+    return ahead;
+  }
+  let safe=DIRS.map(([dx,dy])=>consider(level,mouse,cat,dx,dy)).filter(Boolean);
+  if(!safe.length)return {x:mouse.x,y:mouse.y,dx:mouse.dx,dy:mouse.dy};
+  if(level.slip){const hol=safe.filter(o=>o.hole);if(hol.length)safe=hol}
+  const best=Math.max(...safe.map(o=>o.d));
+  return safe.filter(o=>o.d===best)[0];
+}
+const board=document.getElementById('board'),ov=document.getElementById('ov'),ovt=document.getElementById('ovt'),nextBtn=document.getElementById('next');
+const lvEl=document.getElementById('lv'),leftEl=document.getElementById('left'),hintEl=document.getElementById('hint'),bestEl=document.getElementById('best');
+let li=0,level,cat,mouse,steps,over=false,won=false,lock=false,instant=false;
+bestEl.textContent=LTL.getBest('catmouse');
+function holeLetter(x,y){return otherHole(level.holes,x,y)?Object.keys(level.holes).find(k=>level.holes[k].some(p=>p.x===x&&p.y===y)):null}
+function fit(){
+  const maxH=Math.max(180,innerHeight-380);
+  const maxW=Math.min(innerWidth*0.94,420);
+  let w=maxW;
+  if(w*level.h/level.w>maxH)w=maxH*level.w/level.h;
+  board.style.width=Math.floor(w)+'px';
+}
+function draw(){
+  lvEl.textContent=li+1;
+  leftEl.textContent=steps;
+  hintEl.textContent=level.hint;
+  board.style.gridTemplateColumns=`repeat(${level.w},1fr)`;
+  let html='';
+  for(let y=0;y<level.h;y++)for(let x=0;x<level.w;x++){
+    const wall=level.walls.has(x+','+y);
+    const letter=wall?null:holeLetter(x,y);
+    let cls='cell '+((x+y)%2?'b':'a');
+    if(wall)cls+=' wall';
+    let inner=wall?WALL:(letter?holeSVG(letter):'');
+    if(cat.x===x&&cat.y===y)inner+=CAT;
+    if(mouse.x===x&&mouse.y===y)inner+=MOUSE;
+    html+=`<button type="button" class="${cls}" data-x="${x}" data-y="${y}" aria-label="${wall?'墙':letter?'洞':'空格'}">${inner}</button>`;
+  }
+  board.innerHTML=html;
+  fit();
+}
+function wait(ms){return instant?Promise.resolve():new Promise(r=>setTimeout(r,ms))}
+function showEnd(text,label,ok){
+  over=true;won=ok;lock=false;
+  ovt.textContent=text;nextBtn.textContent=label;ov.classList.add('show');
+  if(ok){const n=li+1;if(LTL.record('catmouse',n))bestEl.textContent=LTL.getBest('catmouse');LTL.beep(880,.14,'triangle',.06)}
+  else LTL.beep(160,.16,'square',.05);
+}
+function win(){showEnd(li===LEVELS.length-1?'四关都抓住啦！':'抓住啦！',li===LEVELS.length-1?'再玩一次':'下一关',true)}
+function lose(){showEnd('步数用完，老鼠跑掉了','再试一次',false)}
+async function tryMove(dx,dy){
+  if(lock||over)return;
+  const nx=cat.x+dx,ny=cat.y+dy;
+  if(nx<0||ny<0||nx>=level.w||ny>=level.h){LTL.toast('不能走出棋盘');return}
+  if(level.walls.has(nx+','+ny)){LTL.toast('前面是墙');return}
+  lock=true;
+  cat={x:nx,y:ny};
+  if(cat.x===mouse.x&&cat.y===mouse.y){draw();win();return}
+  steps--;
+  draw();
+  for(let i=0;i<level.speed;i++){
+    await wait(140);
+    if(over){lock=false;return}
+    mouse=mouseStep(level,mouse,cat);
+    draw();
+    if(mouse.x===cat.x&&mouse.y===cat.y){win();return}
+  }
+  if(steps<=0)lose();
+  else lock=false;
+}
+function start(i){
+  li=i;level=Object.assign(parse(LEVELS[i].rows),{speed:LEVELS[i].speed,slip:LEVELS[i].slip,hint:LEVELS[i].hint});
+  cat={...level.cat};mouse={x:level.mouse.x,y:level.mouse.y,dx:0,dy:0};
+  steps=LEVELS[i].steps;over=false;won=false;lock=false;
+  ov.classList.remove('show');draw();
+}
+let px=0,py=0,fromPointer=false;
+board.addEventListener('pointerdown',e=>{px=e.clientX;py=e.clientY;try{board.setPointerCapture(e.pointerId)}catch(err){}});
+board.addEventListener('pointerup',e=>{
+  fromPointer=true;
+  const dx=e.clientX-px,dy=e.clientY-py;
+  if(Math.max(Math.abs(dx),Math.abs(dy))>28){
+    if(Math.abs(dx)>Math.abs(dy))tryMove(dx>0?1:-1,0);else tryMove(0,dy>0?1:-1);
+    return;
+  }
+  const cell=e.target.closest('.cell');if(!cell)return;
+  const x=+cell.dataset.x,y=+cell.dataset.y;
+  const md=Math.abs(x-cat.x)+Math.abs(y-cat.y);
+  if(md===1)tryMove(x-cat.x,y-cat.y);
+  else if(md>1)LTL.toast('只能走到旁边一格');
+});
+board.addEventListener('click',e=>{if(fromPointer){fromPointer=false;e.preventDefault()}});
+document.querySelectorAll('.dpad [data-d]').forEach(b=>b.addEventListener('click',()=>{const [dx,dy]=b.dataset.d.split(',').map(Number);tryMove(dx,dy)}));
+addEventListener('keydown',e=>{
+  const map={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]};
+  if(!map[e.key])return;e.preventDefault();tryMove(...map[e.key]);
+});
+document.getElementById('restart').onclick=()=>start(li);
+nextBtn.onclick=()=>{if(won&&li<LEVELS.length-1)start(li+1);else if(won)start(0);else start(li)};
+addEventListener('resize',()=>{if(level)fit()});
+window.__CAT={
+  setInstant(v){instant=!!v},
+  tryMove,start,
+  get state(){return {li,steps,over,won,cat:{...cat},mouse:{...mouse},w:level.w,h:level.h,speed:level.speed}}
+};
+start(0);
+</script></body></html>
