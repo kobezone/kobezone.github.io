@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>导航 · KOBEZONE</title>
+  <meta name="description" content="KOBEZONE 个人导航：本站入口和我的收藏。">
+  <meta name="theme-color" content="#d7e6f2" id="theme-color">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <script>
+    try {
+      var saved = JSON.parse(localStorage.getItem("kobezone-nav-v1") || "{}");
+      var hour = new Date().getHours();
+      var theme = saved.appearance === "light" ? "day" : saved.appearance === "dark" ? "night" : (hour < 5 || hour >= 21) ? "night" : hour < 11 ? "morning" : hour < 17 ? "day" : "dusk";
+      document.documentElement.dataset.theme = theme;
+      var colors = { morning: "#f3ddcf", day: "#d7e6f2", dusk: "#e4c9c4", night: "#070b14" };
+      document.documentElement.style.background = colors[theme];
+    } catch (error) {}
+  </script>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <span class="orb orb-a"></span>
+    <span class="orb orb-b"></span>
+    <span class="orb orb-c"></span>
+    <span class="orb orb-d"></span>
+  </div>
+
+  <div class="wrap">
+    <header class="topbar">
+      <h1 class="brand">KOBEZONE</h1>
+      <div class="top-actions">
+        <button type="button" class="ghost" id="btn-theme" title="外观：自动（按时间切换清晨、白天、黄昏、夜晚）">自动</button>
+        <button type="button" class="ghost" id="btn-edit" aria-pressed="false">编辑</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-label="时间和搜索">
+        <p class="greet" id="greet">你好</p>
+        <p class="clock" id="clock">--:--</p>
+        <p class="date" id="date"></p>
+        <form class="search" id="search" role="search" action="#">
+          <svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"></circle>
+            <path d="M16 16.5 L20 20.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+          </svg>
+          <label class="sr-only" for="q">搜索</label>
+          <input id="q" type="search" placeholder="搜索网页，或输入网址" autocomplete="off" autocapitalize="off" enterkeyhint="search" spellcheck="false">
+          <label class="sr-only" for="engine">搜索引擎</label>
+          <select id="engine">
+            <option value="baidu">百度</option>
+            <option value="bing">必应</option>
+            <option value="google">Google</option>
+          </select>
+        </form>
+      </section>
+
+      <div class="editbar" id="editbar" hidden>
+        <button type="button" class="primary" id="btn-done">完成</button>
+        <button type="button" class="tool" id="btn-add">添加网站</button>
+        <button type="button" class="tool" id="btn-export">导出</button>
+        <button type="button" class="tool" id="btn-import">导入</button>
+        <button type="button" class="tool" id="btn-reset">恢复默认本站入口</button>
+        <p class="edit-hint">拖动图标可在同一组里排序。本站入口可以隐藏，不能删除。</p>
+      </div>
+      <input id="import-file" type="file" accept="application/json,.json" hidden>
+
+      <section class="group" aria-labelledby="site-title">
+        <h2 id="site-title">本站</h2>
+        <div class="grid" id="site-grid"></div>
+      </section>
+
+      <section class="group" aria-labelledby="fav-title">
+        <h2 id="fav-title">我的收藏</h2>
+        <p class="group-hint" id="fav-hint"></p>
+        <div class="grid" id="fav-grid"></div>
+      </section>
+    </main>
+
+    <footer class="foot">收藏只保存在这台浏览器里</footer>
+    <noscript><p class="noscript">需要启用 JavaScript 才能使用导航页。</p></noscript>
+  </div>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="modal" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dlg-title">
+      <form id="panel-form" novalidate>
+        <h2 id="dlg-title">添加网站</h2>
+        <div class="preview-row">
+          <span class="plate" id="form-preview" aria-hidden="true">+</span>
+          <span class="name" id="form-preview-name">新网站</span>
+        </div>
+        <label>名称
+          <input id="f-name" type="text" maxlength="40" placeholder="例如：GitHub" autocomplete="off">
+        </label>
+        <label>网址
+          <input id="f-url" type="url" inputmode="url" maxlength="2000" placeholder="https://" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </label>
+        <label>图标
+          <input id="f-icon" type="text" maxlength="16" placeholder="留空则用网站自己的图标" autocomplete="off">
+        </label>
+        <div class="emoji-picks" id="emoji-picks"></div>
+        <p class="form-error" id="form-error" role="alert"></p>
+        <div class="modal-actions">
+          <button type="button" class="text-danger" id="btn-delete-form" hidden>删除</button>
+          <span class="spacer"></span>
+          <button type="button" class="ghost" id="btn-cancel-form">取消</button>
+          <button type="submit" class="primary" id="btn-save-form">保存</button>
+        </div>
+      </form>
+      <div id="panel-confirm" hidden>
+        <h3 id="confirm-title">请确认</h3>
+        <p class="confirm-text" id="confirm-text"></p>
+        <div class="modal-actions">
+          <span class="spacer"></span>
+          <button type="button" class="ghost" id="confirm-cancel">取消</button>
+          <button type="button" class="primary" id="confirm-ok">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
