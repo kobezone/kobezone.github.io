@@ -20,32 +20,60 @@ body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 .doctor svg{overflow:visible}
 .doctor.walk .doc-svg{animation:docbob .22s ease-in-out infinite}
 .doctor.to-patient{left:10%}
-.doctor.aside{left:42%}
+.doctor.aside{left:52%}
 .doctor.using{transform:rotate(-5deg);transform-origin:50% 100%}
 .doctor .arm{transform-box:fill-box;transform-origin:50% 8%;transition:transform .35s ease}
 .doctor.using .arm{transform:rotate(-48deg)}
 .doctor.using .tubes{opacity:0}
 @keyframes docbob{50%{transform:translateY(-6px)}}
-.patient{left:108%;bottom:12px;width:96px;height:164px;z-index:4;transition:left .9s cubic-bezier(.22,.7,.2,1),bottom .9s cubic-bezier(.22,.7,.2,1),width .35s ease,height .35s ease,opacity .35s}
+.patient{left:108%;bottom:12px;width:96px;height:164px;z-index:4;transition:left .9s cubic-bezier(.22,.7,.2,1),bottom .9s cubic-bezier(.22,.7,.2,1),width .4s ease,height .4s ease,opacity .35s}
 .patient.to-chair{left:44%}
-.patient.to-bed{left:10px;bottom:13%}
-.patient.tucked{left:10px;width:112px;height:132px}
+.patient.to-bed{left:8%;bottom:12px}
+.patient.bedtime{transition:left .55s cubic-bezier(.22,.7,.2,1),bottom .55s cubic-bezier(.22,.7,.2,1),width .55s ease,height .55s ease,opacity .35s}
+.patient.bedtime.sit{left:13%;bottom:8%;width:32%;height:27%}
+.patient.bedtime.lie{left:2%;bottom:10%;width:46%;height:18%}
 .patient.bye{left:8%;bottom:12px}
 .patient.bye .who{animation:sway .7s ease-in-out infinite}
 @keyframes sway{50%{transform:rotate(4deg)}}
-.patient .who{position:absolute;left:0;right:0;bottom:0;height:78%;transform-origin:50% 100%}
+.patient .who{position:absolute;left:0;right:0;bottom:0;height:78%;transform-origin:50% 100%;transition:transform .24s ease}
 .patient.walking .who{animation:pbob .26s ease-in-out infinite}
 @keyframes pbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 .patient .shadow{position:absolute;left:16%;right:16%;bottom:2px;height:8px;background:rgba(80,40,50,.16);border-radius:50%;z-index:0}
 .patient.walking .shadow{animation:shad .26s ease-in-out infinite}
 @keyframes shad{50%{transform:scaleX(.65);opacity:.45}}
+.patient .fig{overflow:visible;display:block}
+.patient .fig.front{position:absolute;left:0;right:0;bottom:0;width:100%;height:100%}
+.patient .arm,.patient .leg{transform-box:fill-box;transform-origin:50% 0%;transition:transform .35s ease}
+.patient.walking .arm-l{animation:swingL .26s ease-in-out infinite}
+.patient.walking .arm-r{animation:swingR .26s ease-in-out infinite}
+.patient.walking .leg-l{animation:stepL .26s ease-in-out infinite}
+.patient.walking .leg-r{animation:stepR .26s ease-in-out infinite}
+@keyframes swingL{0%,100%{transform:rotate(26deg)}50%{transform:rotate(-22deg)}}
+@keyframes swingR{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(26deg)}}
+@keyframes stepL{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(16deg)}}
+@keyframes stepR{0%,100%{transform:rotate(16deg)}50%{transform:rotate(-16deg)}}
+.patient.auscult .arm-l{transform:rotate(18deg)}
+.patient.auscult .arm-r{transform:rotate(-16deg)}
+.patient.bye .arm-r{animation:wave .7s ease-in-out infinite;transform-origin:50% 0%}
+@keyframes wave{0%,100%{transform:rotate(-16deg)}50%{transform:rotate(-72deg)}}
+.patient.turn .who{transform:scaleX(.32)}
+.patient.snapsize{transition:none}
+.patient.sit .who,.patient.lie .who{height:100%}
+.patient.sit .shadow,.patient.lie .shadow,.patient.turn .shadow{opacity:0}
+.patient .pose-sit,.patient .pose-lie{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.patient.sit .pose-lie{opacity:0;transform:rotate(12deg);transform-origin:30% 62%;transition:opacity .18s ease,transform .48s cubic-bezier(.22,.7,.2,1)}
+.patient.lie .pose-sit{opacity:0;transform:rotate(-24deg) translateY(6px);transform-origin:50% 82%;transition:opacity .16s ease,transform .36s ease}
+.patient.lie .pose-lie{opacity:1;transform:none;transition:opacity .4s ease .08s,transform .48s cubic-bezier(.22,.7,.2,1)}
+.patient .eye-shut{display:none}
+.patient.tucked .eye-open{display:none}
+.patient.tucked .eye-shut{display:block}
+.patient .cover{opacity:0;transform:translateX(28px);transition:opacity .4s ease,transform .48s ease}
+.patient.tucked .cover{opacity:1;transform:none}
 .blanket,.zzz{display:none}
-.patient.tucked .blanket{display:block;position:absolute;left:6px;bottom:0;width:96px;height:56px;z-index:3;background:linear-gradient(#ffe3ef,#ffb3c7);border:3px solid #222;border-radius:16px}
-.patient.tucked .blanket::after{content:'💗';position:absolute;right:8px;top:6px;font-size:1rem}
-.patient.tucked .who{z-index:2;height:104px;width:84px;left:14px;right:auto;bottom:0;animation:none}
-.patient.tucked .who svg{transform:none !important}
-.patient.tucked .shadow{opacity:0}
-.patient.tucked .zzz{display:flex;gap:1px;position:absolute;left:78px;top:16px;z-index:4;font-weight:900;color:#9c36b5;line-height:1;background:#fff;border:3px solid #222;border-radius:12px;padding:1px 5px}
+.patient.sit .bubble,.patient.lie .bubble{top:auto;bottom:calc(100% + 4px)}
+.patient.sit .bubble{left:50%;transform:translateX(-50%)}
+.patient.lie .bubble{left:0;transform:none}
+.patient.tucked .zzz{display:flex;gap:1px;position:absolute;left:38%;top:auto;bottom:calc(100% + 6px);z-index:4;font-weight:900;color:#9c36b5;line-height:1;background:#fff;border:3px solid #222;border-radius:12px;padding:1px 5px}
 .patient.tucked .zzz span{display:inline-block;animation:zzz 1s ease-in-out infinite}
 .patient.tucked .zzz span:nth-child(2){animation-delay:.15s;font-size:1.25rem}
 .patient.tucked .zzz span:nth-child(3){animation-delay:.3s;font-size:1.45rem}
@@ -96,8 +124,8 @@ body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 #ovscore{font-size:2.2rem;font-weight:900;color:#e64980}
 body .toast{top:max(62px,calc(env(safe-area-inset-top) + 54px));bottom:auto}
 @media (prefers-reduced-motion:reduce){
-  .patient,.doctor,.doctor .arm{transition-duration:.01ms}
-  .patient.walking .who,.patient.bye .who,.doctor.walk .doc-svg,.patient.walking .shadow,.clinic.listening .scope.pulse,.clinic.listening .scope.pulse::after,.patient.tucked .zzz span,.heart,.praise,.bubble.pop,.actions .btn.shake{animation:none}
+  .patient,.patient .who,.patient .arm,.patient .leg,.patient .pose-sit,.patient .pose-lie,.patient .cover,.doctor,.doctor .arm{transition-duration:.01ms}
+  .patient.walking .who,.patient.bye .who,.patient.walking .arm,.patient.walking .leg,.patient.bye .arm-r,.doctor.walk .doc-svg,.patient.walking .shadow,.clinic.listening .scope.pulse,.clinic.listening .scope.pulse::after,.patient.tucked .zzz span,.heart,.praise,.bubble.pop,.actions .btn.shake{animation:none}
 }
 @media (max-width:360px){
   .doctor{width:80px;height:120px}
@@ -162,7 +190,7 @@ body .toast{top:max(62px,calc(env(safe-area-inset-top) + 54px));bottom:auto}
 <div class="help"><h2>📖 怎么玩</h2><ul>
 <li>病人从门口走进来。点「听诊」，医生会走过去，把听诊器贴在胸口，可以听到心跳。</li>
 <li>听完头顶会出现一个小图标。在下面点<b>一样的图标</b>。</li>
-<li>第一次没点对，可以再试一次。然后点「去休息」，病人上床盖被子。</li>
+<li>第一次没点对，可以再试一次。然后点「去休息」，病人走到床边，坐下，躺到枕头上，再盖被子。</li>
 <li>选对星星更多。没选对也会给星星，病人不会哭，可以接下一位。</li>
 </ul></div>
 </div>
@@ -193,18 +221,90 @@ const ICONS={
 const HEARTS=['💗','💖','✨','🌸','💕'];
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const T=reduce
-  ?{walk:240,doc:200,reach:180,hold:320,bed:220,tuck:280}
-  :{walk:980,doc:680,reach:420,hold:1180,bed:860,tuck:1100};
-function person(kind,mood){
+  ?{walk:240,doc:200,reach:180,hold:320,bed:180,turn:20,sit:40,lie:40,tuck:180}
+  :{walk:980,doc:680,reach:420,hold:1180,bed:900,turn:260,sit:700,lie:620,tuck:780};
+const SKIN='#ffd8a8';
+function palette(kind){
   const kid=kind==='kid', elder=kind==='elder';
-  const hair=elder?'#dee2e6':kid?'#f59f00':'#343a40';
-  const shirt=kid?'#ff922b':elder?'#e599f7':'#74c0fc';
-  const smile=mood==='happy'?'M28 30 q8 8 16 0':mood==='calm'?'M30 31 q6 4 12 0':'M35 32 a2.3 2.3 0 1 1 .1 0';
-  const scale=kid?0.84:elder?0.96:1;
-  const cane=elder?'<path d="M58 40 q10 8 4 36" fill="none" stroke="#8d5524" stroke-width="3"/>':'';
-  const bow=kid?'<path d="M20 14 q6-8 10 0 q-5 3-10 0 q-6-8-10 0 q5 3 10 0" fill="#ff8fab" stroke="#222" stroke-width="2"/><circle cx="20" cy="14" r="2.4" fill="#fff" stroke="#222" stroke-width="1.5"/>':'';
-  const who=kid?'小孩':elder?'老人':'大人';
-  return `<svg viewBox="0 0 80 110" aria-label="${who}" style="transform:scale(${scale});transform-origin:50% 100%"><circle cx="36" cy="24" r="${kid?16:14}" fill="#ffd8a8" stroke="#222" stroke-width="3"/>${bow}<path d="M22 20 q14-16 28 2" fill="${hair}"/><circle cx="28" cy="28" r="2.4" fill="#ff8fab"/><circle cx="44" cy="28" r="2.4" fill="#ff8fab"/><circle cx="31" cy="24" r="2" fill="#222"/><circle cx="41" cy="24" r="2" fill="#222"/>${elder?'<path d="M26 24 h8 M38 24 h8" stroke="#222" stroke-width="2"/>':''}<path d="${smile}" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/><path d="M20 42 h32 v34 h-32 z" fill="${shirt}" stroke="#222" stroke-width="3"/><rect x="24" y="76" width="10" height="26" fill="#748ffc" stroke="#222" stroke-width="3"/><rect x="38" y="76" width="10" height="26" fill="#748ffc" stroke="#222" stroke-width="3"/>${cane}</svg>`;
+  return {
+    kid, elder,
+    hair:elder?'#dee2e6':kid?'#f59f00':'#343a40',
+    shirt:kid?'#ff922b':elder?'#e599f7':'#74c0fc',
+    who:kid?'小孩':elder?'老人':'大人',
+    scale:kid?0.84:elder?0.96:1
+  };
+}
+function smilePath(mood, cx, cy){
+  if(mood==='happy') return `M${cx-8} ${cy+6} q8 8 16 0`;
+  if(mood==='calm') return `M${cx-6} ${cy+7} q6 4 12 0`;
+  return `M${cx-1} ${cy+8} a2.2 2.2 0 1 1 .1 0`;
+}
+function hand(cx, cy, tx, ty, r){
+  r=r||8;
+  const thumb=tx==null?'':`<circle cx="${tx}" cy="${ty}" r="${Math.round(r*0.42*10)/10}" fill="${SKIN}" stroke="#222" stroke-width="2"/>`;
+  return `<circle class="hand" cx="${cx}" cy="${cy}" r="${r}" fill="${SKIN}" stroke="#222" stroke-width="3"/>${thumb}`;
+}
+function headArt(kind, mood, cx, cy, r, sleepable){
+  const p=palette(kind);
+  const hr=p.kid?r+2:r;
+  const bow=p.kid?`<path d="M${cx-hr+4} ${cy-hr+6} q6-8 10 0 q-5 3-10 0 q-6-8-10 0 q5 3 10 0" fill="#ff8fab" stroke="#222" stroke-width="2"/><circle cx="${cx-hr+4}" cy="${cy-hr+6}" r="2.3" fill="#fff" stroke="#222" stroke-width="1.5"/>`:'';
+  const glasses=p.elder?`<path d="M${cx-11} ${cy-1} h9 M${cx+2} ${cy-1} h9" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>`:'';
+  const open=`<g class="eye-open"><circle cx="${cx-6}" cy="${cy}" r="2.2" fill="#222"/><circle cx="${cx+6}" cy="${cy}" r="2.2" fill="#222"/><circle cx="${cx-11}" cy="${cy+4}" r="2.5" fill="#ff8fab"/><circle cx="${cx+11}" cy="${cy+4}" r="2.5" fill="#ff8fab"/></g>`;
+  const shut=`<g class="eye-shut"><path d="M${cx-10} ${cy} q4 3 8 0 M${cx+2} ${cy} q4 3 8 0" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/><circle cx="${cx-11}" cy="${cy+4}" r="2.4" fill="#ff8fab"/><circle cx="${cx+11}" cy="${cy+4}" r="2.4" fill="#ff8fab"/></g>`;
+  return `<circle cx="${cx}" cy="${cy}" r="${hr}" fill="${SKIN}" stroke="#222" stroke-width="3"/>${bow}<path d="M${cx-hr+2} ${cy-5} q${hr-2} -${hr} ${hr*2-4} 5" fill="${p.hair}"/>${glasses}${open}${sleepable?shut:''}<path d="${smilePath(mood,cx,cy)}" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>`;
+}
+function person(kind, mood){
+  const p=palette(kind);
+  const cane=p.elder?`<path d="M16 78 q-12 12 -2 30" fill="none" stroke="#8d5524" stroke-width="3" stroke-linecap="round"/>`:'';
+  return `<svg class="fig front" viewBox="0 0 100 120" aria-label="${p.who}" preserveAspectRatio="xMidYMax meet" style="transform:scale(${p.scale});transform-origin:50% 100%">
+    <g class="arm arm-l" style="transform-box:view-box;transform-origin:20px 50px">${cane}<rect x="14" y="50" width="13" height="30" rx="6" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(20,82,27,76)}</g>
+    <g class="arm arm-r" style="transform-box:view-box;transform-origin:80px 50px"><rect x="73" y="50" width="13" height="30" rx="6" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(80,82,73,76)}</g>
+    <rect class="leg leg-l" x="36" y="86" width="12" height="26" rx="4" fill="#748ffc" stroke="#222" stroke-width="3"/>
+    <rect class="leg leg-r" x="52" y="86" width="12" height="26" rx="4" fill="#748ffc" stroke="#222" stroke-width="3"/>
+    <rect class="torso" x="32" y="46" width="36" height="42" rx="6" fill="${p.shirt}" stroke="#222" stroke-width="3"/>
+    ${headArt(kind, mood, 50, 28, 15, false)}
+  </svg>`;
+}
+function bedPerson(kind, mood){
+  const p=palette(kind);
+  const fit=p.kid?0.9:p.elder?0.96:1;
+  const sit=`<svg class="fig pose-sit" viewBox="0 0 140 156" aria-label="${p.who}坐下" preserveAspectRatio="xMidYMax meet">
+    <g style="transform:scale(${fit});transform-origin:50% 92%">
+      <ellipse cx="48" cy="132" rx="16" ry="9" fill="#748ffc" stroke="#222" stroke-width="3"/>
+      <ellipse cx="92" cy="132" rx="16" ry="9" fill="#748ffc" stroke="#222" stroke-width="3"/>
+      <rect x="34" y="108" width="72" height="22" rx="10" fill="#748ffc" stroke="#222" stroke-width="3"/>
+      <g class="arm arm-l"><rect x="18" y="66" width="14" height="38" rx="7" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(25,108,34,102)}</g>
+      <g class="arm arm-r"><rect x="108" y="66" width="14" height="38" rx="7" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(115,108,106,102)}</g>
+      <rect class="torso" x="42" y="58" width="56" height="52" rx="12" fill="${p.shirt}" stroke="#222" stroke-width="3"/>
+      ${headArt(kind, mood, 70, 34, 18, false)}
+    </g>
+  </svg>`;
+  const lie=`<svg class="fig pose-lie" viewBox="0 0 250 118" aria-label="${p.who}躺着" preserveAspectRatio="xMidYMax meet">
+    <g style="transform:scale(${fit});transform-origin:42% 70%">
+      <g class="pillow">
+        <rect x="6" y="46" width="78" height="42" rx="16" fill="#ff8fb3" stroke="#222" stroke-width="3"/>
+        <rect x="12" y="36" width="70" height="38" rx="14" fill="#ffd0e2" stroke="#222" stroke-width="3"/>
+        <path d="M24 48 h46" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+      </g>
+      <rect x="156" y="44" width="70" height="15" rx="7" fill="#748ffc" stroke="#222" stroke-width="3"/>
+      <rect x="156" y="62" width="70" height="15" rx="7" fill="#91a7ff" stroke="#222" stroke-width="3"/>
+      <ellipse cx="228" cy="51" rx="12" ry="7" fill="#5c7cfa" stroke="#222" stroke-width="3"/>
+      <ellipse cx="228" cy="69" rx="12" ry="7" fill="#748ffc" stroke="#222" stroke-width="3"/>
+      <rect class="torso" x="78" y="40" width="86" height="40" rx="14" fill="${p.shirt}" stroke="#222" stroke-width="3"/>
+      <rect x="84" y="18" width="42" height="16" rx="8" fill="${SKIN}" stroke="#222" stroke-width="3"/>
+      ${hand(130,26,130,14,12)}
+      <rect x="84" y="78" width="44" height="16" rx="8" fill="${SKIN}" stroke="#222" stroke-width="3"/>
+      ${hand(132,86,132,98,12)}
+      ${headArt(kind, mood, 52, 54, 20, true)}
+      <g class="cover">
+        <rect x="150" y="48" width="92" height="42" rx="16" fill="#ffb3c7" stroke="#222" stroke-width="3"/>
+        <path d="M162 60 h68" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".85"/>
+        <path d="M166 76 h48" fill="none" stroke="#f783ac" stroke-width="3" stroke-linecap="round"/>
+        <path d="M204 66 c0-5 7-5 7 0 c0-5 7-5 7 0 c0 6-7 10-7 12 c0-2-7-6-7-12z" fill="#e64980" stroke="#222" stroke-width="2"/>
+      </g>
+    </g>
+  </svg>`;
+  return sit+lie;
 }
 function shuffle(a){const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.random()*(i+1)|0; const t=b[i]; b[i]=b[j]; b[j]=t} return b}
 const clinic=document.getElementById('clinic');
@@ -302,11 +402,15 @@ function anchor(){
   const dw=doctorEl.offsetWidth, dh=doctorEl.offsetHeight;
   const dx=doctorEl.offsetLeft, dy=doctorEl.offsetTop;
   const kind=cur()&&cur().kind;
-  const drop=kind==='kid'?0.68:kind==='elder'?0.62:0.57;
-  return {
-    chest:{x:px+pw*0.5, y:py+ph*drop},
-    hand:{x:dx+dw*0.84, y:dy+dh*0.6}
-  };
+  const drop=kind==='kid'?0.70:kind==='elder'?0.66:0.64;
+  const chest={x:px+pw*0.5, y:py+ph*drop};
+  const torso=who.querySelector('.torso');
+  if(torso && !patientEl.classList.contains('lie') && !patientEl.classList.contains('sit')){
+    const cr=torso.getBoundingClientRect(), box=clinic.getBoundingClientRect();
+    chest.x=cr.left-box.left+cr.width*0.5;
+    chest.y=cr.top-box.top+cr.height*0.46;
+  }
+  return {chest, hand:{x:dx+dw*0.84, y:dy+dh*0.6}};
 }
 function putScope(x,y){scope.style.left=x+'px'; scope.style.top=y+'px'}
 function setCord(a,b){
@@ -373,13 +477,14 @@ function listen(){
   renderActions();
   doctorEl.classList.add('walk','to-patient');
   stepSounds(3);
-  later(()=>{doctorEl.classList.remove('walk'); doctorEl.classList.add('using'); showScope()}, T.doc);
+  later(()=>{doctorEl.classList.remove('walk'); doctorEl.classList.add('using'); patientEl.classList.add('auscult'); showScope()}, T.doc);
   later(()=>heartBeats(reduce?1:2), T.doc+T.reach);
   later(finishListen, T.doc+T.reach+T.hold);
 }
 function finishListen(){
   clearFx();
   doctorEl.classList.remove('using','to-patient','walk');
+  patientEl.classList.remove('auscult');
   step='med'; busy=false;
   LTL.beep(523,.08,'triangle',.05);
   later(()=>LTL.beep(659,.08,'triangle',.05),90);
@@ -424,24 +529,48 @@ function rest(){
   renderActions();
   doctorEl.classList.remove('to-patient','using','walk');
   doctorEl.classList.add('walk','aside');
-  patientEl.classList.remove('to-chair');
+  patientEl.classList.remove('to-chair','auscult');
   patientEl.classList.add('walking','to-bed');
+  bubble.textContent='去床上';
+  hintEl.textContent='走到床边';
   stepSounds(4);
   later(()=>{
     patientEl.classList.remove('walking');
     doctorEl.classList.remove('walk');
+    patientEl.classList.add('turn');
+    bubble.textContent='转身';
+    hintEl.textContent='转身，坐到床边';
+  }, T.bed);
+  later(()=>{
+    const p=cur();
+    patientEl.classList.add('snapsize');
+    if(p) who.innerHTML=bedPerson(p.kind, mood());
+    patientEl.classList.remove('to-bed');
+    patientEl.classList.add('bedtime','sit');
+    void patientEl.offsetWidth;
+    patientEl.classList.remove('snapsize');
+    bubble.textContent='坐下';
+    requestAnimationFrame(()=>patientEl.classList.remove('turn'));
+  }, T.bed+T.turn);
+  later(()=>{
+    patientEl.classList.add('lie');
+    bubble.textContent='躺好';
+    hintEl.textContent='慢慢躺到枕头上';
+  }, T.bed+T.turn+T.sit);
+  later(()=>{
     patientEl.classList.add('tucked');
+    bubble.textContent='呼…';
+    hintEl.textContent='盖好小被子，睡一会儿';
     LTL.beep(392,.12,'sine',.04);
     later(()=>LTL.beep(494,.14,'sine',.035),200);
-  }, T.bed);
-  later(finishRest, T.bed+T.tuck);
+  }, T.bed+T.turn+T.sit+T.lie);
+  later(finishRest, T.bed+T.turn+T.sit+T.lie+T.tuck);
 }
 function finishRest(){
   lastStars=pending; score+=lastStars;
   step='leave'; busy=false;
   doctorEl.classList.remove('walk','using','to-patient');
-  patientEl.classList.remove('tucked','to-bed','walking');
-  patientEl.classList.add('bye');
+  snapPatient('bye');
   LTL.beep(523,.08,'triangle',.05);
   later(()=>LTL.beep(659,.08,'triangle',.05),90);
   later(()=>LTL.beep(784,.12,'triangle',.05),180);
