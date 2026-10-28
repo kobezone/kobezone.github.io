@@ -15,7 +15,7 @@
       const o=C.createOscillator(),g=C.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;
       o.connect(g);g.connect(C.destination);o.start();g.gain.exponentialRampToValueAtTime(0.0001,C.currentTime+dur);o.stop(C.currentTime+dur+0.02)}catch(e){}},
     // 滑动手势
-    version:'2.9',
+    version:'2.10',
     defaults:{nav:'fab',help:false,stats:true,controls:true,dpad:true},
     getSettings(){
       const s={nav:'fab',help:false,stats:true,controls:true,dpad:true};
