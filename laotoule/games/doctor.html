@@ -3,64 +3,177 @@
 <style>
 html,body{height:100%}
 body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
-.wrap{flex:1;display:flex;flex-direction:column;min-height:0;width:100%;max-width:480px;padding:6px 8px 8px}
-.hud{text-align:center;font-size:1.28rem;font-weight:900;margin:0 0 4px}
-.hud b{color:#c92a2a}
-.rule{margin:0 0 4px;background:#fff;border:3px solid #222;border-radius:14px;padding:4px 8px;font-size:1.02rem;font-weight:800;line-height:1.3;text-align:center}
-.clinic{position:relative;flex:1;min-height:210px;border:4px solid #222;border-radius:18px;overflow:hidden;background:linear-gradient(#d0ebff 0 58%,#f8f1e3 58% 72%,#e7c48a 72%)}
-.door{position:absolute;right:10px;top:8px;width:58px;height:86px;background:#e8590c;border:3px solid #222;border-radius:8px 8px 0 0;z-index:1}
+.wrap{flex:1;display:flex;flex-direction:column;min-height:0;width:100%;max-width:480px;padding:6px 8px max(8px,env(safe-area-inset-bottom))}
+.hud.stats{display:block;margin:0 0 4px;min-width:0;border:0;box-shadow:none;background:transparent;padding:0;text-align:center;font-size:1.2rem;font-weight:900}
+.hud b{color:#d6336c}
+.clinic{position:relative;flex:1;min-height:230px;border:4px solid #222;border-radius:18px;overflow:hidden;background:linear-gradient(#ffd6e8 0 10%,#fff0f6 10% 56%,#d8f5dc 56% 70%,#f6d7a8 70%);touch-action:manipulation}
+.door{position:absolute;right:8px;top:8px;width:54px;height:78px;background:#ff9db5;border:3px solid #222;border-radius:8px 8px 0 0;z-index:1}
 .door span{position:absolute;left:0;right:0;bottom:4px;text-align:center;color:#fff;font-size:.85rem;font-weight:900}
-.door i{position:absolute;right:8px;top:40px;width:8px;height:8px;border-radius:50%;background:#ffd43b;border:2px solid #222}
+.door i{position:absolute;right:8px;top:36px;width:8px;height:8px;border-radius:50%;background:#ffd43b;border:2px solid #222}
+.rug{position:absolute;left:30%;bottom:6px;width:42%;height:14px;background:#ffc9de;border:3px solid #222;border-radius:10px;z-index:1}
 .bed,.chair,.cabinet,.doctor,.patient{position:absolute;z-index:2}
-.bed{left:6px;bottom:8px;width:46%;height:34%}
+.bed{left:6px;bottom:8px;width:48%;height:34%}
 .bed svg,.chair svg,.cabinet svg,.doctor svg,.patient .who{width:100%;height:100%;display:block}
-.chair{left:48%;bottom:10px;width:16%;height:24%}
-.cabinet{right:8px;bottom:18%;width:24%;height:46%;z-index:1}
-.doctor{left:4px;bottom:12px;width:78px;height:118px;z-index:3}
-.patient{left:58%;bottom:14px;width:92px;height:158px;z-index:4;transition:left .35s ease,bottom .35s ease}
-.patient.exam{left:34%}
-.patient.rest{left:8%;bottom:28%}
-.patient.out{left:78%;bottom:14px}
-.patient .who{position:absolute;left:0;right:0;bottom:0;height:78%}
-.bubble{position:absolute;left:50%;top:0;transform:translateX(-50%);background:#fff;border:3px solid #222;border-radius:16px;padding:2px 8px;font-weight:900;font-size:1.15rem;white-space:nowrap;box-shadow:0 3px 0 #222;z-index:5}
-.bubble svg{width:28px;height:28px;vertical-align:-8px}
+.chair{left:46%;bottom:10px;width:15%;height:22%}
+.cabinet{right:6px;bottom:16%;width:22%;height:42%;z-index:1}
+.doctor{left:6px;bottom:10px;width:92px;height:136px;z-index:3;transition:left .65s ease,transform .35s ease}
+.doctor svg{overflow:visible}
+.doctor.walk .doc-svg{animation:docbob .22s ease-in-out infinite}
+.doctor.to-patient{left:10%}
+.doctor.aside{left:42%}
+.doctor.using{transform:rotate(-5deg);transform-origin:50% 100%}
+.doctor .arm{transform-box:fill-box;transform-origin:50% 8%;transition:transform .35s ease}
+.doctor.using .arm{transform:rotate(-48deg)}
+.doctor.using .tubes{opacity:0}
+@keyframes docbob{50%{transform:translateY(-6px)}}
+.patient{left:108%;bottom:12px;width:96px;height:164px;z-index:4;transition:left .9s cubic-bezier(.22,.7,.2,1),bottom .9s cubic-bezier(.22,.7,.2,1),width .35s ease,height .35s ease,opacity .35s}
+.patient.to-chair{left:44%}
+.patient.to-bed{left:10px;bottom:13%}
+.patient.tucked{left:10px;width:112px;height:132px}
+.patient.bye{left:8%;bottom:12px}
+.patient.bye .who{animation:sway .7s ease-in-out infinite}
+@keyframes sway{50%{transform:rotate(4deg)}}
+.patient .who{position:absolute;left:0;right:0;bottom:0;height:78%;transform-origin:50% 100%}
+.patient.walking .who{animation:pbob .26s ease-in-out infinite}
+@keyframes pbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.patient .shadow{position:absolute;left:16%;right:16%;bottom:2px;height:8px;background:rgba(80,40,50,.16);border-radius:50%;z-index:0}
+.patient.walking .shadow{animation:shad .26s ease-in-out infinite}
+@keyframes shad{50%{transform:scaleX(.65);opacity:.45}}
+.blanket,.zzz{display:none}
+.patient.tucked .blanket{display:block;position:absolute;left:6px;bottom:0;width:96px;height:56px;z-index:3;background:linear-gradient(#ffe3ef,#ffb3c7);border:3px solid #222;border-radius:16px}
+.patient.tucked .blanket::after{content:'💗';position:absolute;right:8px;top:6px;font-size:1rem}
+.patient.tucked .who{z-index:2;height:104px;width:84px;left:14px;right:auto;bottom:0;animation:none}
+.patient.tucked .who svg{transform:none !important}
+.patient.tucked .shadow{opacity:0}
+.patient.tucked .zzz{display:flex;gap:1px;position:absolute;left:78px;top:16px;z-index:4;font-weight:900;color:#9c36b5;line-height:1;background:#fff;border:3px solid #222;border-radius:12px;padding:1px 5px}
+.patient.tucked .zzz span{display:inline-block;animation:zzz 1s ease-in-out infinite}
+.patient.tucked .zzz span:nth-child(2){animation-delay:.15s;font-size:1.25rem}
+.patient.tucked .zzz span:nth-child(3){animation-delay:.3s;font-size:1.45rem}
+@keyframes zzz{0%{opacity:.25;transform:translateY(4px)}100%{opacity:1;transform:translateY(-10px)}}
+.bubble{position:absolute;left:50%;top:0;transform:translateX(-50%);background:#fff;border:3px solid #222;border-radius:16px;padding:2px 8px;font-weight:900;font-size:1.12rem;white-space:nowrap;box-shadow:0 3px 0 #222;z-index:5}
+.bubble svg{width:30px;height:30px;vertical-align:-8px}
+.bubble.pop{animation:pop .4s ease}
+@keyframes pop{0%{transform:translateX(-50%) scale(.45)}70%{transform:translateX(-50%) scale(1.08)}100%{transform:translateX(-50%) scale(1)}}
 .queue{position:absolute;left:8px;top:8px;background:#fff;border:3px solid #222;border-radius:12px;padding:1px 8px;font-weight:900;font-size:.95rem;z-index:5}
-.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:8px}
-.actions .btn{min-height:58px;min-width:104px;font-size:1.15rem}
+.window{position:absolute;left:46%;top:12px;width:62px;height:48px;background:#d0ebff;border:3px solid #222;border-radius:8px;z-index:1}
+.window i{position:absolute;background:#222}
+.window i:first-child{left:50%;top:0;bottom:0;width:3px;margin-left:-1px}
+.window i:nth-child(2){top:50%;left:0;right:0;height:3px;margin-top:-1px}
+.window span{position:absolute;left:0;right:0;top:11px;text-align:center;font-size:.95rem}
+.cord,.scope{position:absolute;pointer-events:none;opacity:0;transition:opacity .2s linear}
+.cord{z-index:3;height:5px;margin-top:-3px;background:#74c0fc;border-radius:6px;transform-origin:0 50%;box-shadow:0 0 0 2px #222}
+.scope{z-index:7;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#74c0fc 55%,#1c7ed6);border:3px solid #222}
+.scope::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:3px solid #ff8fab;opacity:0}
+.clinic.listening .cord,.clinic.listening .scope{opacity:1}
+.clinic.listening .scope.pulse{animation:thump .56s ease-in-out infinite}
+.clinic.listening .scope.pulse::after{animation:ring .7s ease-out infinite}
+@keyframes thump{0%,100%{transform:scale(1)}28%{transform:scale(1.22)}46%{transform:scale(1)}62%{transform:scale(1.12)}}
+@keyframes ring{0%{opacity:.85;transform:scale(.55)}100%{opacity:0;transform:scale(2.3)}}
+.heart{position:absolute;z-index:8;font-size:1.25rem;pointer-events:none;animation:floatup .95s ease-out forwards}
+.praise{--dx:-50%;position:absolute;left:50%;top:16%;z-index:8;transform:translateX(-50%);background:#fff;border:3px solid #222;border-radius:999px;padding:2px 12px;font-weight:900;color:#d6336c;pointer-events:none;animation:floatup 1.15s ease forwards;white-space:nowrap}
+@keyframes floatup{to{transform:translate(var(--dx,-50%),-64px);opacity:0}}
+.hint{text-align:center;font-size:1.05rem;font-weight:800;margin:6px 0 0;color:#7a3e55;min-height:1.3em}
+.actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:6px}
+.actions .btn{flex:1 1 30%;max-width:160px;min-height:72px;font-size:1.05rem}
+.actions .btn.wide{flex:1 1 100%;max-width:280px;min-height:64px;font-size:1.28rem}
+.actions .btn.med{flex-direction:column;gap:1px;padding:6px 6px;line-height:1.15}
+.actions .btn.med svg{width:34px;height:34px}
+.actions .btn.on{background:#fcc2d7}
+.actions .btn:disabled{opacity:.75}
+.actions .btn.shake{animation:shake .42s ease}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .rate{margin-top:6px;text-align:center;background:#fff;border:3px solid #222;border-radius:14px;padding:4px 8px;font-weight:900}
-.rate .starline{font-size:1.8rem;letter-spacing:2px;color:#f59f00;line-height:1.1}
+.rate[hidden]{display:none !important}
+.rate .starline{font-size:1.7rem;letter-spacing:2px;color:#f59f00;line-height:1.1}
 .rate .dim{color:#ced4da}
-#ovt{font-size:1.6rem;font-weight:900}
-#ovscore{font-size:2.4rem;font-weight:900;color:#e8590c}
-.tools{display:flex;justify-content:center;margin-top:6px}
-.tools .btn{min-height:48px}
+.rate .nexttime{font-size:.95rem;font-weight:800}
+.rate .nexttime svg{width:26px;height:26px;vertical-align:-7px}
+.wrap .controls{margin:6px 0 0}
+.wrap .help{margin:8px 0 0;padding:8px 12px}
+#ov{z-index:9}
+#ovt{font-size:1.5rem;font-weight:900}
+#ovsub{font-size:1.05rem;font-weight:800}
+#ovscore{font-size:2.2rem;font-weight:900;color:#e64980}
+body .toast{top:max(62px,calc(env(safe-area-inset-top) + 54px));bottom:auto}
+@media (prefers-reduced-motion:reduce){
+  .patient,.doctor,.doctor .arm{transition-duration:.01ms}
+  .patient.walking .who,.patient.bye .who,.doctor.walk .doc-svg,.patient.walking .shadow,.clinic.listening .scope.pulse,.clinic.listening .scope.pulse::after,.patient.tucked .zzz span,.heart,.praise,.bubble.pop,.actions .btn.shake{animation:none}
+}
+@media (max-width:360px){
+  .doctor{width:80px;height:120px}
+  .patient{width:86px;height:150px}
+  .actions .btn.med{min-height:68px;font-size:.95rem}
+  .actions .btn.med svg{width:28px;height:28px}
+}
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🩺 医院小医生</h1></div>
 <div class="wrap">
-<div class="hud">第 <b id="num">1</b> / 5 位 · 今天 <b id="score">0</b> 星</div>
-<p class="rule">先听诊，再选药或创可贴，然后让病人上床休息。<br>离开时会打星。看完今天的病人，就结算总分。</p>
+<div class="hud stats">第 <b id="num">1</b> / 5 位 · 今天 <b id="score">0</b> 星</div>
 <div class="clinic" id="clinic">
   <div class="queue" id="queue">门口还有 4 位</div>
-  <div class="door"><i></i><span>门</span></div>
-  <div class="cabinet" aria-hidden="true"><svg viewBox="0 0 80 130"><rect x="4" y="4" width="72" height="122" rx="4" fill="#fff" stroke="#222" stroke-width="3"/><path d="M8 44h64M8 86h64" stroke="#222" stroke-width="3"/><rect x="14" y="14" width="14" height="22" rx="4" fill="#ff6b6b" stroke="#222" stroke-width="2"/><rect x="34" y="16" width="12" height="20" rx="4" fill="#69db7c" stroke="#222" stroke-width="2"/><rect x="52" y="18" width="12" height="18" rx="6" fill="#74c0fc" stroke="#222" stroke-width="2"/><rect x="16" y="54" width="16" height="22" rx="3" fill="#ffd43b" stroke="#222" stroke-width="2"/><rect x="40" y="52" width="22" height="24" rx="3" fill="#fff" stroke="#e03131" stroke-width="3"/><path d="M46 64h10M51 59v10" stroke="#e03131" stroke-width="2"/><text x="40" y="112" font-size="14" font-weight="700" fill="#222">药柜</text></svg></div>
-  <div class="bed" aria-hidden="true"><svg viewBox="0 0 180 100"><rect x="16" y="48" width="150" height="26" rx="6" fill="#f8f9fa" stroke="#222" stroke-width="3"/><rect x="18" y="34" width="40" height="22" rx="5" fill="#fff" stroke="#222" stroke-width="3"/><rect x="8" y="72" width="164" height="12" rx="3" fill="#e67700" stroke="#222" stroke-width="3"/><rect x="14" y="84" width="10" height="14" fill="#222"/><rect x="156" y="84" width="10" height="14" fill="#222"/><text x="70" y="66" font-size="16" font-weight="700" fill="#868e96">病床</text></svg></div>
-  <div class="chair" aria-hidden="true"><svg viewBox="0 0 70 90"><rect x="16" y="8" width="38" height="36" rx="6" fill="#ffd43b" stroke="#222" stroke-width="3"/><rect x="12" y="42" width="46" height="12" rx="3" fill="#fab005" stroke="#222" stroke-width="3"/><rect x="16" y="54" width="6" height="28" fill="#222"/><rect x="48" y="54" width="6" height="28" fill="#222"/></svg></div>
-  <div class="doctor" aria-label="医生"><svg viewBox="0 0 80 130"><circle cx="40" cy="24" r="16" fill="#ffd8a8" stroke="#222" stroke-width="3"/><path d="M24 22 q16-18 32 0" fill="#343a40"/><circle cx="34" cy="24" r="2" fill="#222"/><circle cx="46" cy="24" r="2" fill="#222"/><path d="M34 30 q6 4 12 0" fill="none" stroke="#222" stroke-width="2"/><path d="M22 42 h36 v40 h-36 z" fill="#f8f9fa" stroke="#222" stroke-width="3"/><path d="M40 46 v28" stroke="#74c0fc" stroke-width="3"/><circle cx="40" cy="78" r="7" fill="#4dabf7" stroke="#222" stroke-width="3"/><path d="M28 48 q-16 10-8 28" fill="none" stroke="#4dabf7" stroke-width="3"/><rect x="28" y="82" width="24" height="28" fill="#1971c2" stroke="#222" stroke-width="3"/></svg></div>
-  <div class="patient exam" id="patient"><div class="bubble" id="bubble"></div><div class="who" id="who"></div></div>
-  <div class="overlay" id="ov"><div id="ovt">今天看完啦</div><div id="ovscore">0 星</div><button class="btn" id="again" type="button">再开一天</button></div>
+  <div class="window" aria-hidden="true"><i></i><i></i><span>💗</span></div>
+  <div class="door" aria-hidden="true"><i></i><span>门</span></div>
+  <div class="rug" aria-hidden="true"></div>
+  <div class="cabinet" aria-hidden="true"><svg viewBox="0 0 80 130"><rect x="4" y="4" width="72" height="122" rx="4" fill="#fff" stroke="#222" stroke-width="3"/><path d="M8 44h64M8 86h64" stroke="#222" stroke-width="3"/><rect x="14" y="14" width="14" height="22" rx="4" fill="#ff8fab" stroke="#222" stroke-width="2"/><rect x="34" y="16" width="12" height="20" rx="4" fill="#8ce99a" stroke="#222" stroke-width="2"/><rect x="52" y="18" width="12" height="18" rx="6" fill="#74c0fc" stroke="#222" stroke-width="2"/><rect x="16" y="54" width="16" height="22" rx="3" fill="#ffd43b" stroke="#222" stroke-width="2"/><rect x="40" y="52" width="22" height="24" rx="3" fill="#fff" stroke="#e64980" stroke-width="3"/><path d="M46 64h10M51 59v10" stroke="#e64980" stroke-width="2"/><text x="40" y="112" font-size="14" font-weight="700" fill="#222">药柜</text></svg></div>
+  <div class="bed" aria-hidden="true"><svg viewBox="0 0 180 100"><rect x="16" y="48" width="150" height="26" rx="6" fill="#fff0f6" stroke="#222" stroke-width="3"/><rect x="18" y="34" width="40" height="22" rx="5" fill="#ffc9de" stroke="#222" stroke-width="3"/><rect x="8" y="72" width="164" height="12" rx="3" fill="#ff9db5" stroke="#222" stroke-width="3"/><rect x="14" y="84" width="10" height="14" fill="#222"/><rect x="156" y="84" width="10" height="14" fill="#222"/><text x="70" y="66" font-size="16" font-weight="700" fill="#868e96">病床</text></svg></div>
+  <div class="chair" aria-hidden="true"><svg viewBox="0 0 70 90"><rect x="16" y="8" width="38" height="36" rx="6" fill="#ffd6a5" stroke="#222" stroke-width="3"/><rect x="12" y="42" width="46" height="12" rx="3" fill="#ffc078" stroke="#222" stroke-width="3"/><rect x="16" y="54" width="6" height="28" fill="#222"/><rect x="48" y="54" width="6" height="28" fill="#222"/></svg></div>
+  <div class="doctor" id="doctor" aria-label="医生"><svg class="doc-svg" viewBox="0 0 96 140">
+    <ellipse cx="48" cy="132" rx="24" ry="5" fill="rgba(80,40,50,.15)"/>
+    <rect x="32" y="98" width="14" height="28" rx="4" fill="#bac8ff" stroke="#222" stroke-width="3"/>
+    <rect x="50" y="98" width="14" height="28" rx="4" fill="#bac8ff" stroke="#222" stroke-width="3"/>
+    <path d="M26 50 h46 v50 h-46 z" fill="#fff" stroke="#222" stroke-width="3"/>
+    <path d="M49 54 v40" stroke="#ffc9de" stroke-width="3"/>
+    <rect x="54" y="74" width="12" height="10" rx="2" fill="#fff0f6" stroke="#222" stroke-width="2"/>
+    <rect x="16" y="54" width="13" height="30" rx="6" fill="#ffd8a8" stroke="#222" stroke-width="3"/>
+    <g class="arm"><rect x="66" y="52" width="13" height="32" rx="6" fill="#ffd8a8" stroke="#222" stroke-width="3"/><circle cx="72" cy="86" r="7" fill="#ffd8a8" stroke="#222" stroke-width="3"/></g>
+    <circle cx="48" cy="30" r="18" fill="#ffd8a8" stroke="#222" stroke-width="3"/>
+    <path d="M30 26 q18-22 36 0" fill="#3b2f4a"/>
+    <path d="M62 12 q7-9 12 0 q-6 3-12 0 q-7-9-12 0 q6 3 12 0" fill="#ff8fab" stroke="#222" stroke-width="2"/>
+    <circle cx="62" cy="12" r="3" fill="#fff" stroke="#222" stroke-width="2"/>
+    <circle cx="36" cy="34" r="3" fill="#ff8fab"/>
+    <circle cx="60" cy="34" r="3" fill="#ff8fab"/>
+    <circle cx="41" cy="30" r="2.5" fill="#222"/>
+    <circle cx="55" cy="30" r="2.5" fill="#222"/>
+    <path d="M42 38 q6 5 12 0" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="30" cy="32" r="4" fill="#4dabf7" stroke="#222" stroke-width="2"/>
+    <circle cx="66" cy="32" r="4" fill="#4dabf7" stroke="#222" stroke-width="2"/>
+    <g class="tubes">
+      <path d="M32 36 q10 14 16 26" fill="none" stroke="#4dabf7" stroke-width="3" stroke-linecap="round"/>
+      <path d="M64 36 q-10 14 -16 26" fill="none" stroke="#4dabf7" stroke-width="3" stroke-linecap="round"/>
+      <circle class="chest" cx="48" cy="66" r="8" fill="#74c0fc" stroke="#222" stroke-width="3"/>
+      <circle cx="48" cy="66" r="3.2" fill="#e7f5ff" stroke="#222" stroke-width="2"/>
+    </g>
+  </svg></div>
+  <div class="patient" id="patient">
+    <div class="bubble" id="bubble"></div>
+    <div class="who" id="who"></div>
+    <div class="shadow" aria-hidden="true"></div>
+    <div class="blanket" aria-hidden="true"></div>
+    <div class="zzz" aria-hidden="true"><span>z</span><span>z</span><span>z</span></div>
+  </div>
+  <div class="cord" id="cord" aria-hidden="true"></div>
+  <div class="scope" id="scope" aria-hidden="true"></div>
+  <div class="overlay" id="ov"><div id="ovt">今天看完啦</div><div id="ovsub">小病人都回家休息啦</div><div id="ovscore">0 星</div><button class="btn" id="again" type="button">再开一天</button></div>
 </div>
+<p class="hint" id="hint" aria-live="polite"></p>
 <div class="rate" id="rate" hidden></div>
 <div class="actions" id="actions"></div>
-<div class="tools"><button class="btn" id="restart" type="button">重开今天</button></div>
+<div class="controls"><button class="btn" id="restart" type="button">重开今天</button></div>
+<div class="help"><h2>📖 怎么玩</h2><ul>
+<li>病人从门口走进来。点「听诊」，医生会走过去，把听诊器贴在胸口，可以听到心跳。</li>
+<li>听完头顶会出现一个小图标。在下面点<b>一样的图标</b>。</li>
+<li>第一次没点对，可以再试一次。然后点「去休息」，病人上床盖被子。</li>
+<li>选对星星更多。没选对也会给星星，病人不会哭，可以接下一位。</li>
+</ul></div>
 </div>
 <script src="../common.js"></script>
 <script>
 const MEDS=[
-  {id:'fever',name:'退烧药',bg:'#ffc9c9'},
-  {id:'cough',name:'止咳药',bg:'#d0bfff'},
-  {id:'tummy',name:'肚痛药',bg:'#b2f2bb'},
-  {id:'band',name:'创可贴',bg:'#fff3bf'},
-  {id:'head',name:'止痛药',bg:'#a5d8ff'}
+  {id:'fever',name:'退烧药',bg:'#ffc9c9',sym:'fever'},
+  {id:'cough',name:'止咳药',bg:'#d0bfff',sym:'cough'},
+  {id:'tummy',name:'肚痛药',bg:'#b2f2bb',sym:'tummy'},
+  {id:'band',name:'创可贴',bg:'#fff3bf',sym:'cut'},
+  {id:'head',name:'止痛药',bg:'#a5d8ff',sym:'head'}
 ];
 const CASES=[
   {sym:'fever',name:'发烧',med:'fever'},
@@ -77,103 +190,321 @@ const ICONS={
   cut:'<svg viewBox="0 0 32 32" aria-label="擦伤"><rect x="4" y="12" width="24" height="10" rx="3" fill="#fff" stroke="#222" stroke-width="2"/><path d="M16 12 v10 M10 17 h12" stroke="#e03131" stroke-width="2"/></svg>',
   head:'<svg viewBox="0 0 32 32" aria-label="头疼"><circle cx="16" cy="18" r="9" fill="#ffd8a8" stroke="#222" stroke-width="2"/><path d="M16 4 l2 6 h-4 z" fill="#fab005" stroke="#222" stroke-width="2"/></svg>'
 };
+const HEARTS=['💗','💖','✨','🌸','💕'];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const T=reduce
+  ?{walk:240,doc:200,reach:180,hold:320,bed:220,tuck:280}
+  :{walk:980,doc:680,reach:420,hold:1180,bed:860,tuck:1100};
 function person(kind,mood){
   const kid=kind==='kid', elder=kind==='elder';
   const hair=elder?'#dee2e6':kid?'#f59f00':'#343a40';
-  const shirt=kid?'#ff922b':elder?'#e599f7':'#4dabf7';
-  const smile=mood==='happy'?'M30 30 q6 6 12 0':mood==='sad'?'M30 34 q6-5 12 0':'M32 31 h8';
-  const scale=kid?0.82:elder?0.96:1;
+  const shirt=kid?'#ff922b':elder?'#e599f7':'#74c0fc';
+  const smile=mood==='happy'?'M28 30 q8 8 16 0':mood==='calm'?'M30 31 q6 4 12 0':'M35 32 a2.3 2.3 0 1 1 .1 0';
+  const scale=kid?0.84:elder?0.96:1;
   const cane=elder?'<path d="M58 40 q10 8 4 36" fill="none" stroke="#8d5524" stroke-width="3"/>':'';
-  return `<svg viewBox="0 0 80 110" aria-label="${kind==='kid'?'小孩':elder?'老人':'大人'}" style="transform:scale(${scale});transform-origin:50% 100%"><circle cx="36" cy="24" r="${kid?16:14}" fill="#ffd8a8" stroke="#222" stroke-width="3"/><path d="M22 20 q14-16 28 2" fill="${hair}"/><circle cx="31" cy="24" r="2" fill="#222"/><circle cx="41" cy="24" r="2" fill="#222"/>${elder?'<path d="M26 24 h8 M38 24 h8" stroke="#222" stroke-width="2"/>':''}<path d="${smile}" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/><path d="M20 42 h32 v34 h-32 z" fill="${shirt}" stroke="#222" stroke-width="3"/><rect x="24" y="76" width="10" height="26" fill="#364fc7" stroke="#222" stroke-width="3"/><rect x="38" y="76" width="10" height="26" fill="#364fc7" stroke="#222" stroke-width="3"/>${cane}</svg>`;
+  const bow=kid?'<path d="M20 14 q6-8 10 0 q-5 3-10 0 q-6-8-10 0 q5 3 10 0" fill="#ff8fab" stroke="#222" stroke-width="2"/><circle cx="20" cy="14" r="2.4" fill="#fff" stroke="#222" stroke-width="1.5"/>':'';
+  const who=kid?'小孩':elder?'老人':'大人';
+  return `<svg viewBox="0 0 80 110" aria-label="${who}" style="transform:scale(${scale});transform-origin:50% 100%"><circle cx="36" cy="24" r="${kid?16:14}" fill="#ffd8a8" stroke="#222" stroke-width="3"/>${bow}<path d="M22 20 q14-16 28 2" fill="${hair}"/><circle cx="28" cy="28" r="2.4" fill="#ff8fab"/><circle cx="44" cy="28" r="2.4" fill="#ff8fab"/><circle cx="31" cy="24" r="2" fill="#222"/><circle cx="41" cy="24" r="2" fill="#222"/>${elder?'<path d="M26 24 h8 M38 24 h8" stroke="#222" stroke-width="2"/>':''}<path d="${smile}" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/><path d="M20 42 h32 v34 h-32 z" fill="${shirt}" stroke="#222" stroke-width="3"/><rect x="24" y="76" width="10" height="26" fill="#748ffc" stroke="#222" stroke-width="3"/><rect x="38" y="76" width="10" height="26" fill="#748ffc" stroke="#222" stroke-width="3"/>${cane}</svg>`;
 }
 function shuffle(a){const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.random()*(i+1)|0; const t=b[i]; b[i]=b[j]; b[j]=t} return b}
+const clinic=document.getElementById('clinic');
 const patientEl=document.getElementById('patient'), bubble=document.getElementById('bubble'), who=document.getElementById('who');
+const doctorEl=document.getElementById('doctor'), cord=document.getElementById('cord'), scope=document.getElementById('scope');
 const actions=document.getElementById('actions'), rate=document.getElementById('rate'), queueEl=document.getElementById('queue');
-const numEl=document.getElementById('num'), scoreEl=document.getElementById('score'), ov=document.getElementById('ov');
-let day=[], idx=0, step='listen', score=0, okPick=false, over=false, lastStars=0;
-function choices(med){
-  const others=shuffle(MEDS.filter(m=>m.id!==med));
-  return shuffle([MEDS.find(m=>m.id===med), others[0], others[1]]);
+const numEl=document.getElementById('num'), scoreEl=document.getElementById('score'), hintEl=document.getElementById('hint'), ov=document.getElementById('ov');
+let day=[], idx=0, step='enter', score=0, okPick=false, over=false, lastStars=0, pending=0, tries=0, busy=false, queued=null;
+let timers=[], scopeRAF=0, lastMissAt=0;
+function later(fn,ms){const id=setTimeout(fn,ms); timers.push(id); return id}
+function clearTimers(){timers.forEach(clearTimeout); timers=[]; cancelAnimationFrame(scopeRAF); scopeRAF=0}
+function clearFx(){
+  clinic.classList.remove('listening');
+  cancelAnimationFrame(scopeRAF); scopeRAF=0;
+  scope.classList.remove('pulse');
+  clinic.querySelectorAll('.heart,.praise').forEach(n=>n.remove());
 }
 function cur(){return day[idx]}
+function mood(){
+  if(step==='leave'||(okPick&&(step==='rest'||step==='tuck'))) return 'happy';
+  if(step==='rest'||step==='tuck') return 'calm';
+  return 'wait';
+}
+function hintFor(){
+  if(over) return '今天的病人都看过啦';
+  if(step==='enter') return queued?'好，等病人站好就听':'病人正从门口走过来';
+  if(step==='listen') return '点大按钮，用听诊器听一听';
+  if(step==='listening') return '听诊器贴在胸口，听一听心跳';
+  if(step==='med') return tries?'再找一次，点一样的小图标':'点下面一样的小图标';
+  if(step==='rest') return '点「去休息」，送病人上床';
+  if(step==='tuck') return '盖好小被子，睡一会儿';
+  return '星星到啦，可以接下一位';
+}
 function renderPatient(){
-  const p=cur();
-  who.innerHTML=person(p.kind, step==='leave'?(okPick?'happy':'sad'):'wait');
-  bubble.innerHTML=ICONS[p.sym]+p.name;
+  const p=cur(); if(!p) return;
+  who.innerHTML=person(p.kind, mood());
+  if(step==='enter'||step==='listen'||step==='listening') bubble.textContent='不舒服';
+  else if(step==='tuck') bubble.textContent='呼…';
+  else if(step==='leave') bubble.textContent=okPick?'👋 舒服啦':'💗 休息好啦';
+  else bubble.innerHTML=ICONS[p.sym]+p.name;
+  if(step==='med'){bubble.classList.remove('pop'); void bubble.offsetWidth; bubble.classList.add('pop')}
+  else bubble.classList.remove('pop');
   numEl.textContent=idx+1;
   scoreEl.textContent=score;
   queueEl.textContent='门口还有 '+(day.length-1-idx)+' 位';
+  hintEl.textContent=hintFor();
 }
-function btn(label, attrs, bg){
-  return `<button class="btn" type="button" ${attrs} style="${bg?'background:'+bg:''}">${label}</button>`;
+function btn(label, attrs, bg, wide){
+  return `<button class="btn${wide?' wide':''}" type="button" ${attrs} style="${bg?'background:'+bg:''}">${label}</button>`;
 }
 function renderActions(){
   rate.hidden=step!=='leave';
-  patientEl.classList.toggle('exam', step==='listen'||step==='med'||step==='rest');
-  patientEl.classList.toggle('rest', step==='leave');
-  patientEl.classList.toggle('out', false);
-  if(step==='listen') actions.innerHTML=btn('听诊','id="listen" data-act="listen"','#c3fae8');
-  else if(step==='med') actions.innerHTML=cur().opts.map(m=>btn(m.name,`data-act="med" data-med="${m.id}"`,m.bg)).join('');
-  else if(step==='rest') actions.innerHTML=btn('去休息','data-act="rest"','#d0ebff');
+  if(step==='enter'||step==='listen') actions.innerHTML=btn('🩺 听诊','data-act="listen"','#ffdeeb','wide');
+  else if(step==='listening') actions.innerHTML=btn('正在听…','disabled','#d0ebff','wide');
+  else if(step==='med') actions.innerHTML=cur().opts.map(m=>`<button class="btn med" type="button" data-act="med" data-med="${m.id}" style="background:${m.bg}">${ICONS[m.sym]}<span>${m.name}</span></button>`).join('');
+  else if(step==='rest') actions.innerHTML=btn('🛏️ 去休息','data-act="rest"','#d3f9d8','wide');
+  else if(step==='tuck') actions.innerHTML=btn('盖被子…','disabled','#ffc9de','wide');
   else {
     const full='★★★★★', on=full.slice(0,lastStars), off=full.slice(lastStars);
-    rate.innerHTML=`<div>${okPick?'高兴地离开':'不太高兴，也回家了'}</div><div class="starline">${on}<span class="dim">${off}</span></div><div>这位打了 ${lastStars} 星</div>`;
-    actions.innerHTML=btn(idx>=day.length-1?'看今天的成绩':'下一位','data-act="next"','#ffd43b');
+    const say=lastStars>=5?'一次就对，病人最开心':lastStars===4?'第二次也对，真仔细':'休息一下也会好，你很认真';
+    const right=MEDS.find(m=>m.id===cur().med);
+    const extra=okPick?'':`<div class="nexttime">下次可以找这个 ${ICONS[cur().sym]}${right.name}</div>`;
+    rate.innerHTML=`<div>${say}</div><div class="starline">${on}<span class="dim">${off}</span></div><div>这位 ${lastStars} 星</div>${extra}`;
+    actions.innerHTML=btn(idx>=day.length-1?'🌟 看今天的成绩':'👋 下一位','data-act="next"','#fff3bf','wide');
   }
+  if(queued){const b=actions.querySelector('[data-act="listen"]'); if(b) b.classList.add('on')}
   renderPatient();
 }
-function listen(){step='med'; LTL.beep(660,.08,'sine',.05); LTL.toast('听到了：'+cur().name); renderActions()}
+function snapPatient(cls){
+  patientEl.style.transition='none';
+  patientEl.className='patient '+cls;
+  void patientEl.offsetWidth;
+  patientEl.style.transition='';
+}
+function floatWord(text){
+  const el=document.createElement('div');
+  el.className='praise'; el.textContent=text;
+  clinic.appendChild(el);
+  later(()=>el.remove(),1200);
+}
+function burst(x,y,n){
+  for(let i=0;i<n;i++){
+    const h=document.createElement('span');
+    h.className='heart'; h.textContent=HEARTS[i%HEARTS.length];
+    h.style.left=x+'px'; h.style.top=y+'px';
+    h.style.setProperty('--dx',((Math.random()*64-32)|0)+'px');
+    clinic.appendChild(h);
+    later(()=>h.remove(),1000);
+  }
+}
+function stepSounds(n){for(let i=0;i<n;i++) later(()=>LTL.beep(230,.03,'triangle',.025), i*200)}
+function anchor(){
+  const pw=patientEl.offsetWidth, ph=patientEl.offsetHeight;
+  const px=patientEl.offsetLeft, py=patientEl.offsetTop;
+  const dw=doctorEl.offsetWidth, dh=doctorEl.offsetHeight;
+  const dx=doctorEl.offsetLeft, dy=doctorEl.offsetTop;
+  const kind=cur()&&cur().kind;
+  const drop=kind==='kid'?0.68:kind==='elder'?0.62:0.57;
+  return {
+    chest:{x:px+pw*0.5, y:py+ph*drop},
+    hand:{x:dx+dw*0.84, y:dy+dh*0.6}
+  };
+}
+function putScope(x,y){scope.style.left=x+'px'; scope.style.top=y+'px'}
+function setCord(a,b){
+  cord.style.left=a.x+'px'; cord.style.top=a.y+'px';
+  cord.style.width=Math.hypot(b.x-a.x,b.y-a.y)+'px';
+  cord.style.transform='rotate('+(Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI)+'deg)';
+}
+function showScope(){
+  clinic.classList.add('listening');
+  const a0=anchor();
+  const from={x:a0.hand.x,y:a0.hand.y}, to={x:a0.chest.x,y:a0.chest.y};
+  const t0=performance.now();
+  const loop=now=>{
+    if(!clinic.classList.contains('listening')) return;
+    const k=Math.min(1,(now-t0)/Math.max(1,T.reach));
+    const e=1-Math.pow(1-k,3);
+    const x=from.x+(to.x-from.x)*e, y=from.y+(to.y-from.y)*e;
+    putScope(x,y); setCord(anchor().hand,{x,y});
+    if(k<1) scopeRAF=requestAnimationFrame(loop);
+    else {scope.classList.add('pulse'); burst(to.x,to.y,4); holdScope()}
+  };
+  scopeRAF=requestAnimationFrame(loop);
+}
+function holdScope(){
+  scopeRAF=requestAnimationFrame(()=>{
+    if(!clinic.classList.contains('listening')) return;
+    const a=anchor();
+    putScope(a.chest.x,a.chest.y);
+    setCord(a.hand,a.chest);
+    holdScope();
+  });
+}
+function heartBeats(n){
+  for(let i=0;i<n;i++){
+    later(()=>{LTL.beep(330,.1,'sine',.055); const a=anchor(); burst(a.chest.x,a.chest.y,2)}, i*560);
+    later(()=>LTL.beep(247,.13,'sine',.045), i*560+150);
+  }
+}
+function enterPatient(){
+  clearTimers(); clearFx();
+  step='enter'; busy=true; tries=0; okPick=false; pending=0; queued=null; lastMissAt=0;
+  doctorEl.className='doctor';
+  snapPatient('at-door');
+  renderActions();
+  later(()=>{
+    patientEl.classList.add('walking');
+    patientEl.classList.remove('at-door');
+    patientEl.classList.add('to-chair');
+    stepSounds(4);
+  }, 40);
+  later(()=>{
+    patientEl.classList.remove('walking');
+    step='listen'; busy=false;
+    const go=queued; queued=null;
+    if(go) listen();
+    else renderActions();
+  }, T.walk);
+}
+function listen(){
+  if(over) return;
+  if(step==='enter'){queued='listen'; hintEl.textContent=hintFor(); const b=actions.querySelector('[data-act="listen"]'); if(b) b.classList.add('on'); return}
+  if(step!=='listen'||busy) return;
+  busy=true; step='listening';
+  renderActions();
+  doctorEl.classList.add('walk','to-patient');
+  stepSounds(3);
+  later(()=>{doctorEl.classList.remove('walk'); doctorEl.classList.add('using'); showScope()}, T.doc);
+  later(()=>heartBeats(reduce?1:2), T.doc+T.reach);
+  later(finishListen, T.doc+T.reach+T.hold);
+}
+function finishListen(){
+  clearFx();
+  doctorEl.classList.remove('using','to-patient','walk');
+  step='med'; busy=false;
+  LTL.beep(523,.08,'triangle',.05);
+  later(()=>LTL.beep(659,.08,'triangle',.05),90);
+  later(()=>LTL.beep(784,.1,'triangle',.05),180);
+  floatWord('听到啦');
+  renderActions();
+}
 function pick(id){
-  okPick=id===cur().med;
+  if(busy||step!=='med'||over) return;
+  const good=id===cur().med;
+  const now=performance.now();
+  if(!good && tries<1){
+    tries++; lastMissAt=now;
+    const b=actions.querySelector(`[data-med="${id}"]`);
+    if(b){b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake')}
+    LTL.beep(494,.08,'sine',.04);
+    later(()=>LTL.beep(587,.1,'sine',.04),110);
+    hintEl.textContent=hintFor();
+    floatWord('再试试');
+    return;
+  }
+  if(!good && now-lastMissAt<450) return;
+  okPick=good;
+  pending=good?(tries?4:5):3;
   step='rest';
-  LTL.beep(okPick?760:180, .1, okPick?'triangle':'square', .05);
-  LTL.toast(okPick?'药选对啦':'这个不太对，也让病人去休息');
+  if(good){
+    LTL.beep(659,.08,'triangle',.05);
+    later(()=>LTL.beep(880,.09,'triangle',.05),100);
+    later(()=>LTL.beep(1175,.12,'triangle',.045),200);
+    const a=anchor(); burst(a.chest.x,a.chest.y,6);
+    floatWord(tries?'也对啦':'真棒');
+  }else{
+    LTL.beep(523,.1,'sine',.04);
+    later(()=>LTL.beep(659,.12,'sine',.04),140);
+    floatWord('抱抱');
+  }
   renderActions();
 }
 function rest(){
-  lastStars=okPick?5:2;
-  score+=lastStars;
-  step='leave';
-  LTL.beep(okPick?880:300,.12,'triangle',.05);
+  if(busy||step!=='rest'||over) return;
+  busy=true; step='tuck';
+  renderActions();
+  doctorEl.classList.remove('to-patient','using','walk');
+  doctorEl.classList.add('walk','aside');
+  patientEl.classList.remove('to-chair');
+  patientEl.classList.add('walking','to-bed');
+  stepSounds(4);
+  later(()=>{
+    patientEl.classList.remove('walking');
+    doctorEl.classList.remove('walk');
+    patientEl.classList.add('tucked');
+    LTL.beep(392,.12,'sine',.04);
+    later(()=>LTL.beep(494,.14,'sine',.035),200);
+  }, T.bed);
+  later(finishRest, T.bed+T.tuck);
+}
+function finishRest(){
+  lastStars=pending; score+=lastStars;
+  step='leave'; busy=false;
+  doctorEl.classList.remove('walk','using','to-patient');
+  patientEl.classList.remove('tucked','to-bed','walking');
+  patientEl.classList.add('bye');
+  LTL.beep(523,.08,'triangle',.05);
+  later(()=>LTL.beep(659,.08,'triangle',.05),90);
+  later(()=>LTL.beep(784,.12,'triangle',.05),180);
+  floatWord(lastStars>=5?'好医生':'辛苦啦');
   renderActions();
 }
 function nextPatient(){
+  if(busy||step!=='leave'||over) return;
   if(idx>=day.length-1) return settle();
-  idx++; step='listen'; okPick=false;
-  patientEl.classList.remove('rest');
-  renderActions();
+  idx++;
+  enterPatient();
 }
 function settle(){
-  over=true;
-  if(LTL.record('doctor', score)){}
-  document.getElementById('ovt').textContent='今天看完啦';
+  over=true; busy=false;
+  clearFx();
+  const rec=LTL.record('doctor', score);
+  document.getElementById('ovt').textContent=rec?'新纪录，你真棒':'今天看完啦';
+  document.getElementById('ovsub').textContent=score>=25?'每一位都照顾得很好':'小病人都回家休息啦';
   document.getElementById('ovscore').textContent=score+' 星';
   ov.classList.add('show');
-  LTL.beep(520,.08,'triangle',.05); setTimeout(()=>LTL.beep(680,.1,'triangle',.05),120);
+  actions.innerHTML='';
+  hintEl.textContent=hintFor();
+  rate.hidden=true;
+  LTL.beep(523,.08,'triangle',.05);
+  later(()=>LTL.beep(659,.08,'triangle',.05),120);
+  later(()=>LTL.beep(880,.12,'triangle',.05),240);
+}
+function choices(med){
+  const others=shuffle(MEDS.filter(m=>m.id!==med));
+  return shuffle([MEDS.find(m=>m.id===med), others[0], others[1]]);
 }
 function makeDay(){
   const kinds=shuffle(KINDS.concat(['kid','adult']));
   return shuffle(CASES.map((c,i)=>({...c, kind:kinds[i], opts:choices(c.med)})));
 }
 function start(){
-  day=makeDay(); idx=0; step='listen'; score=0; okPick=false; over=false; lastStars=0;
+  clearTimers(); clearFx();
+  day=makeDay(); idx=0; score=0; okPick=false; over=false; lastStars=0;
   ov.classList.remove('show'); rate.hidden=true;
-  renderActions();
+  doctorEl.className='doctor';
+  enterPatient();
 }
 actions.addEventListener('click',e=>{
-  const b=e.target.closest('button'); if(!b||over) return;
+  const b=e.target.closest('button'); if(!b||over||b.disabled) return;
   const act=b.dataset.act;
-  if(act==='listen'&&step==='listen') listen();
-  else if(act==='med'&&step==='med') pick(b.dataset.med);
-  else if(act==='rest'&&step==='rest') rest();
-  else if(act==='next'&&step==='leave') nextPatient();
+  if(act==='listen') listen();
+  else if(act==='med') pick(b.dataset.med);
+  else if(act==='rest') rest();
+  else if(act==='next') nextPatient();
+});
+patientEl.addEventListener('click',()=>{if(step==='enter'||step==='listen') listen()});
+doctorEl.addEventListener('click',()=>{if(step==='enter'||step==='listen') listen()});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter'&&e.key!==' ') return;
+  if(e.target.closest('button,a,input')) return;
+  const b=actions.querySelector('button:not(:disabled)');
+  if(b){e.preventDefault(); b.click()}
 });
 document.getElementById('restart').onclick=start;
 document.getElementById('again').onclick=start;
 window.__DOC={
-  start,
-  listen, pick, rest, next:nextPatient,
-  get state(){const p=cur()||{}; return {idx,step,score,over,okPick,lastStars,sym:p.sym,med:p.med,kind:p.kind,name:p.name,n:day.length}}
+  start, listen, pick, rest, next:nextPatient,
+  get state(){const p=cur()||{}; return {idx,step,score,over,okPick,lastStars,tries,busy,pending,queued:!!queued,sym:p.sym,med:p.med,kind:p.kind,name:p.name,n:day.length}}
 };
 start();
 </script></body></html>
