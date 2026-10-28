@@ -1,0 +1,62 @@
+{
+  "note": "新增本站入口时改 sites，并同步 app.js 里的 FALLBACK_SITES。说明见 README.md。id 一旦发布就不要改，否则读者浏览器里记住的隐藏和排序会对不上。",
+  "version": 1,
+  "sites": [
+    {
+      "id": "laotoule",
+      "name": "老头乐",
+      "desc": "休闲小游戏合集",
+      "url": "/laotoule/",
+      "icon": "🎮",
+      "color": "#f08c00"
+    },
+    {
+      "id": "filee",
+      "name": "Filee",
+      "desc": "文档与界面原型",
+      "url": "/filee/",
+      "icon": "📑",
+      "color": "#4c6ef5"
+    },
+    {
+      "id": "cook",
+      "name": "做饭指南",
+      "desc": "HowToCook 静态菜谱",
+      "url": "/cook/",
+      "icon": "🍳",
+      "color": "#2f9e44"
+    },
+    {
+      "id": "blog",
+      "name": "JUN的博客",
+      "desc": "博客首页",
+      "url": "https://kobezone.github.io/",
+      "icon": "📖",
+      "color": "#1c7ed6"
+    },
+    {
+      "id": "about",
+      "name": "关于我",
+      "desc": "博客关于页",
+      "url": "/about/",
+      "icon": "👋",
+      "color": "#ae3ec9"
+    },
+    {
+      "id": "photos",
+      "name": "相册",
+      "desc": "照片页",
+      "url": "/photos/",
+      "icon": "🖼️",
+      "color": "#e64980"
+    },
+    {
+      "id": "laotoule-cf",
+      "name": "老头乐镜像",
+      "desc": "Cloudflare，大陆访问更快",
+      "url": "https://laotoule.pages.dev/",
+      "icon": "☁️",
+      "color": "#0b7285"
+    }
+  ]
+}
