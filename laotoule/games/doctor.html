@@ -123,9 +123,24 @@ body{display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 #ovsub{font-size:1.05rem;font-weight:800}
 #ovscore{font-size:2.2rem;font-weight:900;color:#e64980}
 body .toast{top:max(62px,calc(env(safe-area-inset-top) + 54px));bottom:auto}
+.mouth-eat{display:none}
+.patient.taking .mouth{display:none}
+.patient.taking .mouth-eat{display:block}
+.patient.dosing .arm-r{transition:transform .48s cubic-bezier(.22,.7,.2,1)}
+.patient.got-med .arm-r{transform:rotate(-36deg)}
+.patient.taking .arm-r{transform:rotate(118deg)}
+.patient.applying .arm-r{transform:rotate(97deg)}
+.patient.dosing .cup{transition:transform .48s ease;transform-box:fill-box;transform-origin:center}
+.patient.got-med .cup{transform:rotate(36deg)}
+.patient.got-med .med-pop{animation:medpop .42s ease}
+@keyframes medpop{0%{transform:scale(.25)}65%{transform:scale(1.16)}100%{transform:scale(1)}}
+.patient.swallowed .med-held{transform:scale(.08);opacity:0;transition:transform .32s ease,opacity .28s ease}
+.flying-med{position:fixed;z-index:40;width:76px;height:76px;pointer-events:none;left:0;top:0;filter:drop-shadow(0 4px 0 rgba(34,34,34,.25))}
+.flying-med svg{width:100%;height:100%;overflow:visible;display:block}
 @media (prefers-reduced-motion:reduce){
-  .patient,.patient .who,.patient .arm,.patient .leg,.patient .pose-sit,.patient .pose-lie,.patient .cover,.doctor,.doctor .arm{transition-duration:.01ms}
-  .patient.walking .who,.patient.bye .who,.patient.walking .arm,.patient.walking .leg,.patient.bye .arm-r,.doctor.walk .doc-svg,.patient.walking .shadow,.clinic.listening .scope.pulse,.clinic.listening .scope.pulse::after,.patient.tucked .zzz span,.heart,.praise,.bubble.pop,.actions .btn.shake{animation:none}
+  .patient,.patient .who,.patient .arm,.patient .leg,.patient .pose-sit,.patient .pose-lie,.patient .cover,.doctor,.doctor .arm,
+  .patient.dosing .arm-r,.patient.got-med .arm-r,.patient.taking .arm-r,.patient.applying .arm-r,.patient.swallowed .med-held,.patient.dosing .cup{transition-duration:.01ms}
+  .patient.walking .who,.patient.bye .who,.patient.walking .arm,.patient.walking .leg,.patient.bye .arm-r,.doctor.walk .doc-svg,.patient.walking .shadow,.clinic.listening .scope.pulse,.clinic.listening .scope.pulse::after,.patient.tucked .zzz span,.heart,.praise,.bubble.pop,.actions .btn.shake,.patient.got-med .med-pop{animation:none}
 }
 @media (max-width:360px){
   .doctor{width:80px;height:120px}
@@ -189,8 +204,8 @@ body .toast{top:max(62px,calc(env(safe-area-inset-top) + 54px));bottom:auto}
 <div class="controls"><button class="btn" id="restart" type="button">重开今天</button></div>
 <div class="help"><h2>📖 怎么玩</h2><ul>
 <li>病人从门口走进来。点「听诊」，医生会走过去，把听诊器贴在胸口，可以听到心跳。</li>
-<li>听完头顶会出现一个小图标。在下面点<b>一样的图标</b>。</li>
-<li>第一次没点对，可以再试一次。然后点「去休息」，病人走到床边，坐下，躺到枕头上，再盖被子。</li>
+<li>听完头顶会出现一个小图标。在下面点<b>一样的图标</b>。第一次没点对，可以再试一次。</li>
+<li>选完药，药会先出现，再飞到病人手上。药片自己吃，药水自己喝，创可贴自己贴到脸上。然后再点「去休息」，走到床边，坐下，躺好，盖被子。</li>
 <li>选对星星更多。没选对也会给星星，病人不会哭，可以接下一位。</li>
 </ul></div>
 </div>
@@ -221,8 +236,8 @@ const ICONS={
 const HEARTS=['💗','💖','✨','🌸','💕'];
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const T=reduce
-  ?{walk:240,doc:200,reach:180,hold:320,bed:180,turn:20,sit:40,lie:40,tuck:180}
-  :{walk:980,doc:680,reach:420,hold:1180,bed:900,turn:260,sit:700,lie:620,tuck:780};
+  ?{walk:240,doc:200,reach:180,hold:320,bed:180,turn:20,sit:40,lie:40,tuck:180,give:90,fly:150,holdMed:200,take:170,gulp:120,lower:100}
+  :{walk:980,doc:680,reach:420,hold:1180,bed:900,turn:260,sit:700,lie:620,tuck:780,give:520,fly:620,holdMed:880,take:860,gulp:380,lower:520};
 const SKIN='#ffd8a8';
 function palette(kind){
   const kid=kind==='kid', elder=kind==='elder';
@@ -251,18 +266,39 @@ function headArt(kind, mood, cx, cy, r, sleepable){
   const glasses=p.elder?`<path d="M${cx-11} ${cy-1} h9 M${cx+2} ${cy-1} h9" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>`:'';
   const open=`<g class="eye-open"><circle cx="${cx-6}" cy="${cy}" r="2.2" fill="#222"/><circle cx="${cx+6}" cy="${cy}" r="2.2" fill="#222"/><circle cx="${cx-11}" cy="${cy+4}" r="2.5" fill="#ff8fab"/><circle cx="${cx+11}" cy="${cy+4}" r="2.5" fill="#ff8fab"/></g>`;
   const shut=`<g class="eye-shut"><path d="M${cx-10} ${cy} q4 3 8 0 M${cx+2} ${cy} q4 3 8 0" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/><circle cx="${cx-11}" cy="${cy+4}" r="2.4" fill="#ff8fab"/><circle cx="${cx+11}" cy="${cy+4}" r="2.4" fill="#ff8fab"/></g>`;
-  return `<circle cx="${cx}" cy="${cy}" r="${hr}" fill="${SKIN}" stroke="#222" stroke-width="3"/>${bow}<path d="M${cx-hr+2} ${cy-5} q${hr-2} -${hr} ${hr*2-4} 5" fill="${p.hair}"/>${glasses}${open}${sleepable?shut:''}<path d="${smilePath(mood,cx,cy)}" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>`;
+  const eat=`<path class="mouth-eat" d="M${cx-7} ${cy+5} q7 10 14 0 q-7 2-14 0" fill="#e03131" stroke="#222" stroke-width="2"/>`;
+  return `<circle cx="${cx}" cy="${cy}" r="${hr}" fill="${SKIN}" stroke="#222" stroke-width="3"/>${bow}<path d="M${cx-hr+2} ${cy-5} q${hr-2} -${hr} ${hr*2-4} 5" fill="${p.hair}"/>${glasses}${open}${sleepable?shut:''}<path class="mouth" d="${smilePath(mood,cx,cy)}" fill="none" stroke="#222" stroke-width="2" stroke-linecap="round"/>${eat}`;
+}
+function plasterParts(){
+  return `<rect x="-16" y="-7" width="32" height="14" rx="3" fill="#fff" stroke="#222" stroke-width="2.5"/><rect x="-6" y="-5" width="12" height="10" rx="2" fill="#ffb3c6" stroke="#e64980" stroke-width="1.6"/>`;
+}
+function held(cls, inner){
+  const box='style="transform-box:fill-box;transform-origin:center"';
+  return `<g class="med-held ${cls}" ${box}><g class="med-pop" ${box}>${inner}</g></g>`;
+}
+function medShape(id){
+  if(id==='band') return held('plaster', `<g transform="rotate(-18)">${plasterParts()}</g>`);
+  if(id==='cough') return held('cup', `<path d="M-12 -1 h24 l-3 15 h-18 z" fill="#d0bfff" stroke="#222" stroke-width="2.5"/><rect x="-14" y="-6" width="28" height="7" rx="2" fill="#b197fc" stroke="#222" stroke-width="2"/><path d="M12 1 q8 1 5 11" fill="none" stroke="#222" stroke-width="2.5" stroke-linecap="round"/>`);
+  const tone=id==='fever'?'#ff6b6b':id==='tummy'?'#51cf66':id==='head'?'#4dabf7':'#ffd43b';
+  return held('pill', `<rect x="-16" y="-8" width="32" height="16" rx="8" fill="#fff" stroke="#222" stroke-width="2.5"/><path d="M0 -8 h8 a8 8 0 0 1 0 16 h-8 z" fill="${tone}"/>`);
+}
+function medSvg(id){return `<svg viewBox="-34 -34 68 68" aria-hidden="true">${medShape(id)}</svg>`}
+function facePlaster(x,y,sc){
+  if(!bandOn) return '';
+  return `<g class="plaster" transform="translate(${x},${y}) rotate(-18) scale(${sc||1})">${plasterParts()}</g>`;
 }
 function person(kind, mood){
   const p=palette(kind);
   const cane=p.elder?`<path d="M16 78 q-12 12 -2 30" fill="none" stroke="#8d5524" stroke-width="3" stroke-linecap="round"/>`:'';
   return `<svg class="fig front" viewBox="0 0 100 120" aria-label="${p.who}" preserveAspectRatio="xMidYMax meet" style="transform:scale(${p.scale});transform-origin:50% 100%">
     <g class="arm arm-l" style="transform-box:view-box;transform-origin:20px 50px">${cane}<rect x="14" y="50" width="13" height="30" rx="6" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(20,82,27,76)}</g>
-    <g class="arm arm-r" style="transform-box:view-box;transform-origin:80px 50px"><rect x="73" y="50" width="13" height="30" rx="6" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(80,82,73,76)}</g>
+    <g class="arm arm-r" style="transform-box:view-box;transform-origin:80px 50px"><rect x="73" y="50" width="13" height="30" rx="6" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(80,82,73,76)}<g class="palm" transform="translate(80,82)"></g></g>
     <rect class="leg leg-l" x="36" y="86" width="12" height="26" rx="4" fill="#748ffc" stroke="#222" stroke-width="3"/>
     <rect class="leg leg-r" x="52" y="86" width="12" height="26" rx="4" fill="#748ffc" stroke="#222" stroke-width="3"/>
     <rect class="torso" x="32" y="46" width="36" height="42" rx="6" fill="${p.shirt}" stroke="#222" stroke-width="3"/>
     ${headArt(kind, mood, 50, 28, 15, false)}
+    <g class="face-spot" transform="translate(49,47)"></g>
+    ${facePlaster(49,47,.68)}
   </svg>`;
 }
 function bedPerson(kind, mood){
@@ -277,6 +313,7 @@ function bedPerson(kind, mood){
       <g class="arm arm-r"><rect x="108" y="66" width="14" height="38" rx="7" fill="${SKIN}" stroke="#222" stroke-width="3"/>${hand(115,108,106,102)}</g>
       <rect class="torso" x="42" y="58" width="56" height="52" rx="12" fill="${p.shirt}" stroke="#222" stroke-width="3"/>
       ${headArt(kind, mood, 70, 34, 18, false)}
+      ${facePlaster(78,48,.62)}
     </g>
   </svg>`;
   const lie=`<svg class="fig pose-lie" viewBox="0 0 250 118" aria-label="${p.who}躺着" preserveAspectRatio="xMidYMax meet">
@@ -296,6 +333,7 @@ function bedPerson(kind, mood){
       <rect x="84" y="78" width="44" height="16" rx="8" fill="${SKIN}" stroke="#222" stroke-width="3"/>
       ${hand(132,86,132,98,12)}
       ${headArt(kind, mood, 52, 54, 20, true)}
+      ${facePlaster(66,66,.62)}
       <g class="cover">
         <rect x="150" y="48" width="92" height="42" rx="16" fill="#ffb3c7" stroke="#222" stroke-width="3"/>
         <path d="M162 60 h68" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".85"/>
@@ -313,17 +351,20 @@ const doctorEl=document.getElementById('doctor'), cord=document.getElementById('
 const actions=document.getElementById('actions'), rate=document.getElementById('rate'), queueEl=document.getElementById('queue');
 const numEl=document.getElementById('num'), scoreEl=document.getElementById('score'), hintEl=document.getElementById('hint'), ov=document.getElementById('ov');
 let day=[], idx=0, step='enter', score=0, okPick=false, over=false, lastStars=0, pending=0, tries=0, busy=false, queued=null;
-let timers=[], scopeRAF=0, lastMissAt=0;
+let givenMed=null, bandOn=false, doseBubble='伸手', doseHint='手伸出来，等药过来', doseGen=0;
+let timers=[], scopeRAF=0, flyRAF=0, lastMissAt=0;
 function later(fn,ms){const id=setTimeout(fn,ms); timers.push(id); return id}
-function clearTimers(){timers.forEach(clearTimeout); timers=[]; cancelAnimationFrame(scopeRAF); scopeRAF=0}
+function clearTimers(){timers.forEach(clearTimeout); timers=[]; cancelAnimationFrame(scopeRAF); scopeRAF=0; cancelAnimationFrame(flyRAF); flyRAF=0}
 function clearFx(){
   clinic.classList.remove('listening');
   cancelAnimationFrame(scopeRAF); scopeRAF=0;
   scope.classList.remove('pulse');
   clinic.querySelectorAll('.heart,.praise').forEach(n=>n.remove());
+  document.querySelectorAll('.flying-med').forEach(n=>n.remove());
 }
 function cur(){return day[idx]}
 function mood(){
+  if(step==='dose') return okPick?'happy':'calm';
   if(step==='leave'||(okPick&&(step==='rest'||step==='tuck'))) return 'happy';
   if(step==='rest'||step==='tuck') return 'calm';
   return 'wait';
@@ -334,6 +375,7 @@ function hintFor(){
   if(step==='listen') return '点大按钮，用听诊器听一听';
   if(step==='listening') return '听诊器贴在胸口，听一听心跳';
   if(step==='med') return tries?'再找一次，点一样的小图标':'点下面一样的小图标';
+  if(step==='dose') return doseHint;
   if(step==='rest') return '点「去休息」，送病人上床';
   if(step==='tuck') return '盖好小被子，睡一会儿';
   return '星星到啦，可以接下一位';
@@ -342,6 +384,7 @@ function renderPatient(){
   const p=cur(); if(!p) return;
   who.innerHTML=person(p.kind, mood());
   if(step==='enter'||step==='listen'||step==='listening') bubble.textContent='不舒服';
+  else if(step==='dose') bubble.textContent=doseBubble;
   else if(step==='tuck') bubble.textContent='呼…';
   else if(step==='leave') bubble.textContent=okPick?'👋 舒服啦':'💗 休息好啦';
   else bubble.innerHTML=ICONS[p.sym]+p.name;
@@ -360,6 +403,7 @@ function renderActions(){
   if(step==='enter'||step==='listen') actions.innerHTML=btn('🩺 听诊','data-act="listen"','#ffdeeb','wide');
   else if(step==='listening') actions.innerHTML=btn('正在听…','disabled','#d0ebff','wide');
   else if(step==='med') actions.innerHTML=cur().opts.map(m=>`<button class="btn med" type="button" data-act="med" data-med="${m.id}" style="background:${m.bg}">${ICONS[m.sym]}<span>${m.name}</span></button>`).join('');
+  else if(step==='dose') actions.innerHTML=btn(givenMed==='band'?'正在贴药…':givenMed==='cough'?'正在喝药…':'正在吃药…','disabled','#fff3bf','wide');
   else if(step==='rest') actions.innerHTML=btn('🛏️ 去休息','data-act="rest"','#d3f9d8','wide');
   else if(step==='tuck') actions.innerHTML=btn('盖被子…','disabled','#ffc9de','wide');
   else {
@@ -451,6 +495,7 @@ function heartBeats(n){
 }
 function enterPatient(){
   clearTimers(); clearFx();
+  doseGen++; givenMed=null; bandOn=false;
   step='enter'; busy=true; tries=0; okPick=false; pending=0; queued=null; lastMissAt=0;
   doctorEl.className='doctor';
   snapPatient('at-door');
@@ -492,6 +537,120 @@ function finishListen(){
   floatWord('听到啦');
   renderActions();
 }
+function sayDose(text, hint){
+  doseBubble=text; doseHint=hint;
+  bubble.textContent=text; hintEl.textContent=hint;
+}
+function liftArm(front){
+  const svg=who.querySelector('.fig.front');
+  const arm=svg&&svg.querySelector('.arm-r');
+  if(!arm) return;
+  if(front) svg.appendChild(arm);
+  else {const leg=svg.querySelector('.leg-l'); if(leg) svg.insertBefore(arm, leg)}
+}
+function putFlyer(id, pt){
+  document.querySelectorAll('.flying-med').forEach(n=>n.remove());
+  const el=document.createElement('div');
+  el.className='flying-med';
+  el.setAttribute('aria-hidden','true');
+  el.innerHTML=medSvg(id);
+  let x=pt&&pt.x, y=pt&&pt.y;
+  if(x==null){
+    const r=clinic.querySelector('.cabinet').getBoundingClientRect();
+    x=r.left+r.width*0.5; y=r.top+r.height*0.42;
+  }
+  el.style.left=x+'px'; el.style.top=y+'px';
+  el.style.transform='translate(-50%,-50%) scale(1)';
+  document.body.appendChild(el);
+  return el;
+}
+function flyToHand(el, gen, done){
+  const hand=who.querySelector('.arm-r .hand');
+  if(!hand||!el.isConnected){if(el) el.remove(); done(); return}
+  const hr=hand.getBoundingClientRect();
+  const sx=parseFloat(el.style.left), sy=parseFloat(el.style.top);
+  const ex=hr.left+hr.width/2, ey=hr.top+hr.height/2;
+  const t0=performance.now();
+  const dur=Math.max(1,T.fly);
+  const loop=now=>{
+    if(gen!==doseGen){el.remove(); return}
+    const k=Math.min(1,(now-t0)/dur);
+    const e=1-Math.pow(1-k,3);
+    const s=1-(1-0.46)*e;
+    el.style.left=(sx+(ex-sx)*e)+'px';
+    el.style.top=(sy+(ey-sy)*e)+'px';
+    el.style.transform=`translate(-50%,-50%) scale(${s})`;
+    if(k<1) flyRAF=requestAnimationFrame(loop);
+    else {flyRAF=0; done()}
+  };
+  flyRAF=requestAnimationFrame(loop);
+}
+function stickBandage(){
+  const svg=who.querySelector('.fig.front');
+  const spot=who.querySelector('.face-spot');
+  const held=who.querySelector('.med-held');
+  if(svg&&spot&&held){
+    held.setAttribute('transform','scale(0.68)');
+    spot.appendChild(held);
+    svg.appendChild(spot);
+  }
+  bandOn=true;
+  patientEl.classList.remove('applying','got-med');
+  sayDose('贴好啦','贴在脸上啦，可以去休息');
+  LTL.beep(784,.08,'triangle',.05);
+  later(()=>LTL.beep(988,.07,'triangle',.035),80);
+}
+function endDose(){
+  patientEl.classList.remove('dosing','got-med','taking','applying','swallowed');
+  document.querySelectorAll('.flying-med').forEach(n=>n.remove());
+  step='rest'; busy=false;
+  renderActions();
+}
+function beginDose(medId, fromPt){
+  const gen=++doseGen;
+  givenMed=medId;
+  const band=medId==='band', drink=medId==='cough';
+  step='dose'; busy=true;
+  doseBubble='伸手'; doseHint='手伸出来，等药过来';
+  renderActions();
+  liftArm(true);
+  patientEl.classList.add('dosing','got-med');
+  const flyer=putFlyer(medId, fromPt);
+  LTL.beep(880,.06,'triangle',.04);
+  const alive=()=>gen===doseGen;
+  later(()=>{
+    if(!alive()) return;
+    sayDose(band?'创可贴':drink?'药水':'药片','药飞到手上');
+    flyToHand(flyer, gen, ()=>{
+      if(!alive()){flyer.remove(); return}
+      const palm=who.querySelector('.palm');
+      if(palm) palm.innerHTML='<g transform="translate(0,4)">'+medShape(medId)+'</g>';
+      flyer.remove();
+      LTL.beep(698,.08,'sine',.05);
+      sayDose('在手上','看，药在手里');
+      later(()=>{
+        if(!alive()) return;
+        patientEl.classList.remove('got-med');
+        patientEl.classList.add(band?'applying':'taking');
+        sayDose(band?'贴一贴':drink?'喝药':'吃药', band?'自己贴到脸上':drink?'自己送到嘴边喝':'自己送到嘴边吃');
+        later(()=>{
+          if(!alive()) return;
+          if(band){stickBandage(); later(()=>{if(alive()) endDose()}, T.lower); return}
+          patientEl.classList.add('swallowed');
+          LTL.beep(523,.07,'sine',.05);
+          later(()=>LTL.beep(392,.08,'sine',.04),100);
+          sayDose(drink?'喝好啦':'吃好啦', drink?'喝下去啦':'吃下去啦');
+          later(()=>{
+            if(!alive()) return;
+            patientEl.classList.remove('taking','swallowed');
+            sayDose(drink?'喝好啦':'吃好啦','好啦，可以去休息');
+            later(()=>{if(alive()) endDose()}, T.lower);
+          }, T.gulp);
+        }, T.take);
+      }, T.holdMed);
+    });
+  }, T.give);
+}
 function pick(id){
   if(busy||step!=='med'||over) return;
   const good=id===cur().med;
@@ -509,7 +668,9 @@ function pick(id){
   if(!good && now-lastMissAt<450) return;
   okPick=good;
   pending=good?(tries?4:5):3;
-  step='rest';
+  const b=actions.querySelector(`[data-med="${id}"]`);
+  const rect=b?b.getBoundingClientRect():null;
+  const fromPt=rect?{x:rect.left+rect.width/2,y:rect.top+rect.height*0.42}:null;
   if(good){
     LTL.beep(659,.08,'triangle',.05);
     later(()=>LTL.beep(880,.09,'triangle',.05),100);
@@ -521,7 +682,7 @@ function pick(id){
     later(()=>LTL.beep(659,.12,'sine',.04),140);
     floatWord('抱抱');
   }
-  renderActions();
+  beginDose(id, fromPt);
 }
 function rest(){
   if(busy||step!=='rest'||over) return;
@@ -529,7 +690,7 @@ function rest(){
   renderActions();
   doctorEl.classList.remove('to-patient','using','walk');
   doctorEl.classList.add('walk','aside');
-  patientEl.classList.remove('to-chair','auscult');
+  patientEl.classList.remove('to-chair','auscult','dosing','got-med','taking','applying','swallowed');
   patientEl.classList.add('walking','to-bed');
   bubble.textContent='去床上';
   hintEl.textContent='走到床边';
@@ -633,7 +794,7 @@ document.getElementById('restart').onclick=start;
 document.getElementById('again').onclick=start;
 window.__DOC={
   start, listen, pick, rest, next:nextPatient,
-  get state(){const p=cur()||{}; return {idx,step,score,over,okPick,lastStars,tries,busy,pending,queued:!!queued,sym:p.sym,med:p.med,kind:p.kind,name:p.name,n:day.length}}
+  get state(){const p=cur()||{}; return {idx,step,score,over,okPick,lastStars,tries,busy,pending,queued:!!queued,sym:p.sym,med:p.med,kind:p.kind,name:p.name,n:day.length,given:givenMed,band:bandOn}}
 };
 start();
 </script></body></html>
