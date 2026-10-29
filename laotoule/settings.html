@@ -14,7 +14,7 @@
 </style></head><body>
 <div class="pagehead"><a class="btn" href="index.html">← 游戏列表</a><h1>⚙ 设置</h1></div>
 <main class="wrap set">
-<p class="note">这些选项存在这台设备上，<b>所有游戏一起生效</b>。当前版本 <b id="ver">v2.10</b> · <a href="changelog.html">查看更新记录</a></p>
+<p class="note">这些选项存在这台设备上。画面和按钮<b>所有游戏一起生效</b>。生肖那一项只影响生肖合成。当前版本 <b id="ver">v2.12</b> · <a href="changelog.html">查看更新记录</a></p>
 <section class="card">
 <h2>返回方式</h2>
 <p>二选一。角落小按钮不占高度；顶部标题栏一直显示返回、名字和设置。</p>
@@ -29,6 +29,11 @@
 <button class="btn switch" type="button" data-k="controls">🎛 操作按钮（悔棋、提示、重开这一类）</button>
 <button class="btn switch" type="button" data-k="dpad">⬆ 屏幕方向键</button>
 </section>
+<section class="card">
+<h2>生肖合成</h2>
+<p>大一点的生肖现在也会从上面掉下来。龙珠要不要直接掉，在这里自己选。默认是关。</p>
+<button class="btn switch" type="button" data-k="zodiacDragon">🐲 直接掉落龙珠</button>
+</section>
 <div class="controls">
 <button class="btn red" id="reset" type="button">恢复默认</button>
 <a class="btn green" href="index.html">完成</a>
@@ -38,6 +43,7 @@
 <li>玩法说明<b>收起</b>，点标题可以展开。</li>
 <li>分数、操作按钮、方向键都<b>显示</b>。</li>
 <li>蹬车、开火、跳跃这类必须按住的大按钮始终留在画面上，避免没法玩。</li>
+<li>生肖合成的「直接掉落龙珠」是<b>关</b>。打开后，一百次里大约有 4 次会掉出龙珠。</li>
 </ul></div>
 </main>
 <script src="common.js"></script>

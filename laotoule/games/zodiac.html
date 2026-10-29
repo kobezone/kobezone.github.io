@@ -82,8 +82,9 @@
 <div class="help"><h2>📖 怎么玩</h2><ul>
 <li>左右移动最上面那只生肖，<b>松手</b>、点「放下」或按<b>空格</b>，它就会掉下去。手机可以在框里左右拖。</li>
 <li>两只<b>一样</b>的生肖碰到一起，会合成下一只。顺序是：鼠2、牛4、虎8、兔16、龙32、蛇64、马128、羊256、猴512、鸡1024。两只鸡合成<b>龙珠</b>，分数是 <b>2048</b>，这局就赢，不用再合到 4096。</li>
-<li>掉下来的大多是鼠、牛、虎、兔。龙、蛇、马也会偶尔出现，越往后越少。羊、猴、鸡只能靠合成。</li>
-<li><b>龙珠</b>是一颗红金色的珠子，珠上画着一条中国龙（有龙身、龙须）。珠子个头和马差不多。两颗龙珠再碰到会合成一只更大的五彩蝴蝶。它先扇翅膀飞一圈，再飞出屏幕，然后放庆祝，再奖励一大笔分。首页关掉声音后，庆祝也不响。</li>
+<li>掉下来的还是鼠、牛、虎、兔比较多。龙、蛇、马更多一些，羊、猴、鸡也会偶尔直接掉下来，越大越少，这样合得快一些。</li>
+<li><b>龙珠</b>是一颗红金色的珠子，珠上画着一条中国龙（有龙身、龙须）。珠子个头和马差不多。两只鸡合成龙珠会庆祝。两颗龙珠再碰到会合成一只更大的五彩蝴蝶。它先扇翅膀飞一圈，再飞出屏幕，然后放庆祝，再奖励一大笔分。首页关掉声音后，庆祝也不响。</li>
+<li>龙珠默认不会从上面掉下来。想让它偶尔直接掉到场上，打开游戏列表里的「设置」，点「直接掉落龙珠」。打开后，一百次里大约有 4 次是龙珠。关掉就不会再直接掉龙珠。</li>
 <li>生肖停在顶上的<b>红线</b>上方大约 2 秒，这局就结束。</li>
 <li><b>锤子</b>一局最多 100 次，次数写在按钮上。点锤子，再点一只小动物，它会直接消失，并扣掉这只分数的两倍。扣完会变成负数就不能砸，按钮会变灰。砸掉以后上面的会掉下来，照旧合成。用完要等下一局。</li>
 </ul></div>
@@ -116,9 +117,11 @@ const Z=[
 ];
 // 马是第 6 级，半径 22+6*4.5=49。龙珠用同一半径。合出龙珠（2048）即胜利。
 const DRAGON_LV=10,DRAGON_R=22+6*4.5,DRAGON_V=2048,DRAGON_BONUS=30000;
-// 原先只掉 0–3：鼠 46%、牛 32%、虎 15%、兔 7%，32 及更大为 0。
-// 现在 100 份权重：鼠40 牛26 虎16 兔10 龙4 蛇3 马1。羊以后仍只能合成。
-const DROP_W=[40,26,16,10,4,3,1];
+// 100 份：鼠28 牛18 虎14 兔12 龙8 蛇6 马5 羊4 猴3 鸡2。
+// v2.10 及以前是鼠40 牛26 虎16 兔10 龙4 蛇3 马1，羊以后不会掉。
+// 龙珠不在这张表里。设置「直接掉落龙珠」打开后，另有 4% 直接掉龙珠。
+const DROP_W=[28,18,14,12,8,6,5,4,3,2];
+const DRAGON_DROP_P=0.04;
 function radiusFor(level){return level>=DRAGON_LV?DRAGON_R:22+level*4.5}
 function info(level){return level>=DRAGON_LV?{n:'龙珠',v:DRAGON_V,c:'#e03131'}:Z[level]}
 
@@ -132,10 +135,21 @@ let acc=0,last=performance.now(),celebrateOn=false,bits=[],cheer=null,celeT=0,fa
 const keys={};
 const cele=document.getElementById('cele'),fx=document.getElementById('fx'),celeCv=document.getElementById('celeCv');
 
+function dragonDropOn(){
+  try{return !!(window.LTL&&LTL.getSettings&&LTL.getSettings().zodiacDragon)}catch(e){return false}
+}
 function randomLow(){
-  let r=Math.random()*DROP_W.reduce((a,b)=>a+b,0);
+  if(dragonDropOn()&&Math.random()<DRAGON_DROP_P)return DRAGON_LV;
+  let total=0;
+  for(let i=0;i<DROP_W.length;i++)total+=DROP_W[i];
+  let r=Math.random()*total;
   for(let i=0;i<DROP_W.length;i++){r-=DROP_W[i];if(r<0)return i}
   return 0;
+}
+function applyDragonSetting(){
+  if(dragonDropOn())return;
+  if(current>=DRAGON_LV)current=randomLow();
+  if(next>=DRAGON_LV)next=randomLow();
 }
 function makeBody(level,x,y){
   const r=radiusFor(level);
@@ -202,6 +216,7 @@ function smashAt(x,y){
 function drop(){
   if(hammerOn){LTL.toast('先点一只小动物，或再点锤子取消');return}
   if(over||celebrateOn||cooling>0)return;
+  applyDragonSetting();
   clampAim();
   const r=radiusFor(current),y=r+6;
   if(hitsAny(aimX,y,r)){LTL.toast('这里放不下，往旁边挪挪');return}
@@ -506,6 +521,7 @@ function butterflyPose(b){
   };
 }
 function update(dt){
+  if(!butterfly&&!over&&!celebrateOn)applyDragonSetting();
   if(butterfly){
     butterfly.t+=dt;
     const pose=butterflyPose(butterfly);
@@ -974,6 +990,8 @@ addEventListener('keydown',e=>{
 addEventListener('keyup',e=>{keys[e.key]=false});
 new ResizeObserver(resize).observe(stage);
 bestEl.textContent=LTL.getBest('zodiac');
+window.addEventListener('pageshow',applyDragonSetting);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')applyDragonSetting()});
 restart(true);
 resize();
 requestAnimationFrame(frame);
@@ -983,7 +1001,7 @@ window.__ZODIAC={
   radius:radiusFor,world:()=>({w:WORLD_W,h:WORLD_H,danger:DANGER_Y}),
   setAim(x){aimX=x;clampAim()},setCurrent(level){current=level},setNext(level){next=level},
   drop,restart(force){restart(!!force)},
-  randomLow,weights:DROP_W.slice(),
+  randomLow,weights:DROP_W.slice(),dragonDropP:DRAGON_DROP_P,dragonDropOn,
   celebrating(){return celebrateOn},
   get flying(){return butterfly?{x:butterfly.x,y:butterfly.y,t:butterfly.t}:null},
   celeTitle(){return document.getElementById('celet').textContent},
