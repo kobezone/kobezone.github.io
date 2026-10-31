@@ -15,21 +15,22 @@
       const o=C.createOscillator(),g=C.createGain();o.type=type;o.frequency.value=freq;g.gain.value=vol;
       o.connect(g);g.connect(C.destination);o.start();g.gain.exponentialRampToValueAtTime(0.0001,C.currentTime+dur);o.stop(C.currentTime+dur+0.02)}catch(e){}},
     // 滑动手势
-    version:'2.11',
-    defaults:{nav:'fab',help:false,stats:true,controls:true,dpad:true},
+    version:'2.12',
+    defaults:{nav:'fab',help:false,stats:true,controls:true,dpad:true,zodiacDragon:false},
     getSettings(){
-      const s={nav:'fab',help:false,stats:true,controls:true,dpad:true};
+      const s={nav:'fab',help:false,stats:true,controls:true,dpad:true,zodiacDragon:false};
       try{
         const raw=localStorage.getItem(KEY+'settings');
         if(raw){const o=JSON.parse(raw);
           if(o.nav==='bar'||o.nav==='fab')s.nav=o.nav;
-          ['help','stats','controls','dpad'].forEach(k=>{if(typeof o[k]==='boolean')s[k]=o[k]});
+          ['help','stats','controls','dpad','zodiacDragon'].forEach(k=>{if(typeof o[k]==='boolean')s[k]=o[k]});
           return s}
         if(localStorage.getItem(KEY+'topbar')==='show')s.nav='bar';
       }catch(e){}
       return s},
     saveSettings(s){try{localStorage.setItem(KEY+'settings',JSON.stringify({
-      nav:s.nav==='bar'?'bar':'fab', help:!!s.help, stats:!!s.stats, controls:!!s.controls, dpad:!!s.dpad
+      nav:s.nav==='bar'?'bar':'fab', help:!!s.help, stats:!!s.stats, controls:!!s.controls, dpad:!!s.dpad,
+      zodiacDragon:!!s.zodiacDragon
     }))}catch(e){}},
     onSwipe(el,cb,min=24){let sx,sy,active=false;
       el.addEventListener('touchstart',e=>{const t=e.touches[0];sx=t.clientX;sy=t.clientY;active=true},{passive:true});
