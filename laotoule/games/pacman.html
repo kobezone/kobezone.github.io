@@ -2,59 +2,74 @@
 <title>吃豆豆 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#121a3a">
 <style>
 html,body{height:100%;background:#070b18}
-body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:
+body{height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:
   radial-gradient(120% 70% at 50% -10%, #24356e 0%, #10183a 42%, #070b18 100%)}
 .topbar{background:#1a274f}
-.wrap{flex:1;display:flex;flex-direction:column;min-height:0;width:100%;max-width:640px;margin:0 auto;padding:6px 8px calc(8px + env(safe-area-inset-bottom))}
-.stats{margin:2px 0 4px;gap:6px}
-body:not(.ltl-showbar) .stats,body.ltl-need-menu .stats{padding-right:54px}
-.stat{background:#141c3c;color:#fff8ea;border-color:#31457a;box-shadow:0 3px 0 #070d22;min-width:0;flex:1;padding:2px 4px}
-.stat b{font-size:1.25rem}
-.stat span{color:#c5d2f2;font-size:.78rem}
-.toggles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 6px}
-.toggles .btn{min-height:48px;padding:6px 12px;background:#24325f;color:#f5f8ff;border-color:#10182e;box-shadow:0 3px 0 #070d22}
-.toggles .btn.on{background:#ffd43b;color:#222;border-color:#222}
-.minibar{text-align:center;font-weight:800;color:#d7e4ff;font-size:1.08rem;margin:0 0 4px}
+.wrap{flex:1;display:flex;flex-direction:column;min-height:0;width:100%;max-width:none;margin:0;padding:4px max(4px,env(safe-area-inset-right)) calc(4px + env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));overflow:hidden}
+body.ltl-show-help .wrap{overflow:auto}
+.hud{display:flex;align-items:stretch;gap:6px;margin:0 auto 4px;flex:0 0 auto;min-width:0;width:100%;max-width:560px}
+body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
+.stats{margin:0;gap:4px;flex:1;min-width:0;flex-wrap:nowrap}
+.stat{background:#141c3c;color:#fff8ea;border-color:#31457a;box-shadow:0 3px 0 #070d22;min-width:0;flex:1;padding:1px 2px}
+.stat b{font-size:1.2rem}
+.stat span{color:#c5d2f2;font-size:.72rem}
+#gear{flex:none;align-self:stretch;min-height:44px;padding:2px 10px;background:#24325f;color:#f5f8ff;border-color:#10182e;box-shadow:0 3px 0 #070d22;font-size:1rem}
+#gear[aria-expanded="true"]{background:#ffd43b;color:#222;border-color:#222}
+body.ltl-hide-controls #gear{display:none !important}
+.minibar{flex:1;margin:0;align-self:center;text-align:left;font-weight:800;color:#d7e4ff;font-size:1.05rem;padding:0 4px}
 .minibar[hidden]{display:none !important}
-.stage{flex:1;min-height:180px;display:flex;align-items:center;justify-content:center}
-#box{position:relative;width:min(96vw,520px);aspect-ratio:15/17;border-radius:18px;overflow:hidden;touch-action:none;
-  box-shadow:0 0 0 3px #24386e, 0 10px 30px rgba(40,90,180,.28);background:#0c1430}
-#cv{width:100%;height:100%;display:block}
+.stage{flex:1 1 auto;min-height:0;width:100%;display:flex;align-items:center;justify-content:center}
+body.ltl-show-help .stage{flex:0 0 auto;height:min(62dvh,100%);min-height:220px}
+#box{position:relative;width:min(100%,calc((100dvh - 200px) * 15 / 17));aspect-ratio:15/17;max-height:100%;border-radius:14px;overflow:hidden;touch-action:none;
+  box-shadow:0 0 0 3px #24386e, 0 8px 22px rgba(40,90,180,.28);background:#0c1430}
+#cv{width:100%;height:100%;display:block;touch-action:none}
 .overlay{background:rgba(7,11,26,.78);color:#fff6df}
 #ovt{font-size:1.4rem;line-height:1.3}
 .overlay .sub{display:block;margin-top:4px;font-size:.95rem;font-weight:700;color:#ffe08a;line-height:1.35}
-.dpad{grid-template-columns:repeat(3,minmax(72px,22vw));grid-template-rows:repeat(3,minmax(64px,16vw));gap:10px;margin:8px auto 4px;touch-action:none}
-.dpad .btn{min-height:0;height:100%;font-size:1.7rem;padding:0}
-.dpad #pause{font-size:1.05rem;background:#ffe08a}
-.help{background:#121a38;color:#e7eeff;border-color:#8eb6ff}
+.dpad{flex:0 0 auto;width:max-content;max-width:100%;grid-template-columns:repeat(3,minmax(68px,min(88px,20vw)));grid-template-rows:repeat(3,minmax(56px,min(72px,10vw)));gap:8px;margin:4px auto 2px;touch-action:none}
+.dpad .btn{min-height:0;height:100%;font-size:1.65rem;padding:0}
+.dpad #pause{font-size:1rem;background:#ffe08a}
+.help{background:#121a38;color:#e7eeff;border-color:#8eb6ff;margin:4px 0 0;padding:6px 12px}
 .help h2{color:#ffe08a}
 body.pac-hide-chrome .stats{display:none !important}
-body.ltl-hide-dpad .wrap{padding-bottom:calc(168px + env(safe-area-inset-bottom))}
-@media (max-height:760px){
-  .dpad{grid-template-columns:repeat(3,minmax(64px,20vw));grid-template-rows:repeat(3,minmax(56px,13vw));gap:7px}
-  .toggles .btn{min-height:46px;padding:4px 10px}
-  .stat{padding:2px 10px}
-  .stat b{font-size:1.25rem}
+body:not(.ltl-show-help) .wrap>.help{display:none !important}
+body.ltl-hide-dpad .wrap{padding-bottom:calc(210px + env(safe-area-inset-bottom))}
+.shade{position:fixed;inset:0;z-index:64;background:rgba(4,8,20,.45)}
+.shade[hidden]{display:none !important}
+.drawer{position:fixed;z-index:65;left:0;right:0;bottom:max(8px,env(safe-area-inset-bottom));width:min(520px,calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right)));margin-inline:auto;max-height:min(78dvh,560px);overflow:auto;background:#141c3c;color:#f5f8ff;border:3px solid #ffe08a;border-radius:18px;padding:10px 12px 14px;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.drawer[hidden]{display:none !important}
+.drawer-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 4px}
+.drawer-bar h2{margin:0;font-size:1.25rem;color:#ffe08a}
+.drawer-bar .btn{min-height:48px;padding:4px 16px;background:#ffd43b;color:#222}
+.drawer .bestline{margin:0 0 4px;font-weight:800;color:#fff6d0;font-size:1.05rem}
+.drawer .bestline b{font-size:1.35rem}
+.drawer .lab{margin:8px 0 2px;font-weight:800;font-size:1.05rem;color:#ffe08a}
+.drawer .toggles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 4px}
+.drawer .toggles .btn{min-height:52px;padding:6px 12px;background:#24325f;color:#f5f8ff;border-color:#10182e;box-shadow:0 3px 0 #070d22}
+.drawer .toggles .btn.on{background:#ffd43b;color:#222;border-color:#222}
+.drawer .hint{margin:0 0 6px;font-size:.95rem;color:#c5d2f2;font-weight:700}
+.drawer .howto{margin-top:8px;background:#101832;border:2px dashed #8eb6ff;border-radius:14px;padding:8px 12px}
+.drawer .howto h3{margin:0 0 4px;color:#ffe08a;font-size:1.1rem}
+.drawer .howto ul{margin:.2em 0;padding-left:1.2em}
+.drawer .howto li{margin:.25em 0}
+@media (max-height:700px){
+  .hud{margin:0 0 2px}
+  .dpad{grid-template-columns:repeat(3,minmax(60px,min(80px,18vw)));grid-template-rows:repeat(3,minmax(48px,min(60px,11vw)));gap:6px;margin:2px auto}
+  .stat b{font-size:1.05rem}
+  #gear{min-height:40px;padding:2px 8px}
 }
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🟡 吃豆豆</h1></div>
 <div class="wrap">
-<div class="stats" id="stats">
-  <div class="stat"><span>分数</span><b id="score">0</b></div>
-  <div class="stat"><span>最高分</span><b id="best">0</b></div>
-  <div class="stat"><span>生命</span><b id="lives">3</b></div>
-  <div class="stat"><span>关卡</span><b id="level">1</b></div>
+<div class="hud">
+  <button class="btn" type="button" id="gear" aria-expanded="false" aria-controls="drawer">⚙ 设置</button>
+  <div class="stats" id="stats">
+    <div class="stat"><span>分数</span><b id="score">0</b></div>
+    <div class="stat"><span>生命</span><b id="lives">3</b></div>
+    <div class="stat"><span>关卡</span><b id="level">1</b></div>
+  </div>
+  <div class="minibar" id="minibar" hidden>第 1 关 · 生命 3</div>
 </div>
-<div class="toggles controls">
-  <button class="btn" type="button" data-sp="slow">🐢 慢</button>
-  <button class="btn" type="button" data-sp="normal">🚶 中</button>
-  <button class="btn" type="button" data-sp="fast">🐇 快</button>
-  <button class="btn" type="button" data-df="simple">😊 简单</button>
-  <button class="btn" type="button" data-df="classic">👻 经典</button>
-  <button class="btn" type="button" id="chrome">分数：开</button>
-  <button class="btn" type="button" id="restart">🔄 重新开始</button>
-</div>
-<div class="minibar" id="minibar" hidden>第 1 关 · 生命 3</div>
 <div class="stage" id="stage">
   <div id="box">
     <canvas id="cv" width="480" height="544" aria-label="吃豆豆迷宫"></canvas>
@@ -72,9 +87,42 @@ body.ltl-hide-dpad .wrap{padding-bottom:calc(168px + env(safe-area-inset-bottom)
 <li>用<b>方向键</b>或 WASD，在迷宫上<b>滑动</b>，也可以点下面的大箭头。</li>
 <li>把<b>豆子吃光</b>就过关，下一关会稍快一点。四角的<b>大豆子</b>会让幽灵变蓝，这时可以吃掉它们，它们会先回家再出来。</li>
 <li>碰到没变蓝的幽灵会少一条命，开始有 <b>3</b> 条命。路上的水果是加分的。</li>
-<li><b>慢、中、快</b>调速度。<b>简单</b>的幽灵比较慢，也爱闲逛；<b>经典</b>会追着你跑。分数条可以关掉，少挡画面。</li>
+<li>速度、幽灵和<b>无敌时长</b>在左上角<b>设置</b>里，点开再选。无敌可以选 3 秒、4 秒或 5 秒。分数条也可以在设置里关掉。</li>
 <li>按<b>空格</b>暂停。声音跟着大厅里的静音开关。</li>
 </ul></div>
+</div>
+<div class="shade" id="shade" hidden></div>
+<div class="drawer" id="drawer" hidden role="dialog" aria-modal="true" aria-label="设置">
+  <div class="drawer-bar"><h2>设置</h2><button class="btn" type="button" id="drawerClose">收起</button></div>
+  <p class="bestline">最高分 <b id="best">0</b></p>
+  <p class="lab">速度</p>
+  <div class="toggles controls">
+    <button class="btn" type="button" data-sp="slow">🐢 慢</button>
+    <button class="btn" type="button" data-sp="normal">🚶 中</button>
+    <button class="btn" type="button" data-sp="fast">🐇 快</button>
+  </div>
+  <p class="lab">幽灵</p>
+  <div class="toggles controls">
+    <button class="btn" type="button" data-df="simple">😊 简单</button>
+    <button class="btn" type="button" data-df="classic">👻 经典</button>
+  </div>
+  <p class="lab" id="powlab">无敌时长</p>
+  <div class="toggles controls" role="group" aria-labelledby="powlab">
+    <button class="btn" type="button" data-pw="3">无敌 3 秒</button>
+    <button class="btn" type="button" data-pw="4">无敌 4 秒</button>
+    <button class="btn" type="button" data-pw="5">无敌 5 秒</button>
+  </div>
+  <p class="hint">吃到四角的大豆子后，幽灵变蓝、可以吃掉的时间，就是这里选的秒数。</p>
+  <div class="toggles controls">
+    <button class="btn" type="button" id="chrome">分数：开</button>
+    <button class="btn" type="button" id="restart">🔄 重新开始</button>
+  </div>
+  <div class="howto"><h3>📖 怎么玩</h3><ul>
+    <li>用<b>方向键</b>或 WASD，在迷宫上<b>滑动</b>，也可以点下面的大箭头。</li>
+    <li>把<b>豆子吃光</b>就过关，下一关会稍快一点。四角的<b>大豆子</b>会让幽灵变蓝，这时可以吃掉它们，它们会先回家再出来。</li>
+    <li>碰到没变蓝的幽灵会少一条命，开始有 <b>3</b> 条命。路上的水果是加分的。</li>
+    <li><b>简单</b>的幽灵比较慢，也爱闲逛；<b>经典</b>会追着你跑。按<b>空格</b>暂停。声音跟着大厅里的静音开关。</li>
+  </ul></div>
 </div>
 <script src="../common.js"></script>
 <script>
@@ -109,7 +157,7 @@ let grid,dotsLeft,totalDots,dotsEaten;
 let pac,ghosts,score,lives,level,state,paused;
 let frightLeft,frightChain,phase,modeIndex,modeLeft;
 let fruit,fruitQueued,parts,pops,anim,dieT,clearT,armT,banner,bestAtStart;
-let speedKey,diffKey,hideChrome,reduced,lastTs;
+let speedKey,diffKey,hideChrome,powerSec,reduced,lastTs,pausedForDrawer;
 let wallCanvas,pelletSprite;
 
 const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
@@ -119,6 +167,7 @@ const livesEl=document.getElementById('lives'),levelEl=document.getElementById('
 const ov=document.getElementById('ov'),ovt=document.getElementById('ovt'),goBtn=document.getElementById('go');
 const pauseBtn=document.getElementById('pause'),chromeBtn=document.getElementById('chrome'),minibar=document.getElementById('minibar');
 const stageEl=document.getElementById('stage'),boxEl=document.getElementById('box');
+const gearBtn=document.getElementById('gear'),drawer=document.getElementById('drawer'),shade=document.getElementById('shade');
 
 function parseMap(){
   if(MAP.length!==ROWS) throw new Error('迷宫行数不对');
@@ -155,10 +204,12 @@ function schedule(){
   const ch=simple?8:20;
   return [['scatter',sc],['chase',ch],['scatter',sc],['chase',ch],['scatter',simple?5:4],['chase',1e9]];
 }
-function frightDur(){
-  const b=Math.max(2.1,6.5-(level-1)*0.45);
-  return diffKey==='simple'?b*1.45:b;
+function readPower(){
+  const raw=localStorage.getItem('laotoule:pacmanPower');
+  if(raw==='3'||raw==='4'||raw==='5') return Number(raw);
+  return 4;
 }
+function frightDur(){return powerSec}
 function placeActors(){
   pac={kind:'pac',x:7,y:14,dir:'left',want:null};
   const slow=diffKey==='simple';
@@ -705,7 +756,7 @@ function drawGhost(g,i){
       ghostPath(r);
       let col=g.color, top=g.top;
       if(fright){
-        const warn=frightLeft>0&&frightLeft<2;
+        const warn=frightLeft>0&&frightLeft<Math.min(1.2,powerSec*0.34);
         const k=warn?(0.5+0.5*Math.sin(anim*7+i)):0;
         col=k>0.5?'#e7f1ff':'#9ebeff';
         top=k>0.5?'#ffffff':'#d5e6ff';
@@ -860,16 +911,23 @@ function draw(){
 function fit(){
   const sw=stageEl.clientWidth, sh=stageEl.clientHeight;
   if(sw<40||sh<40) return;
-  let w=Math.min(sw, sh*COLS/ROWS);
-  w=Math.max(140,Math.floor(w));
-  const h=Math.floor(w*ROWS/COLS);
-  if(h>sh){w=Math.floor(sh*COLS/ROWS)}
+  const aw=Math.max(40,sw-4), ah=Math.max(40,sh-4);
+  let w=Math.min(aw, ah*COLS/ROWS);
+  w=Math.floor(w);
+  let h=Math.floor(w*ROWS/COLS);
+  if(h>ah){h=Math.floor(ah); w=Math.floor(h*COLS/ROWS); h=Math.floor(w*ROWS/COLS)}
+  if(w<40||h<40) return;
   boxEl.style.width=w+'px';
-  boxEl.style.height=Math.floor(w*ROWS/COLS)+'px';
+  boxEl.style.height=h+'px';
 }
 function paintToggles(){
   document.querySelectorAll('[data-sp]').forEach(b=>b.classList.toggle('on',b.dataset.sp===speedKey));
   document.querySelectorAll('[data-df]').forEach(b=>b.classList.toggle('on',b.dataset.df===diffKey));
+  document.querySelectorAll('[data-pw]').forEach(b=>{
+    const on=Number(b.dataset.pw)===powerSec;
+    b.classList.toggle('on',on);
+    b.setAttribute('aria-pressed',on?'true':'false');
+  });
   chromeBtn.classList.toggle('on',!hideChrome);
   chromeBtn.textContent=hideChrome?'分数：关':'分数：开';
   chromeBtn.setAttribute('aria-pressed',hideChrome?'false':'true');
@@ -882,7 +940,22 @@ function loadSettings(){
   diffKey=localStorage.getItem('laotoule:pacmanGhost');
   if(diffKey!=='simple'&&diffKey!=='classic') diffKey='simple';
   hideChrome=localStorage.getItem('laotoule:pacmanChrome')==='1';
+  powerSec=readPower();
   try{reduced=matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){reduced=false}
+}
+function setDrawer(open){
+  drawer.hidden=!open;
+  shade.hidden=!open;
+  gearBtn.setAttribute('aria-expanded',open?'true':'false');
+  if(open){
+    if(!paused&&(state==='play'||state==='arm')){
+      paused=true; pausedForDrawer=true;
+      pauseBtn.textContent='继续';
+    }
+  }else if(pausedForDrawer&&paused){
+    paused=false; pausedForDrawer=false;
+    pauseBtn.textContent='暂停';
+  }else pausedForDrawer=false;
 }
 function bind(){
   document.querySelectorAll('[data-sp]').forEach(b=>b.addEventListener('click',()=>{
@@ -891,13 +964,21 @@ function bind(){
   document.querySelectorAll('[data-df]').forEach(b=>b.addEventListener('click',()=>{
     diffKey=b.dataset.df; localStorage.setItem('laotoule:pacmanGhost',diffKey); paintToggles();
   }));
+  document.querySelectorAll('[data-pw]').forEach(b=>b.addEventListener('click',()=>{
+    powerSec=Number(b.dataset.pw);
+    localStorage.setItem('laotoule:pacmanPower',String(powerSec));
+    paintToggles();
+  }));
   chromeBtn.addEventListener('click',()=>{
     hideChrome=!hideChrome;
     localStorage.setItem('laotoule:pacmanChrome',hideChrome?'1':'0');
     paintToggles();
     requestAnimationFrame(fit);
   });
-  document.getElementById('restart').addEventListener('click',start);
+  gearBtn.addEventListener('click',()=>setDrawer(drawer.hidden));
+  document.getElementById('drawerClose').addEventListener('click',()=>setDrawer(false));
+  shade.addEventListener('click',()=>setDrawer(false));
+  document.getElementById('restart').addEventListener('click',()=>{setDrawer(false); start()});
   goBtn.addEventListener('click',start);
   pauseBtn.addEventListener('click',()=>{
     if(state==='ready'||state==='over') start();
@@ -907,6 +988,11 @@ function bind(){
   const km={ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right',w:'up',a:'left',s:'down',d:'right'};
   addEventListener('keydown',e=>{
     const k=km[e.key]||km[e.key.toLowerCase()];
+    if(!drawer.hidden){
+      if(e.key==='Escape'||k||e.key===' '||e.key==='Enter') e.preventDefault();
+      if(e.key==='Escape') setDrawer(false);
+      return;
+    }
     if(k){e.preventDefault(); setDir(k); return}
     if(e.key===' '||e.key==='Enter'){
       e.preventDefault();
@@ -923,7 +1009,7 @@ function bind(){
 }
 function boot(){
   loadSettings();
-  score=0; lives=3; level=1; state='ready'; paused=false; anim=0; lastTs=0;
+  score=0; lives=3; level=1; state='ready'; paused=false; pausedForDrawer=false; anim=0; lastTs=0;
   parts=[]; pops=[]; banner='';
   bind();
   resetBoard();
@@ -931,6 +1017,7 @@ function boot(){
   upd();
   showReady();
   fit();
+  if(window.ResizeObserver) new ResizeObserver(()=>fit()).observe(stageEl);
   draw();
   if(location.search.indexOf('selftest=1')>=0){
     let report;
@@ -951,11 +1038,22 @@ function frame(ts){
 }
 function runSelfTest(){
   const prev=localStorage.getItem('laotoule:pacman');
+  const prevPower=localStorage.getItem('laotoule:pacmanPower');
   const errors=[];
   const assert=(c,m)=>{if(!c) errors.push(m)};
   try{
     localStorage.removeItem('laotoule:pacman');
-    speedKey='slow'; diffKey='simple'; reduced=false;
+    speedKey='slow'; diffKey='simple'; reduced=false; powerSec=4;
+    assert(drawer.hidden,'设置没有收起');
+    localStorage.removeItem('laotoule:pacmanPower');
+    assert(readPower()===4,'无敌时长默认不是 4 秒');
+    document.querySelector('[data-pw="5"]').click();
+    assert(powerSec===5&&localStorage.getItem('laotoule:pacmanPower')==='5','无敌 5 秒没记住');
+    document.querySelector('[data-pw="3"]').click();
+    assert(powerSec===3&&localStorage.getItem('laotoule:pacmanPower')==='3','无敌 3 秒没记住');
+    localStorage.setItem('laotoule:pacmanPower','9');
+    assert(readPower()===4,'无敌时长越界');
+    powerSec=4;
     score=0; lives=3; level=1; bestAtStart=0;
     resetBoard();
     assert(totalDots>70,'豆子太少 '+totalDots);
@@ -1020,9 +1118,17 @@ function runSelfTest(){
     pac.x=px; pac.y=py; pac.dir='left'; pac.want=null;
     ghosts.forEach(g=>{g.mode='house'; g.release=1e9});
     ghosts[0].mode='chase'; ghosts[0].x=px; ghosts[0].y=py+3; ghosts[0].dir='up';
+    powerSec=5;
     update(1/60);
-    assert(frightLeft>0,'大豆子没有让幽灵变蓝');
+    assert(Math.abs(frightLeft-(5-1/60))<0.03,'无敌时长不是 5 秒 '+frightLeft.toFixed(3));
     assert(ghosts[0].mode==='frightened','红幽灵没有害怕');
+    tickModes(5);
+    assert(frightLeft===0,'无敌没有按秒数结束');
+    assert(ghosts[0].mode!=='frightened','时间到了还在害怕');
+    ghosts[0].mode='frightened';
+    powerSec=3;
+    consumePower(px,py);
+    assert(frightLeft===3,'再吃大豆子没有用 3 秒');
     ghosts[0].x=pac.x; ghosts[0].y=pac.y;
     const sc=score;
     update(1/60);
@@ -1060,6 +1166,9 @@ function runSelfTest(){
   }finally{
     if(prev===null) localStorage.removeItem('laotoule:pacman');
     else localStorage.setItem('laotoule:pacman',prev);
+    if(prevPower===null) localStorage.removeItem('laotoule:pacmanPower');
+    else localStorage.setItem('laotoule:pacmanPower',prevPower);
+    powerSec=readPower();
   }
 }
 boot();
