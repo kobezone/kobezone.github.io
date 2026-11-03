@@ -26,7 +26,7 @@ body.ltl-show-help .stage{flex:0 0 auto;height:min(62dvh,100%);min-height:220px}
 .overlay{background:rgba(7,11,26,.78);color:#fff6df}
 #ovt{font-size:1.4rem;line-height:1.3}
 .overlay .sub{display:block;margin-top:4px;font-size:.95rem;font-weight:700;color:#ffe08a;line-height:1.35}
-.dpad{flex:0 0 auto;width:max-content;max-width:100%;grid-template-columns:repeat(3,minmax(68px,min(88px,20vw)));grid-template-rows:repeat(3,minmax(56px,min(72px,10vw)));gap:8px;margin:4px auto 2px;touch-action:none}
+.dpad{flex:0 0 auto;width:max-content;max-width:100%;grid-template-columns:repeat(3,minmax(76px,min(96px,22vw)));grid-template-rows:repeat(3,minmax(60px,min(78px,12vw)));gap:8px;margin:4px auto 2px;touch-action:none}
 .dpad .btn{min-height:0;height:100%;font-size:1.65rem;padding:0}
 .dpad #pause{font-size:1rem;background:#ffe08a}
 .help{background:#121a38;color:#e7eeff;border-color:#8eb6ff;margin:4px 0 0;padding:6px 12px}
@@ -47,6 +47,8 @@ body.ltl-hide-dpad .wrap{padding-bottom:calc(210px + env(safe-area-inset-bottom)
 .drawer .toggles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 4px}
 .drawer .toggles .btn{min-height:52px;padding:6px 12px;background:#24325f;color:#f5f8ff;border-color:#10182e;box-shadow:0 3px 0 #070d22}
 .drawer .toggles .btn.on{background:#ffd43b;color:#222;border-color:#222}
+.drawer .pow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.drawer .pow .btn{min-height:56px;font-size:1.2rem}
 .drawer .hint{margin:0 0 6px;font-size:.95rem;color:#c5d2f2;font-weight:700}
 .drawer .howto{margin-top:8px;background:#101832;border:2px dashed #8eb6ff;border-radius:14px;padding:8px 12px}
 .drawer .howto h3{margin:0 0 4px;color:#ffe08a;font-size:1.1rem}
@@ -87,7 +89,7 @@ body.ltl-hide-dpad .wrap{padding-bottom:calc(210px + env(safe-area-inset-bottom)
 <li>用<b>方向键</b>或 WASD，在迷宫上<b>滑动</b>，也可以点下面的大箭头。</li>
 <li>把<b>豆子吃光</b>就过关，下一关会稍快一点。四角的<b>大豆子</b>会让幽灵变蓝，这时可以吃掉它们，它们会先回家再出来。</li>
 <li>碰到没变蓝的幽灵会少一条命，开始有 <b>3</b> 条命。路上的水果是加分的。</li>
-<li>速度、幽灵和<b>无敌时长</b>在左上角<b>设置</b>里，点开再选。无敌可以选 3 秒、4 秒或 5 秒。分数条也可以在设置里关掉。</li>
+<li>速度、幽灵和<b>无敌时长</b>在左上角<b>设置</b>里，点开再选。无敌可以选 <b>5 秒、10 秒、15 秒或 20 秒</b>，一开始是 <b>10 秒</b>。分数条也可以在设置里关掉。</li>
 <li>按<b>空格</b>暂停。声音跟着大厅里的静音开关。</li>
 </ul></div>
 </div>
@@ -107,12 +109,13 @@ body.ltl-hide-dpad .wrap{padding-bottom:calc(210px + env(safe-area-inset-bottom)
     <button class="btn" type="button" data-df="classic">👻 经典</button>
   </div>
   <p class="lab" id="powlab">无敌时长</p>
-  <div class="toggles controls" role="group" aria-labelledby="powlab">
-    <button class="btn" type="button" data-pw="3">无敌 3 秒</button>
-    <button class="btn" type="button" data-pw="4">无敌 4 秒</button>
-    <button class="btn" type="button" data-pw="5">无敌 5 秒</button>
+  <div class="toggles controls pow" role="group" aria-labelledby="powlab">
+    <button class="btn" type="button" data-pw="5">5 秒</button>
+    <button class="btn" type="button" data-pw="10">10 秒</button>
+    <button class="btn" type="button" data-pw="15">15 秒</button>
+    <button class="btn" type="button" data-pw="20">20 秒</button>
   </div>
-  <p class="hint">吃到四角的大豆子后，幽灵变蓝、可以吃掉的时间，就是这里选的秒数。</p>
+  <p class="hint">吃到四角的大豆子后，幽灵变蓝、可以吃掉。给小朋友可以选长一点，一开始是 10 秒。</p>
   <div class="toggles controls">
     <button class="btn" type="button" id="chrome">分数：开</button>
     <button class="btn" type="button" id="restart">🔄 重新开始</button>
@@ -121,7 +124,7 @@ body.ltl-hide-dpad .wrap{padding-bottom:calc(210px + env(safe-area-inset-bottom)
     <li>用<b>方向键</b>或 WASD，在迷宫上<b>滑动</b>，也可以点下面的大箭头。</li>
     <li>把<b>豆子吃光</b>就过关，下一关会稍快一点。四角的<b>大豆子</b>会让幽灵变蓝，这时可以吃掉它们，它们会先回家再出来。</li>
     <li>碰到没变蓝的幽灵会少一条命，开始有 <b>3</b> 条命。路上的水果是加分的。</li>
-    <li><b>简单</b>的幽灵比较慢，也爱闲逛；<b>经典</b>会追着你跑。按<b>空格</b>暂停。声音跟着大厅里的静音开关。</li>
+    <li><b>简单</b>的幽灵比较慢，也爱闲逛；<b>经典</b>会追着你跑。无敌可以选 5 秒、10 秒、15 秒或 20 秒。按<b>空格</b>暂停。声音跟着大厅里的静音开关。</li>
   </ul></div>
 </div>
 <script src="../common.js"></script>
@@ -194,20 +197,22 @@ function speeds(){
     normal:{pac:5.55,ghost:4.85,fright:2.9,eaten:9.4,house:2.6},
     fast:{pac:7.3,ghost:6.4,fright:3.65,eaten:11,house:3.15}
   }[speedKey]||{pac:4.15,ghost:3.35,fright:2.15,eaten:7.6,house:2.15};
-  const lv=Math.min(1.32,1+(level-1)*0.055);
-  const gMul=diffKey==='simple'?0.8:1;
-  return {pac:base.pac*lv,ghost:base.ghost*lv*gMul,fright:base.fright*(diffKey==='simple'?0.9:1)*Math.min(lv,1.12),eaten:base.eaten,house:base.house};
+  const simple=diffKey==='simple';
+  const lv=simple?Math.min(1.12,1+(level-1)*0.028):Math.min(1.32,1+(level-1)*0.055);
+  const gMul=simple?0.62:1;
+  return {pac:base.pac*lv,ghost:base.ghost*lv*gMul,fright:base.fright*(simple?0.72:1)*Math.min(lv,simple?1.05:1.12),eaten:base.eaten,house:base.house};
 }
 function schedule(){
   const simple=diffKey==='simple';
-  const sc=simple?6:Math.max(3,7-(level-1)*0.45);
-  const ch=simple?8:20;
-  return [['scatter',sc],['chase',ch],['scatter',sc],['chase',ch],['scatter',simple?5:4],['chase',1e9]];
+  const sc=simple?8:Math.max(3,7-(level-1)*0.45);
+  const ch=simple?5:20;
+  return [['scatter',sc],['chase',ch],['scatter',sc],['chase',ch],['scatter',simple?6:4],['chase',1e9]];
 }
 function readPower(){
   const raw=localStorage.getItem('laotoule:pacmanPower');
-  if(raw==='3'||raw==='4'||raw==='5') return Number(raw);
-  return 4;
+  if(raw==='5'||raw==='10'||raw==='15'||raw==='20') return Number(raw);
+  if(raw==='3'||raw==='4') return 5;
+  return 10;
 }
 function frightDur(){return powerSec}
 function placeActors(){
@@ -215,9 +220,9 @@ function placeActors(){
   const slow=diffKey==='simple';
   ghosts=[
     {kind:'ghost',id:'red',color:'#ff4d5e',top:'#ffc2c8',x:7,y:7,dir:'left',mode:'scatter',scatter:{x:14,y:-2},release:0,bob:1},
-    {kind:'ghost',id:'pink',color:'#ffb0d0',top:'#ffe3ef',x:7,y:10,dir:'up',mode:'house',scatter:{x:1,y:-2},release:slow?2.4:1.15,bob:1},
-    {kind:'ghost',id:'cyan',color:'#8adfff',top:'#e7f8ff',x:5,y:10,dir:'up',mode:'house',scatter:{x:14,y:18},release:slow?8.5:4.6,bob:-1},
-    {kind:'ghost',id:'orange',color:'#ffc27a',top:'#ffe7c8',x:9,y:10,dir:'up',mode:'house',scatter:{x:0,y:18},release:slow?14:8.2,bob:1}
+    {kind:'ghost',id:'pink',color:'#ffb0d0',top:'#ffe3ef',x:7,y:10,dir:'up',mode:'house',scatter:{x:1,y:-2},release:slow?3.6:1.15,bob:1},
+    {kind:'ghost',id:'cyan',color:'#8adfff',top:'#e7f8ff',x:5,y:10,dir:'up',mode:'house',scatter:{x:14,y:18},release:slow?11:4.6,bob:-1},
+    {kind:'ghost',id:'orange',color:'#ffc27a',top:'#ffe7c8',x:9,y:10,dir:'up',mode:'house',scatter:{x:0,y:18},release:slow?18:8.2,bob:1}
   ];
 }
 function resetBoard(){
@@ -1043,17 +1048,24 @@ function runSelfTest(){
   const assert=(c,m)=>{if(!c) errors.push(m)};
   try{
     localStorage.removeItem('laotoule:pacman');
-    speedKey='slow'; diffKey='simple'; reduced=false; powerSec=4;
+    speedKey='slow'; diffKey='simple'; reduced=false; powerSec=10;
     assert(drawer.hidden,'设置没有收起');
+    assert(document.querySelectorAll('[data-pw]').length===4,'无敌选项不是四档');
     localStorage.removeItem('laotoule:pacmanPower');
-    assert(readPower()===4,'无敌时长默认不是 4 秒');
+    assert(readPower()===10,'无敌时长默认不是 10 秒');
+    document.querySelector('[data-pw="20"]').click();
+    assert(powerSec===20&&localStorage.getItem('laotoule:pacmanPower')==='20','无敌 20 秒没记住');
+    document.querySelector('[data-pw="15"]').click();
+    assert(powerSec===15&&localStorage.getItem('laotoule:pacmanPower')==='15','无敌 15 秒没记住');
     document.querySelector('[data-pw="5"]').click();
     assert(powerSec===5&&localStorage.getItem('laotoule:pacmanPower')==='5','无敌 5 秒没记住');
-    document.querySelector('[data-pw="3"]').click();
-    assert(powerSec===3&&localStorage.getItem('laotoule:pacmanPower')==='3','无敌 3 秒没记住');
     localStorage.setItem('laotoule:pacmanPower','9');
-    assert(readPower()===4,'无敌时长越界');
-    powerSec=4;
+    assert(readPower()===10,'无敌时长越界');
+    localStorage.setItem('laotoule:pacmanPower','3');
+    assert(readPower()===5,'旧的 3 秒没有并进 5 秒');
+    localStorage.setItem('laotoule:pacmanPower','4');
+    assert(readPower()===5,'旧的 4 秒没有并进 5 秒');
+    powerSec=10;
     score=0; lives=3; level=1; bestAtStart=0;
     resetBoard();
     assert(totalDots>70,'豆子太少 '+totalDots);

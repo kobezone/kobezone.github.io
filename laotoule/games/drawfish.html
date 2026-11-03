@@ -31,7 +31,14 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
 .tools{display:flex;gap:8px;flex:none}
 .tools .btn{flex:1;min-height:52px;padding:8px 4px}
 .primary{width:100%;min-height:64px;font-size:1.35rem;flex:none}
-.stage{position:relative;flex:1;min-height:160px;border:4px solid #222;border-radius:18px;overflow:hidden;box-shadow:0 5px 0 #222;background:#0b4f8a;touch-action:none}
+.place{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.place .btn{min-height:56px;font-size:1.15rem;padding:6px 8px}
+.place svg{width:40px;height:28px;flex:none}
+#addGold{background:#ffd43b}
+#addHorse{background:#ffd8a8}
+#addKelp{background:#b2f2bb}
+#addCoral{background:#fcc2d7}
+.stage{position:relative;flex:1;min-height:180px;border:4px solid #222;border-radius:18px;overflow:hidden;box-shadow:0 5px 0 #222;background:#0b4f8a;touch-action:none}
 #sea{width:100%;height:100%;display:block;touch-action:none}
 .banner{position:absolute;z-index:2;left:6%;right:6%;top:8%;background:#fffef8;border:4px solid #222;border-radius:16px;box-shadow:0 5px 0 #222;text-align:center;padding:12px 10px}
 .banner p{margin:0;font-size:1.5rem;font-weight:900;color:#0b4f8a;line-height:1.3}
@@ -84,7 +91,7 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
       <button class="paper" type="button" data-i="4"><canvas class="thumb" width="8" height="8" aria-hidden="true"></canvas><span class="plabel">点我画鱼</span></button>
       <button class="paper" type="button" data-i="5"><canvas class="thumb" width="8" height="8" aria-hidden="true"></canvas><span class="plabel">点我画鱼</span></button>
     </div>
-    <button class="btn blue primary" type="button" id="seeSea" hidden>看大海</button>
+    <button class="btn blue primary" type="button" id="seeSea">看大海</button>
   </div>
 
   <div class="view" id="viewDraw" hidden>
@@ -106,8 +113,14 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
       <canvas id="sea" aria-label="大海"></canvas>
       <div class="banner" id="banner" hidden role="status">
         <p>十条小鱼游走啦</p>
-        <p class="sub">海又空了，可以再画新的</p>
+        <p class="sub">海又空了。海带和珊瑚还在，可以再画、再放</p>
       </div>
+    </div>
+    <div class="place" role="group" aria-label="放到海里">
+      <button class="btn" type="button" id="addGold" aria-label="放一条小金鱼"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M6 16c7-9 12-9 12 0s-5 9-12 0z" fill="#ff6b6b" stroke="#222" stroke-width="2" stroke-linejoin="round"/><ellipse cx="30" cy="16" rx="14" ry="10" fill="#ffd43b" stroke="#222" stroke-width="2"/><circle cx="36" cy="14" r="2.2" fill="#222"/></svg>小金鱼</button>
+      <button class="btn" type="button" id="addHorse" aria-label="放一只小海马"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M30 6c4 0 8 3 8 7 0 2-1 4-3 5l6 2c2 1 2 3 0 4l-8 1c-1 5-4 8-8 8-2 3-6 4-8 2-3-3 0-6 2-7-3-1-5-4-5-8 0-6 5-10 10-10 1-2 3-4 6-4z" fill="#ff922b" stroke="#222" stroke-width="2" stroke-linejoin="round"/><circle cx="33" cy="11" r="1.6" fill="#222"/></svg>小海马</button>
+      <button class="btn" type="button" id="addKelp" aria-label="放一株海带"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M16 30c1-8 4-12 2-22M24 30c0-10 6-12 4-24M32 30c-1-8-4-14-2-22" fill="none" stroke="#2b8a3e" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="8" r="3" fill="#69db7c"/><circle cx="28" cy="6" r="3.2" fill="#2f9e44"/><circle cx="30" cy="10" r="2.4" fill="#8ce99a"/></svg>海带</button>
+      <button class="btn" type="button" id="addCoral" aria-label="放一丛珊瑚"><svg viewBox="0 0 48 32" aria-hidden="true"><ellipse cx="24" cy="22" rx="6" ry="8" fill="#ff8787" stroke="#222" stroke-width="2"/><ellipse cx="14" cy="14" rx="5" ry="7" fill="#ffa8a8" stroke="#222" stroke-width="2"/><ellipse cx="34" cy="13" rx="6" ry="8" fill="#ff6b6b" stroke="#222" stroke-width="2"/><ellipse cx="24" cy="8" rx="5" ry="6" fill="#fcc2d7" stroke="#222" stroke-width="2"/></svg>珊瑚</button>
     </div>
     <button class="btn green primary" type="button" id="more">再画一条</button>
   </div>
@@ -115,8 +128,9 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   <div class="help"><h2>📖 怎么玩</h2><ul>
     <li>桌上有白纸。点一张，用手指画出小鱼。</li>
     <li>画好了点<b>变成真鱼</b>。大海漫上来，这张画就会游。</li>
-    <li>可以再画。好几条一起在海里游，碰到边上会转身。</li>
-    <li>海里<b>最多十条</b>。放进第十条时，它们会一起游走。海又空了，可以再画新的。</li>
+    <li>大海里可以再放<b>小金鱼</b>和<b>小海马</b>。它们和画出来的鱼算在一起。</li>
+    <li>海里<b>最多十条</b>。放进第十条时，它们会一起游走。海又空了，可以再画、再放。</li>
+    <li><b>海带</b>和<b>珊瑚</b>是海底的摆设，不算鱼，也不会跟着游走。</li>
     <li>撤销去掉刚才那一笔。擦掉清空这张纸。笔的粗细在设置里。</li>
   </ul></div>
 </div>
@@ -142,7 +156,8 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   </div>
   <div class="howto"><h3>📖 怎么玩</h3><ul>
     <li>点白纸，用手指画。点<b>变成真鱼</b>，它就游进大海。</li>
-    <li>海里最多 <b>10</b> 条。第 10 条放进去，十条一起游走，可以再画。</li>
+    <li>大海里也可以放<b>小金鱼</b>、<b>小海马</b>。和画出来的算在一起，最多 <b>10</b> 条。</li>
+    <li>第 10 条放进去，十条一起游走。<b>海带</b>和<b>珊瑚</b>不算鱼，还留在海底。</li>
     <li>声音跟着大厅里的静音开关。</li>
   </ul></div>
 </div>
@@ -167,6 +182,17 @@ const calm = () => motionMQ.matches;
 const papers = Array.from({length: 6}, () => ({strokes: []}));
 const fish = [];
 const bubbles = [];
+const AMBIENT = [
+  {kind:'kelp', x:0.07, h:0.4, hue:0, phase:0.4},
+  {kind:'kelp', x:0.16, h:0.28, hue:1, phase:1.6},
+  {kind:'kelp', x:0.94, h:0.36, hue:2, phase:2.5},
+  {kind:'coral', x:0.28, scale:1, hue:0, phase:0.5},
+  {kind:'coral', x:0.76, scale:0.92, hue:2, phase:1.9}
+];
+const placedDecor = [];
+const MAX_DECOR = 8;
+let goldImg = null;
+let horseImg = null;
 let opts = loadOpts();
 let total = loadTotal();
 let mode = 'desk';
@@ -364,22 +390,22 @@ function updateCopy(){
   seaCv.setAttribute('aria-label', n ? '大海，里面有' + n + '条小鱼' : '大海，现在是空的');
   const pending = papers.some(p => p.strokes.some(s => s.pts.length));
   if(mode === 'desk'){
-    if(justReset && n === 0) sayEl.textContent = '十条小鱼游走啦。点白纸，再画新的';
+    if(justReset && n === 0) sayEl.textContent = '十条小鱼游走啦。点白纸再画，或到大海里再放';
     else if(pending && n) sayEl.textContent = '画好的纸可以点开，再放进大海';
     else if(pending) sayEl.textContent = '点开画好的纸，让它变成真鱼';
-    else if(n) sayEl.textContent = '海里有 ' + n + ' 条，还可以再画';
-    else sayEl.textContent = '点一张白纸，用手指画小鱼';
+    else if(n) sayEl.textContent = '海里有 ' + n + ' 条，还可以再画、再放';
+    else sayEl.textContent = '点白纸画小鱼，或到大海里放小金鱼';
   }else if(mode === 'draw'){
     const ink = papers[active] && papers[active].strokes.some(s => s.pts.length);
     sayEl.textContent = ink ? '画好了，点下面的「变成真鱼」' : '用手指在纸上画一条小鱼';
   }else if(farewell && !farewell.done){
     sayEl.textContent = '十条小鱼游走啦';
   }else if(n === 0){
-    sayEl.textContent = '海又空了，再画新的吧';
+    sayEl.textContent = justReset ? '十条游走啦。海带和珊瑚还在，可以再放' : '点下面的按钮，放小金鱼、小海马、海带和珊瑚';
   }else{
     sayEl.textContent = '小鱼在游。海里 ' + n + ' 条，最多 10 条';
   }
-  seeSeaBtn.hidden = n === 0;
+  seeSeaBtn.hidden = false;
   moreBtn.textContent = (farewell || n === 0) ? '再画新的' : '再画一条';
   document.getElementById('total').textContent = String(total);
 }
@@ -420,25 +446,142 @@ function burst(x, y){
     });
   }
 }
-function releaseFish(){
-  if(busy || (farewell && !farewell.done)) return;
-  const page = papers[active];
-  if(!page || !hasInk(page.strokes)){
-    LTL.toast('再多画几笔，小鱼才游得动');
-    return;
+function stockSprite(kind){
+  if(kind === 'gold'){
+    if(!goldImg) goldImg = paintGold();
+    return goldImg;
   }
-  if(fish.length >= MAX_FISH) return;
-  const img = rasterize(page.strokes);
-  if(!img){
-    LTL.toast('再多画几笔，小鱼才游得动');
-    return;
+  if(!horseImg) horseImg = paintHorse();
+  return horseImg;
+}
+function paintGold(){
+  const cv = document.createElement('canvas');
+  cv.width = 360; cv.height = 200;
+  const g = cv.getContext('2d');
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  g.fillStyle = '#ff6b6b';
+  g.strokeStyle = '#9a3412';
+  g.lineWidth = 7;
+  g.beginPath();
+  g.moveTo(118, 100);
+  g.lineTo(28, 36);
+  g.quadraticCurveTo(70, 100, 28, 164);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.fillStyle = '#ff8787';
+  g.beginPath();
+  g.moveTo(180, 58);
+  g.quadraticCurveTo(210, 8, 250, 52);
+  g.quadraticCurveTo(210, 62, 180, 58);
+  g.fill(); g.stroke();
+  g.fillStyle = '#ffb703';
+  g.beginPath();
+  g.ellipse(210, 104, 108, 64, 0, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#fff3bf';
+  g.beginPath();
+  g.ellipse(220, 124, 72, 34, 0, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#ff922b';
+  g.beginPath();
+  g.moveTo(190, 118);
+  g.quadraticCurveTo(210, 170, 250, 128);
+  g.quadraticCurveTo(210, 124, 190, 118);
+  g.fill(); g.stroke();
+  g.strokeStyle = 'rgba(154,52,18,.4)';
+  g.lineWidth = 3;
+  for(let i = 0; i < 4; i++){
+    g.beginPath();
+    g.arc(150 + i * 28, 108, 16, 0.15, Math.PI - 0.15);
+    g.stroke();
   }
-  busy = true;
-  const oldToast = document.querySelector('.toast');
-  if(oldToast) oldToast.classList.remove('show');
+  g.fillStyle = '#fff';
+  g.strokeStyle = '#222';
+  g.lineWidth = 4;
+  g.beginPath(); g.arc(276, 86, 16, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#222';
+  g.beginPath(); g.arc(282, 88, 7, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(284, 86, 2.4, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = '#9a3412';
+  g.lineWidth = 4;
+  g.beginPath(); g.arc(292, 104, 12, 0.3, 1.4); g.stroke();
+  g.fillStyle = 'rgba(255,107,107,.65)';
+  g.beginPath(); g.ellipse(262, 108, 10, 7, 0, 0, Math.PI * 2); g.fill();
+  return cv;
+}
+function paintHorse(){
+  const cv = document.createElement('canvas');
+  cv.width = 240; cv.height = 320;
+  const g = cv.getContext('2d');
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  g.strokeStyle = '#ffb703';
+  g.lineWidth = 18;
+  g.beginPath();
+  g.moveTo(118, 214);
+  g.bezierCurveTo(168, 250, 176, 300, 118, 300);
+  g.bezierCurveTo(62, 300, 58, 250, 104, 242);
+  g.stroke();
+  g.strokeStyle = '#c2410c';
+  g.lineWidth = 6;
+  g.stroke();
+  g.fillStyle = '#ff922b';
+  g.strokeStyle = '#9a3412';
+  g.lineWidth = 7;
+  g.beginPath();
+  g.ellipse(118, 168, 46, 70, -0.12, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#ffe8a3';
+  g.beginPath();
+  g.ellipse(128, 182, 22, 46, -0.08, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#e8590c';
+  g.lineWidth = 4;
+  for(let i = 0; i < 4; i++){
+    g.beginPath();
+    g.arc(98, 140 + i * 22, 16, 0.5, 2.3);
+    g.stroke();
+  }
+  g.fillStyle = '#ffb703';
+  g.strokeStyle = '#9a3412';
+  g.lineWidth = 7;
+  g.beginPath();
+  g.ellipse(136, 78, 36, 40, 0.35, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.beginPath();
+  g.ellipse(178, 96, 28, 12, 0.15, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#ffd43b';
+  g.beginPath();
+  g.moveTo(116, 50);
+  g.lineTo(126, 16);
+  g.lineTo(140, 48);
+  g.lineTo(154, 14);
+  g.lineTo(162, 52);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.fillStyle = '#fff';
+  g.strokeStyle = '#222';
+  g.lineWidth = 3;
+  g.beginPath(); g.arc(150, 70, 10, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#222';
+  g.beginPath(); g.arc(153, 72, 4.5, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#ff6b6b';
+  g.strokeStyle = '#9a3412';
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(98, 118);
+  g.quadraticCurveTo(46, 96, 56, 152);
+  g.quadraticCurveTo(82, 138, 102, 150);
+  g.fill(); g.stroke();
+  return cv;
+}
+function pushFish(f){
+  if(busy || (farewell && !farewell.done)) return false;
+  if(fish.length >= MAX_FISH) return false;
+  if(farewell && farewell.done) farewell = null;
   const oceanEmpty = fish.length === 0;
-  page.strokes = [];
-  const f = makeFish(img);
+  const wasSea = mode === 'sea';
   fish.push(f);
   burst(f.x, f.y);
   total += 1;
@@ -449,9 +592,67 @@ function releaseFish(){
     farewell = {t0: 0, done: false, pending: true};
     fullSound();
   }else bornSound();
+  if(wasSea){
+    if(full) banner.hidden = false;
+    updateCopy();
+    ensureLoop();
+    return true;
+  }
+  busy = true;
   if(oceanEmpty) presentSea();
   else {show('sea'); busy = false}
   if(full) banner.hidden = false;
+  return true;
+}
+function releaseFish(){
+  if(busy || (farewell && !farewell.done)) return;
+  const page = papers[active];
+  if(!page || !hasInk(page.strokes)){
+    LTL.toast('再多画几笔，小鱼才游得动');
+    return;
+  }
+  if(fish.length >= MAX_FISH){
+    LTL.toast('海里已经有十条了');
+    return;
+  }
+  const img = rasterize(page.strokes);
+  if(!img){
+    LTL.toast('再多画几笔，小鱼才游得动');
+    return;
+  }
+  const oldToast = document.querySelector('.toast');
+  if(oldToast) oldToast.classList.remove('show');
+  page.strokes = [];
+  pushFish(makeFish(img));
+}
+function placeStock(kind){
+  if(busy) return;
+  if(farewell && !farewell.done){
+    LTL.toast('等这十条游走，再放新的');
+    return;
+  }
+  if(fish.length >= MAX_FISH){
+    LTL.toast('海里已经有十条了');
+    return;
+  }
+  pushFish(makeFish(stockSprite(kind)));
+}
+function placeDecor(kind){
+  if(placedDecor.length >= MAX_DECOR){
+    LTL.toast('海底已经很热闹啦');
+    return;
+  }
+  placedDecor.push({
+    kind,
+    x: 0.14 + Math.random() * 0.72,
+    h: kind === 'kelp' ? 0.24 + Math.random() * 0.18 : undefined,
+    scale: kind === 'coral' ? 0.72 + Math.random() * 0.45 : undefined,
+    hue: Math.floor(Math.random() * 4),
+    phase: Math.random() * Math.PI * 2
+  });
+  LTL.beep(kind === 'kelp' ? 392 : 494, .08, 'sine', .04);
+  updateCopy();
+  if(mode === 'sea') ensureLoop();
 }
 function presentSea(){
   if(calm()){show('sea'); busy = false; return}
@@ -501,6 +702,7 @@ function wipe(){
 function restartAll(){
   papers.forEach(p => {p.strokes = []});
   fish.length = 0;
+  placedDecor.length = 0;
   farewell = null;
   justReset = false;
   busy = false;
@@ -587,6 +789,70 @@ function drawFish(ctx, f, w, h, t){
   }
   ctx.restore();
 }
+function drawKelp(g, item, w, h, t){
+  const baseX = item.x * w;
+  const baseY = h * 0.9;
+  const tall = (item.h || 0.34) * h;
+  const colors = ['#2b8a3e', '#37b24d', '#087f5b', '#69db7c'];
+  for(let b = 0; b < 3; b++){
+    const col = colors[(item.hue + b) % colors.length];
+    g.strokeStyle = col;
+    g.fillStyle = col;
+    g.lineWidth = 8 - b;
+    g.lineCap = 'round';
+    g.beginPath();
+    const ox = (b - 1) * 12;
+    g.moveTo(baseX + ox, baseY);
+    let tipX = baseX + ox, tipY = baseY;
+    const reach = b === 1 ? 1 : 0.84;
+    for(let i = 1; i <= 9; i++){
+      const p = i / 9;
+      const yy = baseY - tall * p * reach;
+      const amp = calm() ? 2 : 4 + i * 1.5;
+      const xx = baseX + ox + Math.sin(t * 1.15 + item.phase + b + i * 0.55) * amp;
+      g.lineTo(xx, yy);
+      tipX = xx; tipY = yy;
+    }
+    g.stroke();
+    g.beginPath();
+    g.ellipse(tipX, tipY, 11, 7, Math.sin(t + item.phase + b) * 0.5, 0, Math.PI * 2);
+    g.fill();
+  }
+}
+function drawCoral(g, item, w, h, t){
+  const pals = [
+    ['#ff6b6b', '#ffa8a8', '#ff8787'],
+    ['#f06595', '#fcc2d7', '#faa2c1'],
+    ['#ff922b', '#ffd43b', '#ffc078'],
+    ['#845ef7', '#d0bfff', '#b197fc']
+  ];
+  const pal = pals[(item.hue || 0) % pals.length];
+  const cx = item.x * w + (calm() ? 0 : Math.sin(t * 0.7 + item.phase) * 2);
+  const base = h * 0.905;
+  const s = (item.scale || 1) * Math.min(h * 0.2, w * 0.18);
+  g.save();
+  g.translate(cx, base);
+  g.lineJoin = 'round';
+  g.lineWidth = Math.max(2, s * 0.06);
+  g.strokeStyle = '#5c4033';
+  function bulb(x, y, rx, ry, c){
+    g.fillStyle = c;
+    g.beginPath();
+    g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+    g.fill();
+    g.stroke();
+    g.fillStyle = 'rgba(255,255,255,.85)';
+    g.beginPath();
+    g.arc(x - rx * 0.25, y - ry * 0.35, Math.max(1.5, rx * 0.16), 0, Math.PI * 2);
+    g.fill();
+  }
+  bulb(0, -s * 0.35, s * 0.28, s * 0.42, pal[0]);
+  bulb(-s * 0.42, -s * 0.85, s * 0.24, s * 0.36, pal[1]);
+  bulb(s * 0.4, -s * 0.95, s * 0.26, s * 0.4, pal[2]);
+  bulb(0, -s * 1.25, s * 0.3, s * 0.34, pal[0]);
+  bulb(-s * 0.05, -s * 0.7, s * 0.16, s * 0.24, pal[2]);
+  g.restore();
+}
 function renderSea(g, w, h, t){
   const grd = g.createLinearGradient(0, 0, 0, h);
   grd.addColorStop(0, '#8fd4ff');
@@ -615,20 +881,9 @@ function renderSea(g, w, h, t){
   [[.18,.94,5],[.48,.935,3.5],[.74,.95,5.5]].forEach(([px,py,r]) => {
     g.beginPath(); g.ellipse(px * w, py * h, r, r * .7, 0, 0, Math.PI * 2); g.fill();
   });
-  g.strokeStyle = '#2b8a3e';
-  g.lineCap = 'round';
-  [0.08, 0.9].forEach((px, wi) => {
-    g.lineWidth = 4;
-    g.beginPath();
-    const base = h * 0.9, tall = h * (wi ? 0.16 : 0.2);
-    g.moveTo(px * w, base);
-    for(let i = 1; i <= 7; i++){
-      const yy = base - i * tall / 7;
-      const xx = px * w + Math.sin((calm() ? 0 : t) * 1.2 + i * 0.7 + wi) * (3 + i);
-      g.lineTo(xx, yy);
-    }
-    g.stroke();
-  });
+  const decor = AMBIENT.concat(placedDecor);
+  decor.forEach(d => { if(d.kind === 'kelp') drawKelp(g, d, w, h, t) });
+  decor.forEach(d => { if(d.kind === 'coral') drawCoral(g, d, w, h, t) });
   if(opts.bubbles){
     bubbles.forEach(b => {if(b.y > 0.55) drawBubble(g, b, w, h)});
   }
@@ -685,6 +940,8 @@ function frame(ts){
   if(fading && el >= dur){
     fish.length = 0;
     farewell.done = true;
+    justReset = true;
+    banner.hidden = true;
     updateCopy();
   }
   if(opts.bubbles){
@@ -742,6 +999,10 @@ document.getElementById('backDesk').addEventListener('click', () => show('desk')
 document.getElementById('undo').addEventListener('click', undo);
 document.getElementById('wipe').addEventListener('click', wipe);
 document.getElementById('alive').addEventListener('click', releaseFish);
+document.getElementById('addGold').addEventListener('click', () => placeStock('gold'));
+document.getElementById('addHorse').addEventListener('click', () => placeStock('horse'));
+document.getElementById('addKelp').addEventListener('click', () => placeDecor('kelp'));
+document.getElementById('addCoral').addEventListener('click', () => placeDecor('coral'));
 seeSeaBtn.addEventListener('click', () => show('sea'));
 moreBtn.addEventListener('click', leaveSea);
 document.getElementById('restart').addEventListener('click', restartAll);
@@ -808,4 +1069,57 @@ window.addEventListener('resize', () => {
 });
 
 show('desk');
+if(location.search.indexOf('selftest=1') >= 0){
+  const prevCount = lsGet(COUNT_KEY);
+  const errors = [];
+  const assert = (c, m) => { if(!c) errors.push(m) };
+  try{
+    mode = 'sea';
+    placeStock('gold');
+    assert(fish.length === 1, '小金鱼没放进去');
+    assert(total >= 1, '总数没加');
+    const before = fish.length;
+    placeDecor('kelp');
+    placeDecor('coral');
+    assert(fish.length === before, '海带珊瑚被算成鱼了');
+    assert(placedDecor.length === 2, '装饰没放上 ' + placedDecor.length);
+    for(let i = 0; i < 8; i++) placeStock(i % 2 ? 'horse' : 'gold');
+    assert(fish.length === 9, '放到第九条不对 ' + fish.length);
+    placeStock('horse');
+    assert(fish.length === 10, '第十条没放进去 ' + fish.length);
+    assert(!!(farewell && !farewell.done), '第十条没有一起游走');
+    placeStock('gold');
+    assert(fish.length === 10, '超过十条了');
+    assert(placedDecor.length === 2, '游走前装饰丢了');
+    const cv = document.createElement('canvas');
+    cv.width = 200; cv.height = 280;
+    renderSea(cv.getContext('2d'), 200, 280, 1.2);
+    const px = cv.getContext('2d').getImageData(20, 250, 1, 1).data;
+    assert(px[3] > 0, '海底没有画出来');
+    fish.length = 0;
+    if(farewell) farewell.done = true;
+    banner.hidden = true;
+    placeDecor('kelp');
+    assert(placedDecor.length === 3, '鱼游走后不能再放海带');
+    for(let i = 0; i < 20; i++) placeDecor('coral');
+    assert(placedDecor.length === MAX_DECOR, '装饰没有上限 ' + placedDecor.length);
+    assert(fish.length === 0, '装饰被算进鱼了');
+  }catch(e){
+    errors.push(String(e && e.stack || e));
+  }finally{
+    fish.length = 0;
+    placedDecor.length = 0;
+    farewell = null;
+    justReset = false;
+    busy = false;
+    mode = 'desk';
+    stopLoop();
+    show('desk');
+    if(prevCount === null){try{localStorage.removeItem(COUNT_KEY)}catch(e){}}
+    else lsSet(COUNT_KEY, prevCount);
+    total = loadTotal();
+  }
+  window.__selftest = {ok: errors.length === 0, errors, fish: fish.length};
+  document.title = 'SELFTEST ' + (errors.length ? 'FAIL ' + errors.join(' | ') : 'OK');
+}
 </script></body></html>
