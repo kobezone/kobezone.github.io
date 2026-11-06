@@ -31,13 +31,16 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
 .tools{display:flex;gap:8px;flex:none}
 .tools .btn{flex:1;min-height:52px;padding:8px 4px}
 .primary{width:100%;min-height:64px;font-size:1.35rem;flex:none}
-.place{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.place .btn{min-height:56px;font-size:1.15rem;padding:6px 8px}
-.place svg{width:40px;height:28px;flex:none}
+.place{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.place .btn{min-height:68px;font-size:1.12rem;padding:4px 2px;flex-direction:column;gap:1px;line-height:1.1}
+.place svg{width:48px;height:32px;flex:none}
 #addGold{background:#ffd43b}
 #addHorse{background:#ffd8a8}
+#addShark{background:#a5d8ff}
+#addDolphin{background:#c5f6fa}
 #addKelp{background:#b2f2bb}
 #addCoral{background:#fcc2d7}
+#addPearl{background:#fff0f6}
 .stage{position:relative;flex:1;min-height:180px;border:4px solid #222;border-radius:18px;overflow:hidden;box-shadow:0 5px 0 #222;background:#0b4f8a;touch-action:none}
 #sea{width:100%;height:100%;display:block;touch-action:none}
 .banner{position:absolute;z-index:2;left:6%;right:6%;top:8%;background:#fffef8;border:4px solid #222;border-radius:16px;box-shadow:0 5px 0 #222;text-align:center;padding:12px 10px}
@@ -72,6 +75,7 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   .banner p{font-size:1.3rem}
   .primary{font-size:1.2rem}
   .plabel{font-size:1rem}
+  .place .btn{font-size:1rem;min-height:64px}
 }
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🐟 画着小鱼变真鱼</h1></div>
@@ -113,14 +117,17 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
       <canvas id="sea" aria-label="大海"></canvas>
       <div class="banner" id="banner" hidden role="status">
         <p>十条小鱼游走啦</p>
-        <p class="sub">海又空了。海带和珊瑚还在，可以再画、再放</p>
+        <p class="sub">海又空了。海带、珊瑚和珍珠贝还在</p>
       </div>
     </div>
     <div class="place" role="group" aria-label="放到海里">
-      <button class="btn" type="button" id="addGold" aria-label="放一条小金鱼"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M6 16c7-9 12-9 12 0s-5 9-12 0z" fill="#ff6b6b" stroke="#222" stroke-width="2" stroke-linejoin="round"/><ellipse cx="30" cy="16" rx="14" ry="10" fill="#ffd43b" stroke="#222" stroke-width="2"/><circle cx="36" cy="14" r="2.2" fill="#222"/></svg>小金鱼</button>
-      <button class="btn" type="button" id="addHorse" aria-label="放一只小海马"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M30 6c4 0 8 3 8 7 0 2-1 4-3 5l6 2c2 1 2 3 0 4l-8 1c-1 5-4 8-8 8-2 3-6 4-8 2-3-3 0-6 2-7-3-1-5-4-5-8 0-6 5-10 10-10 1-2 3-4 6-4z" fill="#ff922b" stroke="#222" stroke-width="2" stroke-linejoin="round"/><circle cx="33" cy="11" r="1.6" fill="#222"/></svg>小海马</button>
+      <button class="btn" type="button" id="addGold" aria-label="放一条小金鱼"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M17 15c-1-6-7-9-13-5 4 2 5 6 3 9-5 1-7 5-3 8 6 2 11 0 13-5" fill="#ff8787" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 18c-2 4-6 6-11 5 3-1 5-3 6-5" fill="#ff6b6b" stroke="#222" stroke-width="1.4"/><ellipse cx="30" cy="17" rx="12" ry="9" fill="#ffd43b" stroke="#222" stroke-width="1.8"/><path d="M22 9c3-5 9-5 12 0-4 2-8 2-12 0z" fill="#ff922b" stroke="#222" stroke-width="1.4"/><circle cx="36" cy="15" r="2.6" fill="#fff" stroke="#222" stroke-width="1.2"/><circle cx="37" cy="15.4" r="1.15" fill="#222"/></svg>小金鱼</button>
+      <button class="btn" type="button" id="addHorse" aria-label="放一只小海马"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M27 3l2 4 4-3-1 5 4-1c2 2 6 3 7 6-3 1-5 0-6 2 1 3 0 6-2 7-1 3-2 5-2 7-2 3-7 2-7-1 1-2 4-2 3-5-4-1-6-5-4-9 1-3 4-5 6-6V6l-4-3z" fill="#ffb703" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M20 12c-5 1-7 5-5 8 3-1 5-3 5-5" fill="#ff8787" stroke="#222" stroke-width="1.3"/><circle cx="31" cy="9" r="1.5" fill="#222"/></svg>小海马</button>
+      <button class="btn" type="button" id="addShark" aria-label="放一条鲨鱼"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M12 16c-4-1-8-6-10-10 2 5 6 7 10 8-5 2-7 6-6 10 4-2 7-5 6-8z" fill="#4dabf7" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 15c6-2 14-4 24-2 6 1 8 4 8 6-4 4-14 6-26 4-4-1-6-4-6-8z" fill="#74c0fc" stroke="#222" stroke-width="1.6"/><path d="M14 15c6-2 14-3 22-1v7c-8 2-16 1-22-2z" fill="#fff"/><path d="M26 13l4-8 2 8z" fill="#1c7ed6" stroke="#222" stroke-width="1.4" stroke-linejoin="round"/><circle cx="38" cy="15" r="1.5" fill="#222"/></svg>鲨鱼</button>
+      <button class="btn" type="button" id="addDolphin" aria-label="放一只海豚"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M13 16c-4-1-8-4-11-7 3 4 7 5 11 5-4 2-6 5-5 8 3-1 6-4 5-6z" fill="#868e96" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 15c5-3 12-6 20-4 5 1 10 2 12 5-1 2-6 2-10 1 1 4-2 7-8 8-8 2-14 0-16-4 0-2 1-4 2-6z" fill="#adb5bd" stroke="#222" stroke-width="1.6"/><path d="M16 18c6 2 12 2 18 0v4c-6 2-12 1-18-1z" fill="#f8f9fa"/><path d="M27 12c2-6 6-8 8-8-1 4-2 7-4 8z" fill="#495057" stroke="#222" stroke-width="1.3"/><circle cx="39" cy="15" r="1.4" fill="#222"/></svg>海豚</button>
       <button class="btn" type="button" id="addKelp" aria-label="放一株海带"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M16 30c1-8 4-12 2-22M24 30c0-10 6-12 4-24M32 30c-1-8-4-14-2-22" fill="none" stroke="#2b8a3e" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="8" r="3" fill="#69db7c"/><circle cx="28" cy="6" r="3.2" fill="#2f9e44"/><circle cx="30" cy="10" r="2.4" fill="#8ce99a"/></svg>海带</button>
       <button class="btn" type="button" id="addCoral" aria-label="放一丛珊瑚"><svg viewBox="0 0 48 32" aria-hidden="true"><ellipse cx="24" cy="22" rx="6" ry="8" fill="#ff8787" stroke="#222" stroke-width="2"/><ellipse cx="14" cy="14" rx="5" ry="7" fill="#ffa8a8" stroke="#222" stroke-width="2"/><ellipse cx="34" cy="13" rx="6" ry="8" fill="#ff6b6b" stroke="#222" stroke-width="2"/><ellipse cx="24" cy="8" rx="5" ry="6" fill="#fcc2d7" stroke="#222" stroke-width="2"/></svg>珊瑚</button>
+      <button class="btn" type="button" id="addPearl" aria-label="放一只珍珠贝壳"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M8 20c0 6 32 6 32 0-8 3-24 3-32 0z" fill="#f4c89a" stroke="#222" stroke-width="1.7"/><path d="M10 18c2-8 26-10 30-1-8-4-22-3-30 1z" fill="#ffd8a8" stroke="#222" stroke-width="1.7"/><path d="M14 17c2-5 18-6 22-1-6-2-16-1-22 1z" fill="#ffe3ec"/><circle cx="24" cy="18" r="4.2" fill="#fff" stroke="#868e96" stroke-width="1.3"/><circle cx="22.4" cy="16.6" r="1.3" fill="#fff"/></svg>珍珠贝壳</button>
     </div>
     <button class="btn green primary" type="button" id="more">再画一条</button>
   </div>
@@ -128,9 +135,9 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   <div class="help"><h2>📖 怎么玩</h2><ul>
     <li>桌上有白纸。点一张，用手指画出小鱼。</li>
     <li>画好了点<b>变成真鱼</b>。大海漫上来，这张画就会游。</li>
-    <li>大海里可以再放<b>小金鱼</b>和<b>小海马</b>。它们和画出来的鱼算在一起。</li>
+    <li>大海里可以再放<b>小金鱼</b>、<b>小海马</b>、<b>鲨鱼</b>和<b>海豚</b>。它们和画出来的鱼算在一起。</li>
     <li>海里<b>最多十条</b>。放进第十条时，它们会一起游走。海又空了，可以再画、再放。</li>
-    <li><b>海带</b>和<b>珊瑚</b>是海底的摆设，不算鱼，也不会跟着游走。</li>
+    <li><b>海带</b>、<b>珊瑚</b>和<b>珍珠贝壳</b>是海底的摆设，不算鱼，也不会跟着游走。</li>
     <li>撤销去掉刚才那一笔。擦掉清空这张纸。笔的粗细在设置里。</li>
   </ul></div>
 </div>
@@ -156,8 +163,8 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   </div>
   <div class="howto"><h3>📖 怎么玩</h3><ul>
     <li>点白纸，用手指画。点<b>变成真鱼</b>，它就游进大海。</li>
-    <li>大海里也可以放<b>小金鱼</b>、<b>小海马</b>。和画出来的算在一起，最多 <b>10</b> 条。</li>
-    <li>第 10 条放进去，十条一起游走。<b>海带</b>和<b>珊瑚</b>不算鱼，还留在海底。</li>
+    <li>大海里也可以放<b>小金鱼</b>、<b>小海马</b>、<b>鲨鱼</b>、<b>海豚</b>。和画出来的算在一起，最多 <b>10</b> 条。</li>
+    <li>第 10 条放进去，十条一起游走。<b>海带</b>、<b>珊瑚</b>和<b>珍珠贝壳</b>不算鱼，还留在海底。</li>
     <li>声音跟着大厅里的静音开关。</li>
   </ul></div>
 </div>
@@ -191,8 +198,7 @@ const AMBIENT = [
 ];
 const placedDecor = [];
 const MAX_DECOR = 8;
-let goldImg = null;
-let horseImg = null;
+const sprites = {};
 let opts = loadOpts();
 let total = loadTotal();
 let mode = 'desk';
@@ -394,14 +400,14 @@ function updateCopy(){
     else if(pending && n) sayEl.textContent = '画好的纸可以点开，再放进大海';
     else if(pending) sayEl.textContent = '点开画好的纸，让它变成真鱼';
     else if(n) sayEl.textContent = '海里有 ' + n + ' 条，还可以再画、再放';
-    else sayEl.textContent = '点白纸画小鱼，或到大海里放小金鱼';
+    else sayEl.textContent = '点白纸画小鱼，或到大海里放小动物';
   }else if(mode === 'draw'){
     const ink = papers[active] && papers[active].strokes.some(s => s.pts.length);
     sayEl.textContent = ink ? '画好了，点下面的「变成真鱼」' : '用手指在纸上画一条小鱼';
   }else if(farewell && !farewell.done){
     sayEl.textContent = '十条小鱼游走啦';
   }else if(n === 0){
-    sayEl.textContent = justReset ? '十条游走啦。海带和珊瑚还在，可以再放' : '点下面的按钮，放小金鱼、小海马、海带和珊瑚';
+    sayEl.textContent = justReset ? '十条游走啦。海带、珊瑚和珍珠贝还在' : '点下面的按钮，把小动物和摆设放进海里';
   }else{
     sayEl.textContent = '小鱼在游。海里 ' + n + ' 条，最多 10 条';
   }
@@ -447,133 +453,517 @@ function burst(x, y){
   }
 }
 function stockSprite(kind){
-  if(kind === 'gold'){
-    if(!goldImg) goldImg = paintGold();
-    return goldImg;
+  if(!sprites[kind]){
+    const paint = {gold: paintGold, horse: paintHorse, shark: paintShark, dolphin: paintDolphin}[kind];
+    sprites[kind] = paint();
   }
-  if(!horseImg) horseImg = paintHorse();
-  return horseImg;
+  return sprites[kind];
 }
 function paintGold(){
   const cv = document.createElement('canvas');
-  cv.width = 360; cv.height = 200;
+  cv.width = 460; cv.height = 270;
   const g = cv.getContext('2d');
   g.lineJoin = 'round'; g.lineCap = 'round';
-  g.fillStyle = '#ff6b6b';
-  g.strokeStyle = '#9a3412';
-  g.lineWidth = 7;
+  const ink = '#7c2d12';
+  const tail = g.createLinearGradient(16, 40, 190, 160);
+  tail.addColorStop(0, '#ff6b6b');
+  tail.addColorStop(0.45, '#ff922b');
+  tail.addColorStop(1, '#ffd43b');
+  g.fillStyle = tail;
+  g.strokeStyle = ink;
+  g.lineWidth = 6;
   g.beginPath();
-  g.moveTo(118, 100);
-  g.lineTo(28, 36);
-  g.quadraticCurveTo(70, 100, 28, 164);
+  g.moveTo(188, 112);
+  g.bezierCurveTo(120, 70, 52, 16, 18, 48);
+  g.bezierCurveTo(46, 62, 78, 96, 150, 116);
+  g.quadraticCurveTo(172, 118, 190, 126);
   g.closePath();
   g.fill(); g.stroke();
-  g.fillStyle = '#ff8787';
   g.beginPath();
-  g.moveTo(180, 58);
-  g.quadraticCurveTo(210, 8, 250, 52);
-  g.quadraticCurveTo(210, 62, 180, 58);
+  g.moveTo(188, 138);
+  g.bezierCurveTo(130, 156, 62, 176, 26, 228);
+  g.bezierCurveTo(40, 248, 86, 236, 118, 200);
+  g.bezierCurveTo(150, 170, 170, 154, 190, 146);
+  g.closePath();
   g.fill(); g.stroke();
-  g.fillStyle = '#ffb703';
-  g.beginPath();
-  g.ellipse(210, 104, 108, 64, 0, 0, Math.PI * 2);
-  g.fill(); g.stroke();
-  g.fillStyle = '#fff3bf';
-  g.beginPath();
-  g.ellipse(220, 124, 72, 34, 0, 0, Math.PI * 2);
-  g.fill();
-  g.fillStyle = '#ff922b';
-  g.beginPath();
-  g.moveTo(190, 118);
-  g.quadraticCurveTo(210, 170, 250, 128);
-  g.quadraticCurveTo(210, 124, 190, 118);
-  g.fill(); g.stroke();
-  g.strokeStyle = 'rgba(154,52,18,.4)';
-  g.lineWidth = 3;
-  for(let i = 0; i < 4; i++){
+  g.save();
+  g.strokeStyle = 'rgba(124,45,18,.38)';
+  g.lineWidth = 2.2;
+  [[170, 116, 100, 78, 48, 42, 28, 50], [168, 122, 96, 102, 50, 86, 34, 78], [172, 140, 110, 164, 64, 198, 40, 224], [174, 134, 120, 150, 80, 174, 58, 204]].forEach(p => {
     g.beginPath();
-    g.arc(150 + i * 28, 108, 16, 0.15, Math.PI - 0.15);
+    g.moveTo(p[0], p[1]);
+    g.bezierCurveTo(p[2], p[3], p[4], p[5], p[6], p[7]);
+    g.stroke();
+  });
+  g.restore();
+  const dors = g.createLinearGradient(230, 16, 300, 96);
+  dors.addColorStop(0, '#ff8787');
+  dors.addColorStop(1, '#ffc078');
+  g.fillStyle = dors;
+  g.strokeStyle = ink;
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(228, 86);
+  g.bezierCurveTo(236, 28, 292, 8, 328, 30);
+  g.quadraticCurveTo(336, 52, 312, 74);
+  g.quadraticCurveTo(276, 78, 246, 100);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.strokeStyle = 'rgba(124,45,18,.32)';
+  g.lineWidth = 1.8;
+  for(let i = 0; i < 5; i++){
+    g.beginPath();
+    g.moveTo(246 + i * 12, 90);
+    g.quadraticCurveTo(268 + i * 10, 40, 300 + i * 6, 28);
     g.stroke();
   }
+  g.fillStyle = '#ff922b';
+  g.strokeStyle = ink;
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(214, 186);
+  g.quadraticCurveTo(196, 242, 158, 236);
+  g.quadraticCurveTo(186, 214, 220, 192);
+  g.closePath();
+  g.fill(); g.stroke();
+  const body = g.createRadialGradient(310, 108, 18, 276, 140, 140);
+  body.addColorStop(0, '#fff3bf');
+  body.addColorStop(0.38, '#ffd43b');
+  body.addColorStop(0.74, '#ff922b');
+  body.addColorStop(1, '#e8590c');
+  g.beginPath();
+  g.ellipse(282, 140, 118, 78, -0.05, 0, Math.PI * 2);
+  g.fillStyle = body;
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 6.5;
+  g.stroke();
+  g.save();
+  g.beginPath();
+  g.ellipse(282, 140, 110, 70, -0.05, 0, Math.PI * 2);
+  g.clip();
+  g.fillStyle = 'rgba(255,248,220,.94)';
+  g.beginPath();
+  g.ellipse(292, 172, 80, 40, -0.06, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = 'rgba(124,45,18,.3)';
+  g.lineWidth = 1.8;
+  for(let row = 0; row < 7; row++){
+    for(let col = 0; col < 9; col++){
+      const x = 186 + col * 20 + (row % 2) * 10;
+      const y = 82 + row * 17;
+      g.beginPath();
+      g.arc(x, y, 11, 0.15, Math.PI - 0.12);
+      g.stroke();
+    }
+  }
+  g.fillStyle = 'rgba(255,255,255,.42)';
+  for(let row = 0; row < 4; row++){
+    for(let col = 0; col < 5; col++){
+      g.beginPath();
+      g.arc(230 + col * 20 + (row % 2) * 8, 108 + row * 16, 2.1, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  g.restore();
+  g.strokeStyle = 'rgba(124,45,18,.6)';
+  g.lineWidth = 3.2;
+  g.beginPath();
+  g.arc(328, 136, 24, -0.9, 0.95);
+  g.stroke();
+  g.beginPath();
+  g.moveTo(308, 158);
+  g.quadraticCurveTo(274, 210, 232, 188);
+  g.quadraticCurveTo(274, 176, 304, 166);
+  g.closePath();
+  g.fillStyle = 'rgba(255,146,135,.9)';
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 4.5;
+  g.stroke();
+  g.strokeStyle = 'rgba(124,45,18,.35)';
+  g.lineWidth = 1.6;
+  g.beginPath();
+  g.moveTo(300, 162);
+  g.quadraticCurveTo(270, 192, 246, 184);
+  g.stroke();
   g.fillStyle = '#fff';
-  g.strokeStyle = '#222';
-  g.lineWidth = 4;
-  g.beginPath(); g.arc(276, 86, 16, 0, Math.PI * 2); g.fill(); g.stroke();
-  g.fillStyle = '#222';
-  g.beginPath(); g.arc(282, 88, 7, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 4.5;
+  g.beginPath();
+  g.ellipse(340, 114, 20, 22, 0.1, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  const iris = g.createRadialGradient(346, 116, 2, 344, 118, 12);
+  iris.addColorStop(0, '#3d2914');
+  iris.addColorStop(0.55, '#1a120c');
+  iris.addColorStop(1, '#5c3d1e');
+  g.fillStyle = iris;
+  g.beginPath();
+  g.arc(346, 118, 11, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#111';
+  g.beginPath();
+  g.arc(348, 119, 6, 0, Math.PI * 2);
+  g.fill();
   g.fillStyle = '#fff';
-  g.beginPath(); g.arc(284, 86, 2.4, 0, Math.PI * 2); g.fill();
-  g.strokeStyle = '#9a3412';
+  g.beginPath(); g.arc(338, 108, 5, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.arc(350, 124, 2, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,107,107,.5)';
+  g.beginPath();
+  g.ellipse(322, 142, 13, 8, -0.2, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = '#c2410c';
   g.lineWidth = 4;
-  g.beginPath(); g.arc(292, 104, 12, 0.3, 1.4); g.stroke();
-  g.fillStyle = 'rgba(255,107,107,.65)';
-  g.beginPath(); g.ellipse(262, 108, 10, 7, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath();
+  g.arc(366, 136, 16, 0.2, 1.25);
+  g.stroke();
+  g.strokeStyle = '#fff';
+  g.lineWidth = 2;
+  g.beginPath();
+  g.arc(366, 134, 16, 0.35, 1.05);
+  g.stroke();
   return cv;
 }
 function paintHorse(){
   const cv = document.createElement('canvas');
-  cv.width = 240; cv.height = 320;
+  cv.width = 320; cv.height = 440;
   const g = cv.getContext('2d');
   g.lineJoin = 'round'; g.lineCap = 'round';
-  g.strokeStyle = '#ffb703';
-  g.lineWidth = 18;
-  g.beginPath();
-  g.moveTo(118, 214);
-  g.bezierCurveTo(168, 250, 176, 300, 118, 300);
-  g.bezierCurveTo(62, 300, 58, 250, 104, 242);
-  g.stroke();
-  g.strokeStyle = '#c2410c';
-  g.lineWidth = 6;
-  g.stroke();
-  g.fillStyle = '#ff922b';
-  g.strokeStyle = '#9a3412';
-  g.lineWidth = 7;
-  g.beginPath();
-  g.ellipse(118, 168, 46, 70, -0.12, 0, Math.PI * 2);
-  g.fill(); g.stroke();
-  g.fillStyle = '#ffe8a3';
-  g.beginPath();
-  g.ellipse(128, 182, 22, 46, -0.08, 0, Math.PI * 2);
-  g.fill();
-  g.strokeStyle = '#e8590c';
-  g.lineWidth = 4;
-  for(let i = 0; i < 4; i++){
+  const ink = '#9a3412';
+  const pts = [];
+  for(let i = 0; i <= 16; i++){
+    const t = i / 16;
+    pts.push({
+      x: 150 + Math.sin(t * Math.PI * 1.05 - 0.35) * 34,
+      y: 128 + t * 196,
+      r: 36 - t * 14
+    });
+  }
+  let tx = pts[pts.length - 1].x;
+  let ty = pts[pts.length - 1].y;
+  let ang = 0.9;
+  for(let i = 0; i < 12; i++){
+    const t = i / 11;
+    ang += 0.48;
+    const step = 18 - t * 7;
+    tx += Math.cos(ang) * step;
+    ty += Math.sin(ang) * step * 0.72;
+    pts.push({x: tx, y: ty, r: Math.max(6, 20 - t * 14)});
+  }
+  function ring(p, prev, next){
+    const a = Math.atan2(next.y - prev.y, next.x - prev.x);
+    g.save();
+    g.translate(p.x, p.y);
+    g.rotate(a);
+    const grd = g.createLinearGradient(0, -p.r, 0, p.r);
+    grd.addColorStop(0, '#ffd43b');
+    grd.addColorStop(0.42, '#ff922b');
+    grd.addColorStop(1, '#ffe8cc');
+    g.fillStyle = grd;
     g.beginPath();
-    g.arc(98, 140 + i * 22, 16, 0.5, 2.3);
+    g.ellipse(0, 0, Math.max(4, p.r * 0.78), p.r, 0, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = ink;
+    g.lineWidth = Math.max(2, p.r * 0.12);
+    g.stroke();
+    g.strokeStyle = 'rgba(154,52,18,.4)';
+    g.lineWidth = 2;
+    g.beginPath();
+    g.moveTo(-p.r * 0.45, -p.r * 0.05);
+    g.quadraticCurveTo(0, -p.r * 0.35, p.r * 0.42, -p.r * 0.02);
+    g.stroke();
+    g.restore();
+  }
+  for(let i = pts.length - 1; i >= 0; i--){
+    ring(pts[i], pts[Math.max(0, i - 1)], pts[Math.min(pts.length - 1, i + 1)]);
+  }
+  g.fillStyle = '#ff8787';
+  g.strokeStyle = ink;
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(128, 168);
+  g.quadraticCurveTo(62, 150, 54, 196);
+  g.quadraticCurveTo(70, 228, 124, 214);
+  g.quadraticCurveTo(92, 196, 128, 184);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.strokeStyle = 'rgba(154,52,18,.4)';
+  g.lineWidth = 1.8;
+  for(let i = 0; i < 5; i++){
+    g.beginPath();
+    g.moveTo(120, 174 + i * 8);
+    g.quadraticCurveTo(90, 168 + i * 10, 68, 186 + i * 6);
     g.stroke();
   }
+  g.save();
+  g.translate(168, 92);
+  g.rotate(-0.55);
+  const hg = g.createRadialGradient(-10, -12, 6, 0, 4, 52);
+  hg.addColorStop(0, '#ffe066');
+  hg.addColorStop(0.7, '#ffb703');
+  hg.addColorStop(1, '#f76707');
+  g.fillStyle = hg;
+  g.beginPath();
+  g.ellipse(0, 0, 46, 36, 0, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 6;
+  g.stroke();
+  g.restore();
+  g.save();
+  g.translate(198, 118);
+  g.rotate(0.42);
   g.fillStyle = '#ffb703';
-  g.strokeStyle = '#9a3412';
-  g.lineWidth = 7;
   g.beginPath();
-  g.ellipse(136, 78, 36, 40, 0.35, 0, Math.PI * 2);
-  g.fill(); g.stroke();
+  g.ellipse(28, 0, 40, 13, 0, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 5;
+  g.stroke();
+  g.fillStyle = '#fff3bf';
   g.beginPath();
-  g.ellipse(178, 96, 28, 12, 0.15, 0, Math.PI * 2);
-  g.fill(); g.stroke();
+  g.ellipse(30, 4, 28, 6, 0, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#e8590c';
+  g.beginPath();
+  g.ellipse(66, 1, 7, 5, 0.2, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 2.5;
+  g.stroke();
+  g.restore();
   g.fillStyle = '#ffd43b';
+  g.strokeStyle = ink;
+  g.lineWidth = 4.5;
   g.beginPath();
-  g.moveTo(116, 50);
-  g.lineTo(126, 16);
-  g.lineTo(140, 48);
-  g.lineTo(154, 14);
-  g.lineTo(162, 52);
+  g.moveTo(118, 72);
+  g.lineTo(104, 30);
+  g.lineTo(128, 60);
+  g.lineTo(134, 16);
+  g.lineTo(150, 56);
+  g.lineTo(164, 22);
+  g.lineTo(158, 68);
   g.closePath();
   g.fill(); g.stroke();
   g.fillStyle = '#fff';
   g.strokeStyle = '#222';
-  g.lineWidth = 3;
-  g.beginPath(); g.arc(150, 70, 10, 0, Math.PI * 2); g.fill(); g.stroke();
-  g.fillStyle = '#222';
-  g.beginPath(); g.arc(153, 72, 4.5, 0, Math.PI * 2); g.fill();
-  g.fillStyle = '#ff6b6b';
-  g.strokeStyle = '#9a3412';
-  g.lineWidth = 5;
+  g.lineWidth = 4;
   g.beginPath();
-  g.moveTo(98, 118);
-  g.quadraticCurveTo(46, 96, 56, 152);
-  g.quadraticCurveTo(82, 138, 102, 150);
+  g.ellipse(184, 86, 16, 18, 0.1, 0, Math.PI * 2);
   g.fill(); g.stroke();
+  g.fillStyle = '#3d2914';
+  g.beginPath();
+  g.arc(188, 90, 8, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#111';
+  g.beginPath();
+  g.arc(190, 92, 4.2, 0, Math.PI * 2);
+  g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(182, 82, 4, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.arc(192, 94, 1.6, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,107,107,.55)';
+  g.beginPath();
+  g.ellipse(172, 108, 10, 6, 0.2, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 3;
+  g.beginPath();
+  g.arc(214, 108, 8, 0.2, 1.3);
+  g.stroke();
+  return cv;
+}
+function paintShark(){
+  const cv = document.createElement('canvas');
+  cv.width = 480; cv.height = 240;
+  const g = cv.getContext('2d');
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  const ink = '#1864ab';
+  g.fillStyle = '#4dabf7';
+  g.strokeStyle = ink;
+  g.lineWidth = 6;
+  g.beginPath();
+  g.moveTo(128, 112);
+  g.quadraticCurveTo(78, 96, 26, 28);
+  g.quadraticCurveTo(52, 86, 92, 110);
+  g.quadraticCurveTo(48, 128, 34, 186);
+  g.quadraticCurveTo(84, 150, 128, 136);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.strokeStyle = 'rgba(24,100,171,.35)';
+  g.lineWidth = 2;
+  g.beginPath(); g.moveTo(118, 114); g.quadraticCurveTo(70, 90, 36, 42); g.stroke();
+  g.beginPath(); g.moveTo(118, 128); g.quadraticCurveTo(70, 142, 46, 172); g.stroke();
+  g.fillStyle = '#1c7ed6';
+  g.strokeStyle = ink;
+  g.lineWidth = 5.5;
+  g.beginPath();
+  g.moveTo(236, 86);
+  g.lineTo(268, 12);
+  g.quadraticCurveTo(292, 24, 286, 78);
+  g.quadraticCurveTo(262, 90, 236, 98);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.beginPath();
+  g.moveTo(332, 148);
+  g.quadraticCurveTo(300, 214, 236, 190);
+  g.quadraticCurveTo(292, 176, 334, 158);
+  g.closePath();
+  g.fillStyle = '#74c0fc';
+  g.fill(); g.stroke();
+  g.beginPath();
+  g.moveTo(188, 150);
+  g.quadraticCurveTo(168, 186, 142, 172);
+  g.quadraticCurveTo(170, 164, 190, 156);
+  g.closePath();
+  g.fillStyle = '#4dabf7';
+  g.fill(); g.stroke();
+  g.beginPath();
+  g.moveTo(438, 114);
+  g.quadraticCurveTo(410, 62, 330, 58);
+  g.quadraticCurveTo(250, 52, 190, 86);
+  g.quadraticCurveTo(150, 104, 124, 114);
+  g.lineTo(124, 134);
+  g.quadraticCurveTo(168, 162, 246, 176);
+  g.quadraticCurveTo(330, 192, 398, 160);
+  g.quadraticCurveTo(436, 144, 438, 114);
+  g.closePath();
+  const body = g.createLinearGradient(0, 40, 0, 200);
+  body.addColorStop(0, '#339af0');
+  body.addColorStop(0.42, '#74c0fc');
+  body.addColorStop(0.58, '#e7f5ff');
+  body.addColorStop(1, '#fff');
+  g.fillStyle = body;
+  g.fill();
+  g.lineWidth = 6.5;
+  g.stroke();
+  g.save();
+  g.clip();
+  g.fillStyle = 'rgba(255,255,255,.35)';
+  g.beginPath();
+  g.ellipse(300, 78, 70, 16, -0.15, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+  g.strokeStyle = 'rgba(24,100,171,.75)';
+  g.lineWidth = 2.6;
+  for(let i = 0; i < 4; i++){
+    g.beginPath();
+    g.moveTo(372 - i * 14, 104);
+    g.quadraticCurveTo(366 - i * 14, 122, 370 - i * 14, 140);
+    g.stroke();
+  }
+  g.fillStyle = '#fff';
+  g.strokeStyle = ink;
+  g.lineWidth = 4;
+  g.beginPath();
+  g.ellipse(392, 100, 16, 18, 0.05, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#1a1a1a';
+  g.beginPath(); g.arc(396, 104, 8, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(390, 98, 4, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.arc(400, 108, 1.6, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,146,180,.5)';
+  g.beginPath();
+  g.ellipse(376, 124, 11, 7, -0.1, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 3.2;
+  g.beginPath();
+  g.arc(412, 126, 16, 0.15, 1.05);
+  g.stroke();
+  return cv;
+}
+function paintDolphin(){
+  const cv = document.createElement('canvas');
+  cv.width = 480; cv.height = 250;
+  const g = cv.getContext('2d');
+  g.lineJoin = 'round'; g.lineCap = 'round';
+  const ink = '#343a40';
+  g.fillStyle = '#868e96';
+  g.strokeStyle = ink;
+  g.lineWidth = 6;
+  g.beginPath();
+  g.moveTo(132, 124);
+  g.quadraticCurveTo(70, 104, 22, 72);
+  g.quadraticCurveTo(64, 112, 100, 122);
+  g.quadraticCurveTo(52, 136, 28, 176);
+  g.quadraticCurveTo(78, 154, 132, 142);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.strokeStyle = 'rgba(52,58,64,.35)';
+  g.lineWidth = 2;
+  g.beginPath(); g.moveTo(120, 124); g.quadraticCurveTo(70, 112, 36, 84); g.stroke();
+  g.beginPath(); g.moveTo(120, 136); g.quadraticCurveTo(72, 146, 42, 166); g.stroke();
+  g.fillStyle = '#495057';
+  g.strokeStyle = ink;
+  g.lineWidth = 5.5;
+  g.beginPath();
+  g.moveTo(248, 78);
+  g.quadraticCurveTo(268, 18, 308, 16);
+  g.quadraticCurveTo(296, 48, 284, 86);
+  g.quadraticCurveTo(266, 90, 246, 96);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.beginPath();
+  g.moveTo(324, 150);
+  g.quadraticCurveTo(304, 210, 252, 196);
+  g.quadraticCurveTo(300, 176, 328, 158);
+  g.closePath();
+  g.fillStyle = '#adb5bd';
+  g.fill(); g.stroke();
+  g.beginPath();
+  g.moveTo(458, 128);
+  g.quadraticCurveTo(438, 114, 404, 114);
+  g.quadraticCurveTo(372, 70, 324, 64);
+  g.quadraticCurveTo(250, 52, 190, 90);
+  g.quadraticCurveTo(150, 112, 124, 124);
+  g.lineTo(124, 144);
+  g.quadraticCurveTo(170, 168, 250, 178);
+  g.quadraticCurveTo(330, 190, 392, 164);
+  g.quadraticCurveTo(430, 150, 444, 142);
+  g.quadraticCurveTo(458, 138, 458, 128);
+  g.closePath();
+  const body = g.createLinearGradient(0, 40, 0, 200);
+  body.addColorStop(0, '#495057');
+  body.addColorStop(0.4, '#868e96');
+  body.addColorStop(0.55, '#f1f3f5');
+  body.addColorStop(1, '#fff');
+  g.fillStyle = body;
+  g.fill();
+  g.lineWidth = 6.5;
+  g.stroke();
+  g.save();
+  g.clip();
+  g.fillStyle = 'rgba(255,255,255,.28)';
+  g.beginPath();
+  g.ellipse(280, 86, 64, 14, -0.2, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+  g.strokeStyle = ink;
+  g.lineWidth = 3;
+  g.beginPath();
+  g.arc(348, 74, 6, 0.2, 1.15);
+  g.stroke();
+  g.lineWidth = 2.6;
+  g.beginPath();
+  g.moveTo(452, 132);
+  g.quadraticCurveTo(424, 140, 390, 128);
+  g.stroke();
+  g.fillStyle = '#fff';
+  g.strokeStyle = ink;
+  g.lineWidth = 4;
+  g.beginPath();
+  g.ellipse(378, 104, 15, 17, 0, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#1a1a1a';
+  g.beginPath(); g.arc(382, 108, 7.5, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(376, 102, 3.6, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,182,193,.55)';
+  g.beginPath();
+  g.ellipse(360, 126, 10, 6, 0, 0, Math.PI * 2);
+  g.fill();
   return cv;
 }
 function pushFish(f){
@@ -646,11 +1036,12 @@ function placeDecor(kind){
     kind,
     x: 0.14 + Math.random() * 0.72,
     h: kind === 'kelp' ? 0.24 + Math.random() * 0.18 : undefined,
-    scale: kind === 'coral' ? 0.72 + Math.random() * 0.45 : undefined,
+    scale: kind === 'kelp' ? undefined : 0.78 + Math.random() * 0.4,
     hue: Math.floor(Math.random() * 4),
     phase: Math.random() * Math.PI * 2
   });
-  LTL.beep(kind === 'kelp' ? 392 : 494, .08, 'sine', .04);
+  const tone = kind === 'kelp' ? 392 : kind === 'pearl' ? 659 : 494;
+  LTL.beep(tone, .08, 'sine', .04);
   updateCopy();
   if(mode === 'sea') ensureLoop();
 }
@@ -726,8 +1117,14 @@ function metrics(f, seaW, seaH){
     dw = maxW;
     dh = Math.max(minH, Math.min(maxH, dw / aspect));
   }else if(dw < seaW * 0.34){
-    dw = seaW * 0.34;
-    dh = Math.min(maxH, Math.max(minH, dw / aspect));
+    const grown = dh * (seaW * 0.34) / dw;
+    if(grown <= maxH){
+      dw = seaW * 0.34;
+      dh = grown;
+    }else{
+      dh = maxH;
+      dw = dh * aspect;
+    }
   }
   return {dw, dh};
 }
@@ -778,7 +1175,7 @@ function drawFish(ctx, f, w, h, t){
   ctx.rotate(calm() ? 0 : Math.cos(t * 1.45 + f.phase) * 0.06);
   ctx.scale((f.vx >= 0 ? 1 : -1) * sc, sc);
   ctx.globalAlpha = f.alpha;
-  const strips = Math.max(10, Math.min(28, Math.round(f.img.width / 5)));
+  const strips = Math.max(16, Math.min(48, Math.round(f.img.width / 5)));
   const sw = m.dw / strips;
   const amp = calm() ? 0 : Math.min(8, m.dh * 0.035);
   for(let i = 0; i < strips; i++){
@@ -853,6 +1250,87 @@ function drawCoral(g, item, w, h, t){
   bulb(-s * 0.05, -s * 0.7, s * 0.16, s * 0.24, pal[2]);
   g.restore();
 }
+function drawPearl(g, item, w, h, t){
+  const pals = [
+    {shell:'#f4c89a', ridge:'#d08a4c', inner:'#ffe3ec'},
+    {shell:'#f3d0ff', ridge:'#c9a0e8', inner:'#fff0f6'},
+    {shell:'#ffe08a', ridge:'#f0a050', inner:'#fff9db'},
+    {shell:'#c5ddf5', ridge:'#74a8d8', inner:'#e7f5ff'}
+  ];
+  const pal = pals[(item.hue || 0) % pals.length];
+  const s = (item.scale || 1) * Math.min(h * 0.17, w * 0.2);
+  const cx = item.x * w;
+  const base = h * 0.905;
+  g.save();
+  g.translate(cx, base);
+  g.lineJoin = 'round';
+  g.lineWidth = Math.max(2, s * 0.055);
+  g.strokeStyle = '#5c4033';
+  g.fillStyle = pal.shell;
+  g.beginPath();
+  g.moveTo(-s * 0.98, -s * 0.12);
+  g.bezierCurveTo(-s * 0.92, s * 0.55, s * 0.92, s * 0.55, s * 0.98, -s * 0.12);
+  g.quadraticCurveTo(0, s * 0.02, -s * 0.98, -s * 0.12);
+  g.fill(); g.stroke();
+  g.strokeStyle = pal.ridge;
+  g.lineWidth = Math.max(1.4, s * 0.03);
+  for(let i = -3; i <= 3; i++){
+    g.beginPath();
+    g.moveTo(i * s * 0.05, -s * 0.04);
+    g.quadraticCurveTo(i * s * 0.16, s * 0.16, i * s * 0.24, s * 0.34);
+    g.stroke();
+  }
+  g.save();
+  g.translate(-s * 0.02, -s * 0.1);
+  g.rotate(-0.85);
+  g.fillStyle = pal.shell;
+  g.strokeStyle = '#5c4033';
+  g.lineWidth = Math.max(2, s * 0.055);
+  g.beginPath();
+  g.moveTo(-s * 0.86, 0.02 * s);
+  g.bezierCurveTo(-s * 0.72, -s * 0.72, s * 0.7, -s * 0.78, s * 0.92, 0);
+  g.quadraticCurveTo(0, s * 0.16, -s * 0.86, 0.02 * s);
+  g.fill(); g.stroke();
+  g.fillStyle = pal.inner;
+  g.beginPath();
+  g.moveTo(-s * 0.58, -s * 0.02);
+  g.bezierCurveTo(-s * 0.42, -s * 0.5, s * 0.46, -s * 0.52, s * 0.64, -s * 0.02);
+  g.quadraticCurveTo(0, s * 0.08, -s * 0.58, -s * 0.02);
+  g.fill();
+  g.strokeStyle = pal.ridge;
+  g.lineWidth = Math.max(1.2, s * 0.025);
+  for(let i = -2; i <= 2; i++){
+    g.beginPath();
+    g.moveTo(i * s * 0.06, -s * 0.04);
+    g.quadraticCurveTo(i * s * 0.12, -s * 0.28, i * s * 0.2, -s * 0.46);
+    g.stroke();
+  }
+  g.restore();
+  g.fillStyle = pal.inner;
+  g.beginPath();
+  g.ellipse(0, s * 0.05, s * 0.58, s * 0.2, 0, 0, Math.PI * 2);
+  g.fill();
+  const py = -s * 0.02;
+  const pr = s * 0.3;
+  const glint = calm() ? 0 : Math.sin(t * 2.2 + (item.phase || 0));
+  const pg = g.createRadialGradient(-pr * 0.35, py - pr * 0.4, pr * 0.08, 0, py, pr);
+  pg.addColorStop(0, '#fff');
+  pg.addColorStop(0.5, '#f8f9fa');
+  pg.addColorStop(0.82, '#e7f5ff');
+  pg.addColorStop(1, '#d0bfff');
+  g.fillStyle = pg;
+  g.beginPath();
+  g.arc(0, py, pr, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = 'rgba(73,80,87,.55)';
+  g.lineWidth = Math.max(1.4, s * 0.028);
+  g.stroke();
+  g.fillStyle = 'rgba(255,255,255,' + (0.75 + glint * 0.2) + ')';
+  g.beginPath();
+  g.ellipse(-pr * 0.28, py - pr * 0.32, pr * 0.24, pr * 0.12, -0.6, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+}
 function renderSea(g, w, h, t){
   const grd = g.createLinearGradient(0, 0, 0, h);
   grd.addColorStop(0, '#8fd4ff');
@@ -884,6 +1362,7 @@ function renderSea(g, w, h, t){
   const decor = AMBIENT.concat(placedDecor);
   decor.forEach(d => { if(d.kind === 'kelp') drawKelp(g, d, w, h, t) });
   decor.forEach(d => { if(d.kind === 'coral') drawCoral(g, d, w, h, t) });
+  decor.forEach(d => { if(d.kind === 'pearl') drawPearl(g, d, w, h, t) });
   if(opts.bubbles){
     bubbles.forEach(b => {if(b.y > 0.55) drawBubble(g, b, w, h)});
   }
@@ -1001,8 +1480,11 @@ document.getElementById('wipe').addEventListener('click', wipe);
 document.getElementById('alive').addEventListener('click', releaseFish);
 document.getElementById('addGold').addEventListener('click', () => placeStock('gold'));
 document.getElementById('addHorse').addEventListener('click', () => placeStock('horse'));
+document.getElementById('addShark').addEventListener('click', () => placeStock('shark'));
+document.getElementById('addDolphin').addEventListener('click', () => placeStock('dolphin'));
 document.getElementById('addKelp').addEventListener('click', () => placeDecor('kelp'));
 document.getElementById('addCoral').addEventListener('click', () => placeDecor('coral'));
+document.getElementById('addPearl').addEventListener('click', () => placeDecor('pearl'));
 seeSeaBtn.addEventListener('click', () => show('sea'));
 moreBtn.addEventListener('click', leaveSea);
 document.getElementById('restart').addEventListener('click', restartAll);
@@ -1075,32 +1557,67 @@ if(location.search.indexOf('selftest=1') >= 0){
   const assert = (c, m) => { if(!c) errors.push(m) };
   try{
     mode = 'sea';
+    papers[0].strokes = [{color:'#e03131', w:0.05, pts:[]}];
+    for(let i = 0; i < 14; i++) papers[0].strokes[0].pts.push({x:0.15 + i * 0.05, y:0.45 + Math.sin(i * 0.6) * 0.1});
+    active = 0;
+    releaseFish();
+    assert(fish.length === 1, '画出来的鱼没有放进海里');
+    assert(papers[0].strokes.length === 0, '变成真鱼后纸还在');
+    assert(fish[0].img && fish[0].img.width > 8, '画出来的鱼没有图像');
+    fish.length = 0;
+    farewell = null;
+    justReset = false;
     placeStock('gold');
     assert(fish.length === 1, '小金鱼没放进去');
     assert(total >= 1, '总数没加');
+    placeStock('shark');
+    placeStock('dolphin');
+    assert(fish.length === 3, '鲨鱼海豚没放进去 ' + fish.length);
+    const goldS = stockSprite('gold');
+    const horseS = stockSprite('horse');
+    const sharkS = stockSprite('shark');
+    const dolphinS = stockSprite('dolphin');
+    assert(goldS !== sharkS && dolphinS !== horseS, '新动物没有自己的画');
+    assert(sharkS.width > sharkS.height && dolphinS.width > dolphinS.height, '鲨鱼海豚应该横着游');
+    assert(horseS.height > horseS.width, '海马应该立着');
+    const opaque = cv => {
+      const data = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      let n = 0;
+      for(let i = 3; i < data.length; i += 32) if(data[i] > 20) n++;
+      return n;
+    };
+    assert(opaque(goldS) > 40 && opaque(horseS) > 40 && opaque(sharkS) > 40 && opaque(dolphinS) > 40, '动物画空了');
     const before = fish.length;
     placeDecor('kelp');
     placeDecor('coral');
-    assert(fish.length === before, '海带珊瑚被算成鱼了');
-    assert(placedDecor.length === 2, '装饰没放上 ' + placedDecor.length);
-    for(let i = 0; i < 8; i++) placeStock(i % 2 ? 'horse' : 'gold');
+    placeDecor('pearl');
+    assert(fish.length === before, '摆设被算成鱼了');
+    assert(placedDecor.length === 3, '装饰没放上 ' + placedDecor.length);
+    assert(placedDecor.some(d => d.kind === 'pearl'), '没有珍珠贝');
+    for(let i = 0; i < 6; i++) placeStock(i % 2 ? 'horse' : 'gold');
     assert(fish.length === 9, '放到第九条不对 ' + fish.length);
-    placeStock('horse');
+    placeStock('shark');
     assert(fish.length === 10, '第十条没放进去 ' + fish.length);
     assert(!!(farewell && !farewell.done), '第十条没有一起游走');
-    placeStock('gold');
+    placeStock('dolphin');
     assert(fish.length === 10, '超过十条了');
-    assert(placedDecor.length === 2, '游走前装饰丢了');
+    assert(placedDecor.length === 3, '游走前装饰丢了');
     const cv = document.createElement('canvas');
-    cv.width = 200; cv.height = 280;
-    renderSea(cv.getContext('2d'), 200, 280, 1.2);
+    cv.width = 360; cv.height = 280;
+    renderSea(cv.getContext('2d'), 360, 280, 1.2);
     const px = cv.getContext('2d').getImageData(20, 250, 1, 1).data;
     assert(px[3] > 0, '海底没有画出来');
+    const pc = document.createElement('canvas');
+    pc.width = 200; pc.height = 160;
+    drawPearl(pc.getContext('2d'), {kind:'pearl', x:0.5, scale:1.2, hue:1, phase:0}, 200, 160, 1);
+    assert(opaque(pc) > 8, '珍珠贝没画出来');
     fish.length = 0;
     if(farewell) farewell.done = true;
     banner.hidden = true;
+    const kept = placedDecor.length;
     placeDecor('kelp');
-    assert(placedDecor.length === 3, '鱼游走后不能再放海带');
+    assert(placedDecor.length === kept + 1, '鱼游走后不能再放海带');
+    assert(placedDecor.some(d => d.kind === 'pearl'), '珍珠贝跟着鱼游走了');
     for(let i = 0; i < 20; i++) placeDecor('coral');
     assert(placedDecor.length === MAX_DECOR, '装饰没有上限 ' + placedDecor.length);
     assert(fish.length === 0, '装饰被算进鱼了');
