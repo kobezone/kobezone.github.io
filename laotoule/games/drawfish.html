@@ -31,13 +31,20 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
 .tools{display:flex;gap:8px;flex:none}
 .tools .btn{flex:1;min-height:52px;padding:8px 4px}
 .primary{width:100%;min-height:64px;font-size:1.35rem;flex:none}
-.place{flex:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.place .btn{min-height:68px;font-size:1.12rem;padding:4px 2px;flex-direction:column;gap:1px;line-height:1.1}
-.place svg{width:48px;height:32px;flex:none}
+#netTool{width:100%;min-height:58px;font-size:1.25rem;background:#fff4e6;gap:8px}
+#netTool svg{width:46px;height:30px;flex:none}
+#netTool.on{background:#ffd43b;outline:4px solid #222;outline-offset:2px}
+.stage.netting{box-shadow:0 5px 0 #222,inset 0 0 0 5px #ffd43b}
+.place{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.place .btn{min-height:64px;font-size:clamp(.86rem,3vw,1.05rem);padding:3px 1px;flex-direction:column;gap:0;line-height:1.05;white-space:nowrap}
+.place svg{width:42px;height:28px;flex:none}
 #addGold{background:#ffd43b}
 #addHorse{background:#ffd8a8}
 #addShark{background:#a5d8ff}
 #addDolphin{background:#c5f6fa}
+#addTurtle{background:#d8f5a2}
+#addLion{background:#ffc078}
+#addSeal{background:#dee2e6}
 #addKelp{background:#b2f2bb}
 #addCoral{background:#fcc2d7}
 #addPearl{background:#fff0f6}
@@ -75,7 +82,8 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   .banner p{font-size:1.3rem}
   .primary{font-size:1.2rem}
   .plabel{font-size:1rem}
-  .place .btn{font-size:1rem;min-height:64px}
+  .place .btn{font-size:.86rem;min-height:60px}
+  #netTool{font-size:1.1rem}
 }
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>🐟 画着小鱼变真鱼</h1></div>
@@ -120,13 +128,17 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
         <p class="sub">海又空了。海带、珊瑚和珍珠贝还在</p>
       </div>
     </div>
+    <button class="btn" type="button" id="netTool" aria-pressed="false" aria-label="捞网。点一下拿起，再点海里的一条"><svg viewBox="0 0 48 32" aria-hidden="true"><ellipse cx="16" cy="18" rx="12" ry="8.5" fill="#d0ebff" stroke="#e67700" stroke-width="2.3"/><path d="M6 14h20M6 18h20M7 22h18M10 11v14M16 10v16M22 11v14" fill="none" stroke="#fff" stroke-width="1.15"/><path d="M25 13 L42 4" fill="none" stroke="#e67700" stroke-width="3.2" stroke-linecap="round"/></svg><span id="netLabel">捞网</span></button>
     <div class="place" role="group" aria-label="放到海里">
       <button class="btn" type="button" id="addGold" aria-label="放一条小金鱼"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M17 15c-1-6-7-9-13-5 4 2 5 6 3 9-5 1-7 5-3 8 6 2 11 0 13-5" fill="#ff8787" stroke="#222" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 18c-2 4-6 6-11 5 3-1 5-3 6-5" fill="#ff6b6b" stroke="#222" stroke-width="1.4"/><ellipse cx="30" cy="17" rx="12" ry="9" fill="#ffd43b" stroke="#222" stroke-width="1.8"/><path d="M22 9c3-5 9-5 12 0-4 2-8 2-12 0z" fill="#ff922b" stroke="#222" stroke-width="1.4"/><circle cx="36" cy="15" r="2.6" fill="#fff" stroke="#222" stroke-width="1.2"/><circle cx="37" cy="15.4" r="1.15" fill="#222"/></svg>小金鱼</button>
-      <button class="btn" type="button" id="addHorse" aria-label="放一只小海马"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M27 3l2 4 4-3-1 5 4-1c2 2 6 3 7 6-3 1-5 0-6 2 1 3 0 6-2 7-1 3-2 5-2 7-2 3-7 2-7-1 1-2 4-2 3-5-4-1-6-5-4-9 1-3 4-5 6-6V6l-4-3z" fill="#ffb703" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M20 12c-5 1-7 5-5 8 3-1 5-3 5-5" fill="#ff8787" stroke="#222" stroke-width="1.3"/><circle cx="31" cy="9" r="1.5" fill="#222"/></svg>小海马</button>
+      <button class="btn" type="button" id="addHorse" aria-label="放一只小海马"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M18 8c2-4 8-5 12-2 1 4 8 5 10 8-4 1-7 0-8 2 2 3 0 6-3 7-1 4-3 6-5 8-3 2-7-1-5-4 2-1 3-4 1-6-4-1-6-5-5-9 1-2 2-4 3-4z" fill="#f59f00" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M28 10h12c1 2 0 4-2 4H30" fill="#ffe8a3" stroke="#222" stroke-width="1.3"/><circle cx="24" cy="9" r="1.5" fill="#222"/><path d="M16 24c-2 3-1 6 2 6 2-2 2-4 0-6z" fill="#f08c2e" stroke="#222" stroke-width="1.2"/></svg>小海马</button>
       <button class="btn" type="button" id="addShark" aria-label="放一条鲨鱼"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M12 16c-4-1-8-6-10-10 2 5 6 7 10 8-5 2-7 6-6 10 4-2 7-5 6-8z" fill="#4dabf7" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 15c6-2 14-4 24-2 6 1 8 4 8 6-4 4-14 6-26 4-4-1-6-4-6-8z" fill="#74c0fc" stroke="#222" stroke-width="1.6"/><path d="M14 15c6-2 14-3 22-1v7c-8 2-16 1-22-2z" fill="#fff"/><path d="M26 13l4-8 2 8z" fill="#1c7ed6" stroke="#222" stroke-width="1.4" stroke-linejoin="round"/><circle cx="38" cy="15" r="1.5" fill="#222"/></svg>鲨鱼</button>
       <button class="btn" type="button" id="addDolphin" aria-label="放一只海豚"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M13 16c-4-1-8-4-11-7 3 4 7 5 11 5-4 2-6 5-5 8 3-1 6-4 5-6z" fill="#868e96" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 15c5-3 12-6 20-4 5 1 10 2 12 5-1 2-6 2-10 1 1 4-2 7-8 8-8 2-14 0-16-4 0-2 1-4 2-6z" fill="#adb5bd" stroke="#222" stroke-width="1.6"/><path d="M16 18c6 2 12 2 18 0v4c-6 2-12 1-18-1z" fill="#f8f9fa"/><path d="M27 12c2-6 6-8 8-8-1 4-2 7-4 8z" fill="#495057" stroke="#222" stroke-width="1.3"/><circle cx="39" cy="15" r="1.4" fill="#222"/></svg>海豚</button>
+      <button class="btn" type="button" id="addTurtle" aria-label="放一只海龟"><svg viewBox="0 0 48 32" aria-hidden="true"><ellipse cx="22" cy="18" rx="12" ry="8" fill="#8fbc4a" stroke="#222" stroke-width="1.6"/><path d="M14 14h16M18 11v14M26 11v14" stroke="#5c7a1f" stroke-width="1.2"/><ellipse cx="36" cy="16" rx="5" ry="3.4" fill="#c0eb75" stroke="#222" stroke-width="1.4"/><path d="M30 22c4 5 2 8-2 7" fill="#c0eb75" stroke="#222" stroke-width="1.3"/><circle cx="38" cy="15" r="1" fill="#222"/></svg>海龟</button>
+      <button class="btn" type="button" id="addLion" aria-label="放一只海狮"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M8 18c2 4 8 5 14 3 6 3 14 2 18-2 3-1 6-1 8 1 1 2 0 4-2 4-6 1-10-2-14-2-2 4-8 6-14 2-6-2-12-4-10-6z" fill="#e0862d" stroke="#222" stroke-width="1.5"/><path d="M18 20c-2 6-8 8-10 5 4-1 8-3 10-5z" fill="#f4a259" stroke="#222" stroke-width="1.3"/><path d="M34 12c1-3 4-3 4 0" fill="#e0862d" stroke="#222" stroke-width="1.2"/><circle cx="38" cy="14" r="1.2" fill="#222"/></svg>海狮</button>
+      <button class="btn" type="button" id="addSeal" aria-label="放一只海豹"><svg viewBox="0 0 48 32" aria-hidden="true"><ellipse cx="24" cy="18" rx="16" ry="8" fill="#adb5bd" stroke="#222" stroke-width="1.6"/><ellipse cx="36" cy="16" rx="6" ry="5" fill="#ced4da" stroke="#222" stroke-width="1.4"/><circle cx="12" cy="16" r="1.1" fill="#495057"/><circle cx="18" cy="20" r="1.2" fill="#495057"/><circle cx="22" cy="14" r="1" fill="#495057"/><circle cx="38" cy="15" r="1.2" fill="#222"/><path d="M30 22c2 4 6 4 7 1" fill="#dee2e6" stroke="#222" stroke-width="1.2"/></svg>海豹</button>
       <button class="btn" type="button" id="addKelp" aria-label="放一株海带"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M16 30c1-8 4-12 2-22M24 30c0-10 6-12 4-24M32 30c-1-8-4-14-2-22" fill="none" stroke="#2b8a3e" stroke-width="3" stroke-linecap="round"/><circle cx="18" cy="8" r="3" fill="#69db7c"/><circle cx="28" cy="6" r="3.2" fill="#2f9e44"/><circle cx="30" cy="10" r="2.4" fill="#8ce99a"/></svg>海带</button>
-      <button class="btn" type="button" id="addCoral" aria-label="放一丛珊瑚"><svg viewBox="0 0 48 32" aria-hidden="true"><ellipse cx="24" cy="22" rx="6" ry="8" fill="#ff8787" stroke="#222" stroke-width="2"/><ellipse cx="14" cy="14" rx="5" ry="7" fill="#ffa8a8" stroke="#222" stroke-width="2"/><ellipse cx="34" cy="13" rx="6" ry="8" fill="#ff6b6b" stroke="#222" stroke-width="2"/><ellipse cx="24" cy="8" rx="5" ry="6" fill="#fcc2d7" stroke="#222" stroke-width="2"/></svg>珊瑚</button>
+      <button class="btn" type="button" id="addCoral" aria-label="放一丛珊瑚"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M24 30c-1-8 2-12 0-16M16 30c2-6-2-10 0-16M32 30c-2-6 2-10 0-15" fill="none" stroke="#e8590c" stroke-width="2.2" stroke-linecap="round"/><path d="M24 16c-4-4-4-8-1-12M24 16c4-3 5-8 2-12M16 16c-3-4-2-8 1-11M32 16c3-4 2-8-1-11" fill="none" stroke="#ff8787" stroke-width="1.7" stroke-linecap="round"/></svg>珊瑚</button>
       <button class="btn" type="button" id="addPearl" aria-label="放一只珍珠贝壳"><svg viewBox="0 0 48 32" aria-hidden="true"><path d="M8 20c0 6 32 6 32 0-8 3-24 3-32 0z" fill="#f4c89a" stroke="#222" stroke-width="1.7"/><path d="M10 18c2-8 26-10 30-1-8-4-22-3-30 1z" fill="#ffd8a8" stroke="#222" stroke-width="1.7"/><path d="M14 17c2-5 18-6 22-1-6-2-16-1-22 1z" fill="#ffe3ec"/><circle cx="24" cy="18" r="4.2" fill="#fff" stroke="#868e96" stroke-width="1.3"/><circle cx="22.4" cy="16.6" r="1.3" fill="#fff"/></svg>珍珠贝壳</button>
     </div>
     <button class="btn green primary" type="button" id="more">再画一条</button>
@@ -135,8 +147,9 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   <div class="help"><h2>📖 怎么玩</h2><ul>
     <li>桌上有白纸。点一张，用手指画出小鱼。</li>
     <li>画好了点<b>变成真鱼</b>。大海漫上来，这张画就会游。</li>
-    <li>大海里可以再放<b>小金鱼</b>、<b>小海马</b>、<b>鲨鱼</b>和<b>海豚</b>。它们和画出来的鱼算在一起。</li>
+    <li>大海里可以再放<b>小金鱼</b>、<b>小海马</b>、<b>鲨鱼</b>、<b>海豚</b>、<b>海龟</b>、<b>海狮</b>和<b>海豹</b>。它们和画出来的鱼算在一起。</li>
     <li>海里<b>最多十条</b>。放进第十条时，它们会一起游走。海又空了，可以再画、再放。</li>
+    <li>点<b>捞网</b>，再点海里的一条，就捞起这一条。没点中不会少。一次只捞一条。海带、珊瑚和珍珠贝捞不走。</li>
     <li><b>海带</b>、<b>珊瑚</b>和<b>珍珠贝壳</b>是海底的摆设，不算鱼，也不会跟着游走。</li>
     <li>撤销去掉刚才那一笔。擦掉清空这张纸。笔的粗细在设置里。</li>
   </ul></div>
@@ -163,7 +176,8 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:58px}
   </div>
   <div class="howto"><h3>📖 怎么玩</h3><ul>
     <li>点白纸，用手指画。点<b>变成真鱼</b>，它就游进大海。</li>
-    <li>大海里也可以放<b>小金鱼</b>、<b>小海马</b>、<b>鲨鱼</b>、<b>海豚</b>。和画出来的算在一起，最多 <b>10</b> 条。</li>
+    <li>大海里也可以放<b>小金鱼</b>、<b>小海马</b>、<b>鲨鱼</b>、<b>海豚</b>、<b>海龟</b>、<b>海狮</b>、<b>海豹</b>。和画出来的算在一起，最多 <b>10</b> 条。</li>
+    <li>点<b>捞网</b>再点一条，捞起这一条。没点中不会少。一次只捞一条。摆设捞不走。一共放进海里的数不会因为捞网变少。</li>
     <li>第 10 条放进去，十条一起游走。<b>海带</b>、<b>珊瑚</b>和<b>珍珠贝壳</b>不算鱼，还留在海底。</li>
     <li>声音跟着大厅里的静音开关。</li>
   </ul></div>
@@ -189,6 +203,8 @@ const calm = () => motionMQ.matches;
 const papers = Array.from({length: 6}, () => ({strokes: []}));
 const fish = [];
 const bubbles = [];
+const scoops = [];
+let netOn = false;
 const AMBIENT = [
   {kind:'kelp', x:0.07, h:0.4, hue:0, phase:0.4},
   {kind:'kelp', x:0.16, h:0.28, hue:1, phase:1.6},
@@ -380,7 +396,7 @@ function show(next){
   viewDesk.hidden = next !== 'desk';
   viewDraw.hidden = next !== 'draw';
   viewSea.hidden = next !== 'sea';
-  if(next !== 'sea'){banner.hidden = true; stopLoop()}
+  if(next !== 'sea'){banner.hidden = true; scoops.length = 0; stopLoop()}
   updateCopy();
   afterLayout(() => {
     if(mode !== next) return;
@@ -406,6 +422,8 @@ function updateCopy(){
     sayEl.textContent = ink ? '画好了，点下面的「变成真鱼」' : '用手指在纸上画一条小鱼';
   }else if(farewell && !farewell.done){
     sayEl.textContent = '十条小鱼游走啦';
+  }else if(netOn){
+    sayEl.textContent = n ? '捞网拿好了。点一条小鱼，只捞一条' : '海里没有可捞的。再点捞网就放下';
   }else if(n === 0){
     sayEl.textContent = justReset ? '十条游走啦。海带、珊瑚和珍珠贝还在' : '点下面的按钮，把小动物和摆设放进海里';
   }else{
@@ -432,11 +450,11 @@ function pickY(){
   }
   return 0.26 + (fish.length % 5) * 0.09;
 }
-function makeFish(img){
+function makeFish(img, kind){
   const dir = Math.random() < .5 ? -1 : 1;
   const variance = 0.86 + Math.random() * 0.28;
   return {
-    img, x: 0.22 + Math.random() * 0.56, y: pickY(),
+    img, kind: kind || '', x: 0.22 + Math.random() * 0.56, y: pickY(),
     vx: dir * baseSpeed() * variance, variance,
     phase: Math.random() * Math.PI * 2, age: 0, alpha: 1, splash: 1
   };
@@ -452,12 +470,29 @@ function burst(x, y){
     });
   }
 }
+const LIVE = {horse:1, turtle:1, lion:1, seal:1};
 function stockSprite(kind){
   if(!sprites[kind]){
-    const paint = {gold: paintGold, horse: paintHorse, shark: paintShark, dolphin: paintDolphin}[kind];
+    const paint = {gold:paintGold, horse:paintHorse, shark:paintShark, dolphin:paintDolphin, turtle:paintTurtle, lion:paintLion, seal:paintSeal}[kind];
     sprites[kind] = paint();
   }
   return sprites[kind];
+}
+function spineRibbon(g, pts){
+  const L = [], R = [];
+  for(let i = 0; i < pts.length; i++){
+    const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
+    const ang = Math.atan2(b.y - a.y, b.x - a.x);
+    const nx = Math.cos(ang + Math.PI / 2) * pts[i].w;
+    const ny = Math.sin(ang + Math.PI / 2) * pts[i].w;
+    L.push([pts[i].x + nx, pts[i].y + ny]);
+    R.push([pts[i].x - nx, pts[i].y - ny]);
+  }
+  g.beginPath();
+  g.moveTo(L[0][0], L[0][1]);
+  for(let i = 1; i < L.length; i++) g.lineTo(L[i][0], L[i][1]);
+  for(let i = R.length - 1; i >= 0; i--) g.lineTo(R[i][0], R[i][1]);
+  g.closePath();
 }
 function paintGold(){
   const cv = document.createElement('canvas');
@@ -624,153 +659,387 @@ function paintGold(){
   g.stroke();
   return cv;
 }
-function paintHorse(){
-  const cv = document.createElement('canvas');
-  cv.width = 320; cv.height = 440;
-  const g = cv.getContext('2d');
-  g.lineJoin = 'round'; g.lineCap = 'round';
+function paintHorseLive(g, w, h, time, phase){
+  g.save();
+  g.scale(w / 320, h / 460);
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
   const ink = '#9a3412';
-  const pts = [];
-  for(let i = 0; i <= 16; i++){
-    const t = i / 16;
-    pts.push({
-      x: 150 + Math.sin(t * Math.PI * 1.05 - 0.35) * 34,
-      y: 128 + t * 196,
-      r: 36 - t * 14
+  const flutter = Math.sin((time || 0) * 7 + (phase || 0)) * 5;
+  const spine = [];
+  for(let i = 0; i <= 24; i++){
+    const t = i / 24;
+    spine.push({
+      x: 146 + Math.sin(t * Math.PI * 1.2 - 0.15) * 26,
+      y: 156 + t * 198,
+      w: 24 * (1 - t * 0.58)
     });
   }
-  let tx = pts[pts.length - 1].x;
-  let ty = pts[pts.length - 1].y;
-  let ang = 0.9;
-  for(let i = 0; i < 12; i++){
-    const t = i / 11;
-    ang += 0.48;
-    const step = 18 - t * 7;
-    tx += Math.cos(ang) * step;
-    ty += Math.sin(ang) * step * 0.72;
-    pts.push({x: tx, y: ty, r: Math.max(6, 20 - t * 14)});
+  let x = spine[spine.length - 1].x, y = spine[spine.length - 1].y, ang = 1.15, step = 12;
+  for(let i = 0; i < 16; i++){
+    ang += 0.72;
+    step *= 0.82;
+    x += Math.cos(ang) * step;
+    y += Math.sin(ang) * step * 0.78;
+    spine.push({x, y, w: Math.max(1.7, 8.5 * (1 - i / 16))});
   }
-  function ring(p, prev, next){
-    const a = Math.atan2(next.y - prev.y, next.x - prev.x);
-    g.save();
-    g.translate(p.x, p.y);
-    g.rotate(a);
-    const grd = g.createLinearGradient(0, -p.r, 0, p.r);
-    grd.addColorStop(0, '#ffd43b');
-    grd.addColorStop(0.42, '#ff922b');
-    grd.addColorStop(1, '#ffe8cc');
-    g.fillStyle = grd;
-    g.beginPath();
-    g.ellipse(0, 0, Math.max(4, p.r * 0.78), p.r, 0, 0, Math.PI * 2);
-    g.fill();
-    g.strokeStyle = ink;
-    g.lineWidth = Math.max(2, p.r * 0.12);
-    g.stroke();
-    g.strokeStyle = 'rgba(154,52,18,.4)';
-    g.lineWidth = 2;
-    g.beginPath();
-    g.moveTo(-p.r * 0.45, -p.r * 0.05);
-    g.quadraticCurveTo(0, -p.r * 0.35, p.r * 0.42, -p.r * 0.02);
-    g.stroke();
-    g.restore();
-  }
-  for(let i = pts.length - 1; i >= 0; i--){
-    ring(pts[i], pts[Math.max(0, i - 1)], pts[Math.min(pts.length - 1, i + 1)]);
-  }
-  g.fillStyle = '#ff8787';
+  g.fillStyle = 'rgba(255,146,135,.88)';
   g.strokeStyle = ink;
-  g.lineWidth = 5;
+  g.lineWidth = 2.4;
   g.beginPath();
-  g.moveTo(128, 168);
-  g.quadraticCurveTo(62, 150, 54, 196);
-  g.quadraticCurveTo(70, 228, 124, 214);
-  g.quadraticCurveTo(92, 196, 128, 184);
+  g.moveTo(spine[4].x, spine[4].y);
+  g.quadraticCurveTo(spine[6].x - 34 + flutter, spine[6].y - 6, spine[10].x - 4, spine[10].y);
+  g.quadraticCurveTo(spine[7].x - 6, spine[7].y + 4, spine[4].x, spine[4].y);
   g.closePath();
   g.fill(); g.stroke();
-  g.strokeStyle = 'rgba(154,52,18,.4)';
-  g.lineWidth = 1.8;
+  g.strokeStyle = 'rgba(154,52,18,.45)';
+  g.lineWidth = 1.2;
   for(let i = 0; i < 5; i++){
     g.beginPath();
-    g.moveTo(120, 174 + i * 8);
-    g.quadraticCurveTo(90, 168 + i * 10, 68, 186 + i * 6);
+    g.moveTo(spine[4].x + 2, spine[4].y + i * 6);
+    g.quadraticCurveTo(spine[6].x - 16 + flutter * 0.4, spine[6].y + i * 3, spine[9].x - 2, spine[9].y + 2);
     g.stroke();
   }
-  g.save();
-  g.translate(168, 92);
-  g.rotate(-0.55);
-  const hg = g.createRadialGradient(-10, -12, 6, 0, 4, 52);
-  hg.addColorStop(0, '#ffe066');
-  hg.addColorStop(0.7, '#ffb703');
-  hg.addColorStop(1, '#f76707');
-  g.fillStyle = hg;
-  g.beginPath();
-  g.ellipse(0, 0, 46, 36, 0, 0, Math.PI * 2);
+  const body = g.createLinearGradient(90, 0, 210, 0);
+  body.addColorStop(0, '#e8590c');
+  body.addColorStop(0.42, '#f59f00');
+  body.addColorStop(1, '#ffe8a3');
+  g.fillStyle = body;
+  spineRibbon(g, spine);
   g.fill();
   g.strokeStyle = ink;
-  g.lineWidth = 6;
+  g.lineWidth = 3.2;
   g.stroke();
-  g.restore();
-  g.save();
-  g.translate(198, 118);
-  g.rotate(0.42);
-  g.fillStyle = '#ffb703';
-  g.beginPath();
-  g.ellipse(28, 0, 40, 13, 0, 0, Math.PI * 2);
-  g.fill();
+  g.strokeStyle = 'rgba(154,52,18,.38)';
+  g.lineWidth = 1.35;
+  for(let i = 2; i < spine.length - 1; i += 2){
+    const p = spine[i], a = spine[i - 1], b = spine[Math.min(spine.length - 1, i + 1)];
+    const tang = Math.atan2(b.y - a.y, b.x - a.x);
+    const nx = Math.cos(tang + Math.PI / 2), ny = Math.sin(tang + Math.PI / 2);
+    g.beginPath();
+    g.moveTo(p.x + nx * p.w * 0.82, p.y + ny * p.w * 0.82);
+    g.lineTo(p.x - nx * p.w * 0.82, p.y - ny * p.w * 0.82);
+    g.stroke();
+  }
+  g.fillStyle = 'rgba(255,146,135,.9)';
   g.strokeStyle = ink;
-  g.lineWidth = 5;
-  g.stroke();
-  g.fillStyle = '#fff3bf';
+  g.lineWidth = 2.2;
   g.beginPath();
-  g.ellipse(30, 4, 28, 6, 0, 0, Math.PI * 2);
-  g.fill();
-  g.fillStyle = '#e8590c';
-  g.beginPath();
-  g.ellipse(66, 1, 7, 5, 0.2, 0, Math.PI * 2);
-  g.fill();
+  g.moveTo(150, 168);
+  g.quadraticCurveTo(112, 158 + flutter * 0.3, 118, 196);
+  g.quadraticCurveTo(138, 188, 156, 176);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.fillStyle = '#f59f00';
   g.strokeStyle = ink;
-  g.lineWidth = 2.5;
-  g.stroke();
-  g.restore();
+  g.lineWidth = 3.4;
+  g.beginPath();
+  g.moveTo(156, 168);
+  g.bezierCurveTo(132, 132, 138, 78, 176, 70);
+  g.quadraticCurveTo(206, 62, 214, 92);
+  g.quadraticCurveTo(236, 102, 286, 112);
+  g.quadraticCurveTo(298, 122, 284, 130);
+  g.quadraticCurveTo(236, 126, 204, 128);
+  g.quadraticCurveTo(176, 146, 160, 166);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.fillStyle = '#ffe8a3';
+  g.beginPath();
+  g.moveTo(214, 108);
+  g.quadraticCurveTo(250, 112, 284, 120);
+  g.quadraticCurveTo(250, 124, 208, 122);
+  g.closePath();
+  g.fill();
   g.fillStyle = '#ffd43b';
   g.strokeStyle = ink;
-  g.lineWidth = 4.5;
+  g.lineWidth = 2.6;
   g.beginPath();
-  g.moveTo(118, 72);
-  g.lineTo(104, 30);
-  g.lineTo(128, 60);
-  g.lineTo(134, 16);
-  g.lineTo(150, 56);
-  g.lineTo(164, 22);
-  g.lineTo(158, 68);
+  g.moveTo(156, 78);
+  g.lineTo(150, 58);
+  g.lineTo(166, 74);
+  g.lineTo(170, 50);
+  g.lineTo(182, 70);
+  g.lineTo(190, 48);
+  g.lineTo(198, 72);
+  g.lineTo(206, 64);
+  g.lineTo(208, 88);
+  g.lineTo(186, 86);
   g.closePath();
   g.fill(); g.stroke();
   g.fillStyle = '#fff';
   g.strokeStyle = '#222';
-  g.lineWidth = 4;
-  g.beginPath();
-  g.ellipse(184, 86, 16, 18, 0.1, 0, Math.PI * 2);
-  g.fill(); g.stroke();
-  g.fillStyle = '#3d2914';
-  g.beginPath();
-  g.arc(188, 90, 8, 0, Math.PI * 2);
-  g.fill();
-  g.fillStyle = '#111';
-  g.beginPath();
-  g.arc(190, 92, 4.2, 0, Math.PI * 2);
-  g.fill();
-  g.fillStyle = '#fff';
-  g.beginPath(); g.arc(182, 82, 4, 0, Math.PI * 2); g.fill();
-  g.beginPath(); g.arc(192, 94, 1.6, 0, Math.PI * 2); g.fill();
-  g.fillStyle = 'rgba(255,107,107,.55)';
-  g.beginPath();
-  g.ellipse(172, 108, 10, 6, 0.2, 0, Math.PI * 2);
-  g.fill();
-  g.strokeStyle = ink;
   g.lineWidth = 3;
   g.beginPath();
-  g.arc(214, 108, 8, 0.2, 1.3);
+  g.ellipse(188, 96, 13, 15, 0.15, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#3d2914';
+  g.beginPath(); g.arc(192, 100, 6.5, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#111';
+  g.beginPath(); g.arc(194, 102, 3.4, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(186, 92, 3.2, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,107,107,.45)';
+  g.beginPath(); g.ellipse(176, 118, 8, 5, 0.3, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#e8590c';
+  g.strokeStyle = ink;
+  g.lineWidth = 2;
+  g.beginPath(); g.ellipse(292, 122, 5, 3.4, 0.4, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.restore();
+}
+function paintHorse(){
+  const cv = document.createElement('canvas');
+  cv.width = 320; cv.height = 460;
+  paintHorseLive(cv.getContext('2d'), 320, 460, 0, 0);
+  return cv;
+}
+function paintTurtleLive(g, w, h, time, phase){
+  g.save();
+  g.scale(w / 480, h / 250);
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  const ink = '#3f6212';
+  const flap = Math.sin((time || 0) * 5.5 + (phase || 0));
+  function fin(x, y, rot, len, wid, fill){
+    g.save();
+    g.translate(x, y);
+    g.rotate(rot);
+    g.fillStyle = fill;
+    g.strokeStyle = ink;
+    g.lineWidth = 3.5;
+    g.beginPath();
+    g.moveTo(0, 0);
+    g.quadraticCurveTo(len * 0.45, -wid, len, -wid * 0.15);
+    g.quadraticCurveTo(len * 0.7, wid * 0.55, 0, wid * 0.35);
+    g.closePath();
+    g.fill(); g.stroke();
+    g.restore();
+  }
+  fin(150, 150, 0.5 + flap * 0.15, 78, 26, '#c0eb75');
+  fin(300, 168, 0.9 - flap * 0.85, 108, 34, '#a9e34b');
+  g.fillStyle = '#d8f5a2';
+  g.strokeStyle = ink;
+  g.lineWidth = 4;
+  g.beginPath();
+  g.moveTo(128, 132);
+  g.quadraticCurveTo(108, 128, 96, 146);
+  g.quadraticCurveTo(112, 150, 130, 146);
+  g.fill(); g.stroke();
+  g.fillStyle = '#e9fac8';
+  g.beginPath();
+  g.ellipse(240, 168, 92, 28, 0, 0, Math.PI);
+  g.fill();
+  const shell = g.createLinearGradient(140, 70, 340, 190);
+  shell.addColorStop(0, '#d8f5a2');
+  shell.addColorStop(0.45, '#8fbc4a');
+  shell.addColorStop(1, '#5c7a1e');
+  g.fillStyle = shell;
+  g.beginPath();
+  g.ellipse(236, 132, 108, 62, -0.08, 0, Math.PI * 2);
+  g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 5;
   g.stroke();
+  g.strokeStyle = 'rgba(63,98,18,.55)';
+  g.lineWidth = 2.2;
+  for(let i = -2; i <= 2; i++){
+    g.beginPath();
+    g.moveTo(150 + i * 8, 132);
+    g.quadraticCurveTo(236, 78 + Math.abs(i) * 8, 330 - i * 6, 128);
+    g.stroke();
+  }
+  g.beginPath();
+  g.moveTo(160, 100); g.quadraticCurveTo(236, 150, 320, 108); g.stroke();
+  g.beginPath();
+  g.moveTo(150, 150); g.quadraticCurveTo(236, 118, 330, 156); g.stroke();
+  g.fillStyle = '#c0eb75';
+  g.strokeStyle = ink;
+  g.lineWidth = 4;
+  g.beginPath();
+  g.ellipse(368, 118, 36, 24, 0.25, 0, Math.PI * 2);
+  g.fill(); g.stroke();
+  g.fillStyle = '#fff';
+  g.strokeStyle = '#222';
+  g.lineWidth = 3;
+  g.beginPath(); g.ellipse(382, 110, 8, 9, 0.2, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#213018';
+  g.beginPath(); g.arc(384, 112, 4, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(381, 109, 1.8, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 2.5;
+  g.beginPath(); g.arc(396, 124, 8, 0.2, 1.2); g.stroke();
+  g.restore();
+}
+function paintTurtle(){
+  const cv = document.createElement('canvas');
+  cv.width = 480; cv.height = 250;
+  paintTurtleLive(cv.getContext('2d'), 480, 250, 0, 0);
+  return cv;
+}
+function paintLionLive(g, w, h, time, phase){
+  g.save();
+  g.scale(w / 500, h / 240);
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  const ink = '#7c2d12';
+  const flap = Math.sin((time || 0) * 5 + (phase || 0));
+  g.fillStyle = '#f4a259';
+  g.strokeStyle = ink;
+  g.lineWidth = 5;
+  g.beginPath();
+  g.moveTo(118, 128);
+  g.quadraticCurveTo(70, 150, 36, 118);
+  g.quadraticCurveTo(78, 108, 108, 124);
+  g.quadraticCurveTo(64, 150, 48, 176);
+  g.quadraticCurveTo(96, 156, 124, 146);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.save();
+  g.translate(250, 132);
+  g.rotate(0.55 - flap * 0.7);
+  g.fillStyle = '#e0862d';
+  g.beginPath();
+  g.moveTo(0, 0);
+  g.quadraticCurveTo(50, -34, 118, -8);
+  g.quadraticCurveTo(70, 16, 8, 22);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.restore();
+  const body = g.createLinearGradient(80, 40, 80, 190);
+  body.addColorStop(0, '#f4a259');
+  body.addColorStop(0.45, '#e0862d');
+  body.addColorStop(0.7, '#fff3bf');
+  body.addColorStop(1, '#ffe8cc');
+  g.fillStyle = body;
+  g.beginPath();
+  g.moveTo(430, 112);
+  g.quadraticCurveTo(400, 70, 330, 78);
+  g.quadraticCurveTo(250, 64, 170, 96);
+  g.quadraticCurveTo(120, 112, 118, 128);
+  g.lineTo(124, 148);
+  g.quadraticCurveTo(190, 176, 280, 168);
+  g.quadraticCurveTo(360, 176, 420, 148);
+  g.quadraticCurveTo(448, 136, 430, 112);
+  g.closePath();
+  g.fill();
+  g.lineWidth = 5.5;
+  g.stroke();
+  g.fillStyle = '#e0862d';
+  g.beginPath();
+  g.moveTo(348, 78);
+  g.quadraticCurveTo(356, 52, 372, 58);
+  g.quadraticCurveTo(366, 78, 352, 84);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.strokeStyle = 'rgba(124,45,18,.7)';
+  g.lineWidth = 1.6;
+  for(let i = 0; i < 4; i++){
+    g.beginPath();
+    g.moveTo(424, 118 + i * 3);
+    g.quadraticCurveTo(448, 120 + i * 4, 468, 116 + i * 5);
+    g.stroke();
+  }
+  g.fillStyle = '#fff';
+  g.strokeStyle = '#222';
+  g.lineWidth = 3.2;
+  g.beginPath(); g.ellipse(390, 100, 11, 12, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#1a120c';
+  g.beginPath(); g.arc(393, 102, 5.5, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(390, 98, 2.2, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,146,180,.4)';
+  g.beginPath(); g.ellipse(372, 122, 9, 5, 0, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 2.6;
+  g.beginPath(); g.arc(424, 124, 10, 0.15, 1); g.stroke();
+  g.restore();
+}
+function paintLion(){
+  const cv = document.createElement('canvas');
+  cv.width = 500; cv.height = 240;
+  paintLionLive(cv.getContext('2d'), 500, 240, 0, 0);
+  return cv;
+}
+function paintSealLive(g, w, h, time, phase){
+  g.save();
+  g.scale(w / 480, h / 210);
+  g.lineJoin = 'round';
+  g.lineCap = 'round';
+  const ink = '#343a40';
+  const wag = Math.sin((time || 0) * 6 + (phase || 0));
+  g.save();
+  g.translate(78, 112);
+  g.rotate(-0.2 + wag * 0.35);
+  g.fillStyle = '#868e96';
+  g.strokeStyle = ink;
+  g.lineWidth = 4;
+  g.beginPath();
+  g.moveTo(0, -8);
+  g.quadraticCurveTo(-34, -28, -52, -6);
+  g.quadraticCurveTo(-20, 4, 0, 6);
+  g.quadraticCurveTo(-30, 22, -46, 34);
+  g.quadraticCurveTo(-12, 16, 4, 8);
+  g.closePath();
+  g.fill(); g.stroke();
+  g.restore();
+  g.fillStyle = '#ced4da';
+  g.strokeStyle = ink;
+  g.lineWidth = 4;
+  g.beginPath();
+  g.moveTo(210, 150);
+  g.quadraticCurveTo(180, 196, 150, 176);
+  g.quadraticCurveTo(190, 168, 214, 154);
+  g.closePath();
+  g.fill(); g.stroke();
+  const body = g.createLinearGradient(0, 40, 0, 180);
+  body.addColorStop(0, '#868e96');
+  body.addColorStop(0.42, '#adb5bd');
+  body.addColorStop(0.62, '#f1f3f5');
+  body.addColorStop(1, '#fff');
+  g.fillStyle = body;
+  g.beginPath();
+  g.moveTo(430, 104);
+  g.quadraticCurveTo(400, 62, 320, 68);
+  g.quadraticCurveTo(220, 58, 130, 96);
+  g.quadraticCurveTo(96, 112, 100, 124);
+  g.quadraticCurveTo(140, 156, 240, 162);
+  g.quadraticCurveTo(340, 172, 410, 142);
+  g.quadraticCurveTo(444, 128, 430, 104);
+  g.closePath();
+  g.fill();
+  g.lineWidth = 5;
+  g.stroke();
+  g.fillStyle = '#495057';
+  [[180, 96, 7], [240, 88, 8], [300, 100, 6], [210, 124, 5], [280, 118, 7], [150, 112, 4], [340, 112, 5]].forEach(p => {
+    g.beginPath(); g.ellipse(p[0], p[1], p[2], p[2] * 0.7, 0.4, 0, Math.PI * 2); g.fill();
+  });
+  g.strokeStyle = 'rgba(52,58,64,.65)';
+  g.lineWidth = 1.5;
+  for(let i = 0; i < 3; i++){
+    g.beginPath();
+    g.moveTo(412, 112 + i * 4);
+    g.quadraticCurveTo(432, 114 + i * 5, 452, 110 + i * 6);
+    g.stroke();
+  }
+  g.fillStyle = '#fff';
+  g.strokeStyle = '#222';
+  g.lineWidth = 3;
+  g.beginPath(); g.ellipse(392, 96, 12, 13, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#1a1a1a';
+  g.beginPath(); g.arc(396, 98, 6, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#fff';
+  g.beginPath(); g.arc(392, 94, 2.4, 0, Math.PI * 2); g.fill();
+  g.fillStyle = 'rgba(255,182,193,.45)';
+  g.beginPath(); g.ellipse(370, 118, 10, 6, 0, 0, Math.PI * 2); g.fill();
+  g.strokeStyle = ink;
+  g.lineWidth = 2.4;
+  g.beginPath(); g.moveTo(424, 114); g.quadraticCurveTo(436, 122, 428, 128); g.stroke();
+  g.restore();
+}
+function paintSeal(){
+  const cv = document.createElement('canvas');
+  cv.width = 480; cv.height = 210;
+  paintSealLive(cv.getContext('2d'), 480, 210, 0, 0);
   return cv;
 }
 function paintShark(){
@@ -1016,6 +1285,7 @@ function releaseFish(){
   pushFish(makeFish(img));
 }
 function placeStock(kind){
+  if(netOn) setNet(false);
   if(busy) return;
   if(farewell && !farewell.done){
     LTL.toast('等这十条游走，再放新的');
@@ -1025,9 +1295,10 @@ function placeStock(kind){
     LTL.toast('海里已经有十条了');
     return;
   }
-  pushFish(makeFish(stockSprite(kind)));
+  pushFish(makeFish(stockSprite(kind), kind));
 }
 function placeDecor(kind){
+  if(netOn) setNet(false);
   if(placedDecor.length >= MAX_DECOR){
     LTL.toast('海底已经很热闹啦');
     return;
@@ -1059,6 +1330,7 @@ function presentSea(){
   }, 640);
 }
 function leaveSea(){
+  setNet(false);
   if(farewell){
     fish.length = 0;
     farewell = null;
@@ -1094,6 +1366,8 @@ function restartAll(){
   papers.forEach(p => {p.strokes = []});
   fish.length = 0;
   placedDecor.length = 0;
+  scoops.length = 0;
+  setNet(false);
   farewell = null;
   justReset = false;
   busy = false;
@@ -1175,6 +1449,11 @@ function drawFish(ctx, f, w, h, t){
   ctx.rotate(calm() ? 0 : Math.cos(t * 1.45 + f.phase) * 0.06);
   ctx.scale((f.vx >= 0 ? 1 : -1) * sc, sc);
   ctx.globalAlpha = f.alpha;
+  if(LIVE[f.kind]){
+    drawLive(ctx, f.kind, m.dw, m.dh, t, f.phase);
+    ctx.restore();
+    return;
+  }
   const strips = Math.max(16, Math.min(48, Math.round(f.img.width / 5)));
   const sw = m.dw / strips;
   const amp = calm() ? 0 : Math.min(8, m.dh * 0.035);
@@ -1218,37 +1497,176 @@ function drawKelp(g, item, w, h, t){
 }
 function drawCoral(g, item, w, h, t){
   const pals = [
-    ['#ff6b6b', '#ffa8a8', '#ff8787'],
-    ['#f06595', '#fcc2d7', '#faa2c1'],
-    ['#ff922b', '#ffd43b', '#ffc078'],
-    ['#845ef7', '#d0bfff', '#b197fc']
+    ['#ff6b6b', '#ffc9c9'],
+    ['#f06595', '#fcc2d7'],
+    ['#f76707', '#ffc078'],
+    ['#7950f2', '#d0bfff']
   ];
   const pal = pals[(item.hue || 0) % pals.length];
-  const cx = item.x * w + (calm() ? 0 : Math.sin(t * 0.7 + item.phase) * 2);
-  const base = h * 0.905;
-  const s = (item.scale || 1) * Math.min(h * 0.2, w * 0.18);
+  const baseX = item.x * w;
+  const baseY = h * 0.9;
+  const s = (item.scale || 1) * Math.min(h * 0.16, w * 0.12);
+  const sway = calm() ? 0 : Math.sin(t * 0.9 + (item.phase || 0));
   g.save();
-  g.translate(cx, base);
+  g.translate(baseX, baseY);
+  g.lineCap = 'round';
   g.lineJoin = 'round';
-  g.lineWidth = Math.max(2, s * 0.06);
-  g.strokeStyle = '#5c4033';
-  function bulb(x, y, rx, ry, c){
-    g.fillStyle = c;
+  function branch(x, y, ang, len, width, depth){
+    if(depth > 3 || len < 8 || width < 0.8) return;
+    const segs = 5;
+    let px = x, py = y;
     g.beginPath();
-    g.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-    g.fill();
+    g.moveTo(px, py);
+    for(let i = 1; i <= segs; i++){
+      const bend = sway * (0.05 + depth * 0.03) * (i / segs);
+      const a = ang + bend;
+      px += Math.cos(a) * (len / segs);
+      py += Math.sin(a) * (len / segs);
+      g.lineTo(px, py);
+    }
+    g.strokeStyle = depth % 2 ? pal[0] : pal[1];
+    g.lineWidth = width;
     g.stroke();
-    g.fillStyle = 'rgba(255,255,255,.85)';
-    g.beginPath();
-    g.arc(x - rx * 0.25, y - ry * 0.35, Math.max(1.5, rx * 0.16), 0, Math.PI * 2);
-    g.fill();
+    g.strokeStyle = 'rgba(92,64,51,.35)';
+    g.lineWidth = Math.max(0.6, width * 0.18);
+    g.stroke();
+    if(depth >= 2){
+      g.fillStyle = '#fff';
+      g.globalAlpha = 0.75;
+      g.beginPath();
+      g.arc(px, py, Math.max(1, width * 0.22), 0, Math.PI * 2);
+      g.fill();
+      g.globalAlpha = 1;
+    }
+    const spread = 0.42;
+    branch(px, py, ang - spread, len * 0.66, width * 0.58, depth + 1);
+    branch(px, py, ang + spread * 0.9, len * 0.6, width * 0.52, depth + 1);
   }
-  bulb(0, -s * 0.35, s * 0.28, s * 0.42, pal[0]);
-  bulb(-s * 0.42, -s * 0.85, s * 0.24, s * 0.36, pal[1]);
-  bulb(s * 0.4, -s * 0.95, s * 0.26, s * 0.4, pal[2]);
-  bulb(0, -s * 1.25, s * 0.3, s * 0.34, pal[0]);
-  bulb(-s * 0.05, -s * 0.7, s * 0.16, s * 0.24, pal[2]);
+  branch(0, 0, -Math.PI / 2 - 0.42, s * 0.95, Math.max(2.2, s * 0.09), 0);
+  branch(2, 1, -Math.PI / 2 + 0.05, s * 1.1, Math.max(2.4, s * 0.1), 0);
+  branch(-1, 1, -Math.PI / 2 + 0.48, s * 0.88, Math.max(2, s * 0.085), 0);
   g.restore();
+}
+const scratch = {};
+function drawLive(ctx, kind, dw, dh, time, phase){
+  const src = stockSprite(kind);
+  let cv = scratch[kind];
+  if(!cv){
+    cv = scratch[kind] = document.createElement('canvas');
+    cv.width = src.width;
+    cv.height = src.height;
+  }
+  const g = cv.getContext('2d');
+  g.clearRect(0, 0, cv.width, cv.height);
+  if(kind === 'horse') paintHorseLive(g, cv.width, cv.height, time, phase);
+  else if(kind === 'turtle') paintTurtleLive(g, cv.width, cv.height, time, phase);
+  else if(kind === 'lion') paintLionLive(g, cv.width, cv.height, time, phase);
+  else if(kind === 'seal') paintSealLive(g, cv.width, cv.height, time, phase);
+  ctx.drawImage(cv, -dw / 2, -dh / 2, dw, dh);
+}
+function fishBox(f, seaW, seaH){
+  const m = metrics(f, seaW, seaH);
+  const bob = calm() ? 0 : Math.sin(clock * 1.45 + f.phase) * seaH * 0.012;
+  const grow = Math.min(1, f.age / 0.38);
+  const sc = 0.5 + 0.5 * grow;
+  return {cx: f.x * seaW, cy: f.y * seaH + bob, hw: m.dw * sc / 2 + 28, hh: m.dh * sc / 2 + 28};
+}
+function pickFishAt(px, py, seaW, seaH){
+  let best = null, bestD = Infinity;
+  fish.forEach(f => {
+    if(f.alpha < 0.35) return;
+    const b = fishBox(f, seaW, seaH);
+    if(Math.abs(px - b.cx) <= b.hw && Math.abs(py - b.cy) <= b.hh){
+      const d = Math.hypot(px - b.cx, py - b.cy);
+      if(d < bestD){best = f; bestD = d}
+    }
+  });
+  return best;
+}
+function setNet(on){
+  netOn = !!on;
+  const btn = document.getElementById('netTool');
+  if(!btn) return;
+  btn.classList.toggle('on', netOn);
+  btn.setAttribute('aria-pressed', netOn ? 'true' : 'false');
+  const label = document.getElementById('netLabel');
+  if(label) label.textContent = netOn ? '捞网：开' : '捞网';
+  const stage = document.querySelector('.stage');
+  if(stage) stage.classList.toggle('netting', netOn);
+  if(mode) updateCopy();
+}
+function scoopFish(f){
+  if(!f || busy || (farewell && !farewell.done)) return false;
+  const i = fish.indexOf(f);
+  if(i < 0) return false;
+  const r = seaCv.getBoundingClientRect();
+  const seaW = r.width > 2 ? r.width : 360;
+  const seaH = r.height > 2 ? r.height : 280;
+  const m = metrics(f, seaW, seaH);
+  fish.splice(i, 1);
+  scoops.push({
+    img: f.img, kind: f.kind || '', x: f.x, y: f.y, vx: f.vx, phase: f.phase,
+    dw: m.dw, dh: m.dh, t: 0, dur: calm() ? 0.32 : 0.7
+  });
+  burst(f.x, f.y);
+  LTL.beep(784, .07, 'triangle', .04);
+  setTimeout(() => LTL.beep(988, .09, 'sine', .03), 90);
+  updateCopy();
+  if(mode === 'sea') ensureLoop();
+  return true;
+}
+function drawNet(ctx, cx, cy, dw, dh, p, alpha){
+  const drop = p < 0.38 ? (1 - p / 0.38) : 0;
+  const ny = cy - drop * (Math.max(dw, dh) * 0.55 + 28);
+  const rx = Math.max(28, Math.max(dw, dh) * 0.34 + 16);
+  const ry = rx * 0.62;
+  ctx.save();
+  ctx.globalAlpha = Math.max(0.25, alpha);
+  ctx.translate(cx, ny);
+  ctx.fillStyle = 'rgba(208,235,255,.28)';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.9)';
+  ctx.lineWidth = 1.5;
+  for(let i = -2; i <= 2; i++){
+    ctx.beginPath();
+    ctx.moveTo(-rx * 0.9, i * ry * 0.32);
+    ctx.quadraticCurveTo(0, i * ry * 0.32 + 4, rx * 0.9, i * ry * 0.32);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(i * rx * 0.32, -ry * 0.85);
+    ctx.lineTo(i * rx * 0.32, ry * 0.85);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = '#e67700';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.lineWidth = 7;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(rx * 0.62, -ry * 0.35);
+  ctx.lineTo(rx + 34, -ry - 48 - drop * 16);
+  ctx.stroke();
+  ctx.restore();
+}
+function drawScoop(ctx, s, w, h, t){
+  const p = Math.min(1, s.t / s.dur);
+  const lift = p < 0.38 ? 0 : (p - 0.38) / 0.62;
+  const cx = s.x * w;
+  const cy = s.y * h - lift * h * 0.18;
+  const sc = 1 - lift * 0.5;
+  const alpha = 1 - Math.max(0, lift - 0.4) / 0.6;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.scale((s.vx >= 0 ? 1 : -1) * sc, sc);
+  ctx.globalAlpha = Math.max(0, alpha);
+  if(LIVE[s.kind]) drawLive(ctx, s.kind, s.dw, s.dh, t, s.phase);
+  else if(s.img) ctx.drawImage(s.img, -s.dw / 2, -s.dh / 2, s.dw, s.dh);
+  ctx.restore();
+  drawNet(ctx, cx, cy, s.dw * sc, s.dh * sc, p, Math.max(0.35, alpha));
 }
 function drawPearl(g, item, w, h, t){
   const pals = [
@@ -1367,6 +1785,7 @@ function renderSea(g, w, h, t){
     bubbles.forEach(b => {if(b.y > 0.55) drawBubble(g, b, w, h)});
   }
   fish.forEach(f => drawFish(g, f, w, h, t));
+  scoops.forEach(s => drawScoop(g, s, w, h, t));
   if(opts.bubbles){
     bubbles.forEach(b => {if(b.y <= 0.55) drawBubble(g, b, w, h)});
   }
@@ -1416,6 +1835,10 @@ function frame(ts){
       if(f.y > 0.74) f.y = 0.74;
     }
   });
+  for(let i = scoops.length - 1; i >= 0; i--){
+    scoops[i].t += dt;
+    if(scoops[i].t >= scoops[i].dur) scoops.splice(i, 1);
+  }
   if(fading && el >= dur){
     fish.length = 0;
     farewell.done = true;
@@ -1485,6 +1908,27 @@ document.getElementById('addDolphin').addEventListener('click', () => placeStock
 document.getElementById('addKelp').addEventListener('click', () => placeDecor('kelp'));
 document.getElementById('addCoral').addEventListener('click', () => placeDecor('coral'));
 document.getElementById('addPearl').addEventListener('click', () => placeDecor('pearl'));
+document.getElementById('addTurtle').addEventListener('click', () => placeStock('turtle'));
+document.getElementById('addLion').addEventListener('click', () => placeStock('lion'));
+document.getElementById('addSeal').addEventListener('click', () => placeStock('seal'));
+document.getElementById('netTool').addEventListener('click', () => setNet(!netOn));
+seaCv.addEventListener('pointerdown', e => {
+  if(mode !== 'sea' || !netOn) return;
+  if(e.pointerType === 'mouse' && e.button !== 0) return;
+  e.preventDefault();
+  if(busy || (farewell && !farewell.done)){
+    LTL.toast('等这十条游走，再捞');
+    return;
+  }
+  const r = seaCv.getBoundingClientRect();
+  if(r.width < 2) return;
+  const hit = pickFishAt(e.clientX - r.left, e.clientY - r.top, r.width, r.height);
+  if(!hit){
+    LTL.toast('没捞到，再点一条');
+    return;
+  }
+  scoopFish(hit);
+});
 seeSeaBtn.addEventListener('click', () => show('sea'));
 moreBtn.addEventListener('click', leaveSea);
 document.getElementById('restart').addEventListener('click', restartAll);
@@ -1611,6 +2055,55 @@ if(location.search.indexOf('selftest=1') >= 0){
     pc.width = 200; pc.height = 160;
     drawPearl(pc.getContext('2d'), {kind:'pearl', x:0.5, scale:1.2, hue:1, phase:0}, 200, 160, 1);
     assert(opaque(pc) > 8, '珍珠贝没画出来');
+    assert(fish.length === 10 && farewell && !farewell.done, '进捞网测试前状态不对');
+    const during = fish.length;
+    assert(scoopFish(fish[0]) === false, '十条游走时捞网不该捞走');
+    assert(fish.length === during, '游走时条数变了');
+    fish.length = 0;
+    farewell = null;
+    justReset = false;
+    placeStock('turtle');
+    placeStock('lion');
+    placeStock('seal');
+    assert(fish.length === 3, '海龟海狮海豹没放进 ' + fish.length);
+    assert(fish.map(f => f.kind).join(',') === 'turtle,lion,seal', '新动物种类不对');
+    const lionS = stockSprite('lion'), sealS = stockSprite('seal'), turtleS = stockSprite('turtle');
+    assert(opaque(lionS) > 30 && opaque(sealS) > 30 && opaque(turtleS) > 30, '新动物画空了');
+    const tone = cv => {
+      const d = cv.getContext('2d').getImageData(0, 0, cv.width, cv.height).data;
+      let r = 0, b = 0, n = 0;
+      for(let i = 0; i < d.length; i += 24){
+        if(d[i + 3] > 40){r += d[i]; b += d[i + 2]; n++}
+      }
+      return {r: r / n, b: b / n};
+    };
+    const lionTone = tone(lionS), sealTone = tone(sealS);
+    assert(lionTone.r > lionTone.b + 15, '海狮颜色不像');
+    assert(sealTone.b + 25 > sealTone.r, '海豹不够灰');
+    assert(Math.abs(lionTone.r - sealTone.r) > 12, '海狮和海豹太像');
+    fish.forEach(f => {f.age = 3; f.phase = 0});
+    fish[0].x = 0.15; fish[0].y = 0.24;
+    fish[1].x = 0.68; fish[1].y = 0.5;
+    fish[2].x = fish[1].x; fish[2].y = fish[1].y;
+    const one = pickFishAt(fish[1].x * 360, fish[1].y * 280, 360, 280);
+    assert(one === fish[1] || one === fish[2], '重叠时没有点中其中一条');
+    const spared = one === fish[1] ? fish[2] : fish[1];
+    const life = total;
+    const decorNow = placedDecor.length;
+    assert(scoopFish(one) === true, '捞网没捞到');
+    assert(fish.length === 2, '捞网不是只捞一条 ' + fish.length);
+    assert(fish.indexOf(one) < 0 && fish.indexOf(spared) >= 0 && fish.some(f => f.kind === 'turtle'), '捞走了不止重叠的那一条');
+    assert(total === life, '捞网改了累计条数');
+    assert(scoopFish(one) === false && fish.length === 2, '同一条被捞了两次');
+    assert(!pickFishAt(3, 3, 360, 280), '空白也被当成鱼');
+    assert(scoopFish(null) === false && fish.length === 2, '没捞到也少了');
+    assert(placedDecor.length === decorNow, '摆设被捞走了');
+    for(let n = fish.length; n > 0; n--) assert(scoopFish(fish[0]) === true, '后面的捞不起来');
+    assert(fish.length === 0, '捞完还能是负数 ' + fish.length);
+    for(let i = 0; i < 9; i++) placeStock(i % 2 ? 'seal' : 'turtle');
+    assert(fish.length === 9 && !(farewell && !farewell.done), '捞完再放不到九条 ' + fish.length);
+    placeStock('lion');
+    assert(fish.length === 10 && farewell && !farewell.done, '捞过之后第十条没有一起游走');
     fish.length = 0;
     if(farewell) farewell.done = true;
     banner.hidden = true;
@@ -1626,9 +2119,11 @@ if(location.search.indexOf('selftest=1') >= 0){
   }finally{
     fish.length = 0;
     placedDecor.length = 0;
+    scoops.length = 0;
     farewell = null;
     justReset = false;
     busy = false;
+    setNet(false);
     mode = 'desk';
     stopLoop();
     show('desk');
