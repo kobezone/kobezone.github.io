@@ -122,7 +122,7 @@
       "wrapper": "games/isocity.html",
       "touch": true,
       "note": "screenshot.png from the repository is not deployed. Texture file is the one in the pinned commit.",
-      "bytes": 484929,
+      "bytes": 485182,
       "under_500000": true,
       "files": [
         {
@@ -131,7 +131,7 @@
         },
         {
           "path": "games/vendor/isocity/NOTICE.txt",
-          "bytes": 607
+          "bytes": 772
         },
         {
           "path": "games/vendor/isocity/README.md",
@@ -159,7 +159,7 @@
         },
         {
           "path": "games/isocity.html",
-          "bytes": 2640
+          "bytes": 2728
         }
       ]
     },
