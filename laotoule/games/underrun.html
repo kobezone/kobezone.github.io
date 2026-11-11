@@ -16,11 +16,24 @@
 <li>这是作者提交竞赛时的可玩源文件，不是另外压缩出来的新版本。</li>
 </ul><p>来源和许可证写在 <a href="../credits.html#underrun">致谢</a>。</p></div></div>
 <script>
-if('serviceWorker' in navigator && location.protocol!=='file:'){
-  navigator.serviceWorker.register(new URL('../sw.js', location.href)).catch(function(){});
-}
-document.getElementById('restart').onclick=function(){
-  var f=document.getElementById('frame');
-  try{f.contentWindow.location.reload();}catch(e){f.src=f.getAttribute('src');}
-};
+(function(){
+  var frame=document.getElementById('frame');
+  frame.tabIndex=-1;
+  function focusGame(){try{frame.focus();frame.contentWindow.focus();}catch(e){}}
+  frame.addEventListener('load', focusGame);
+  if (frame.contentDocument && frame.contentDocument.readyState === 'complete') focusGame();
+  if('serviceWorker' in navigator && location.protocol!=='file:'){
+    navigator.serviceWorker.register(new URL('../sw.js', location.href)).catch(function(){});
+  }
+  document.getElementById('restart').onclick=function(){
+    var src=frame.getAttribute('src');
+    try{
+      var w=frame.contentWindow;
+      var here=w.location.pathname+w.location.search+w.location.hash;
+      var want=new URL(src, location.href).pathname+new URL(src, location.href).search;
+      if(here!==want) w.location.replace(want);
+      else w.location.reload();
+    }catch(e){frame.src=src;}
+  };
+})();
 </script></body></html>

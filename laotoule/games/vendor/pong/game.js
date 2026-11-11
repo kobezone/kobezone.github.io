@@ -274,8 +274,19 @@ Game = {
       Game.addEvent(document, 'keyup',   this.onkeyup.bind(this));
     },
 
-    onkeydown: function(ev) { if (this.game.onkeydown) this.game.onkeydown(ev.keyCode); },
-    onkeyup:   function(ev) { if (this.game.onkeyup)   this.game.onkeyup(ev.keyCode);   },
+    // laotoule: a forwarded key from the hall page has key but keyCode 0.
+    keyCodeOf: function(ev) {
+      if (ev.keyCode) return ev.keyCode;
+      var k = ev.key || '';
+      if (k === 'Escape') return 27;
+      if (k.length === 1) {
+        var map = { '0':48, '1':49, '2':50, 'Q':81, 'A':65, 'P':80, 'L':76 };
+        return map[k.toUpperCase()] || 0;
+      }
+      return 0;
+    },
+    onkeydown: function(ev) { if (this.game.onkeydown) this.game.onkeydown(this.keyCodeOf(ev)); },
+    onkeyup:   function(ev) { if (this.game.onkeyup)   this.game.onkeyup(this.keyCodeOf(ev));   },
 
     hideCursor: function() { this.canvas.style.cursor = 'none'; },
     showCursor: function() { this.canvas.style.cursor = 'auto'; },

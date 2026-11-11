@@ -19,7 +19,7 @@
       "wrapper": "games/sublevel07.html",
       "touch": false,
       "note": "Single-file upstream game. Three.js 0.170.0 modules it imports are vendored. Import map points at those local files. Over 500000 bytes is the named-game exception.",
-      "bytes": 1565538,
+      "bytes": 1566081,
       "under_500000": false,
       "files": [
         {
@@ -104,7 +104,7 @@
         },
         {
           "path": "games/sublevel07.html",
-          "bytes": 2235
+          "bytes": 2778
         }
       ]
     },
@@ -122,7 +122,7 @@
       "wrapper": "games/isocity.html",
       "touch": true,
       "note": "screenshot.png from the repository is not deployed. Texture file is the one in the pinned commit.",
-      "bytes": 483900,
+      "bytes": 484929,
       "under_500000": true,
       "files": [
         {
@@ -131,7 +131,7 @@
         },
         {
           "path": "games/vendor/isocity/NOTICE.txt",
-          "bytes": 452
+          "bytes": 607
         },
         {
           "path": "games/vendor/isocity/README.md",
@@ -143,7 +143,7 @@
         },
         {
           "path": "games/vendor/isocity/index.html",
-          "bytes": 1125
+          "bytes": 1456
         },
         {
           "path": "games/vendor/isocity/css/main.css",
@@ -159,7 +159,7 @@
         },
         {
           "path": "games/isocity.html",
-          "bytes": 2097
+          "bytes": 2640
         }
       ]
     },
@@ -177,7 +177,7 @@
       "wrapper": "games/underrun.html",
       "touch": false,
       "note": "The minified js13k build is not in the upstream repository (build/dummy.txt only). This deploy is the committed playable page and the scripts it loads. build.sh was not run.",
-      "bytes": 54005,
+      "bytes": 54548,
       "under_500000": true,
       "files": [
         {
@@ -286,7 +286,7 @@
         },
         {
           "path": "games/underrun.html",
-          "bytes": 2118
+          "bytes": 2661
         }
       ]
     },
@@ -304,7 +304,7 @@
       "wrapper": "games/invaderz.html",
       "touch": true,
       "note": "Removed obsolete appcache manifest and a service worker registration aimed at /invaderz/sw.js. sw.js itself is not deployed.",
-      "bytes": 19985,
+      "bytes": 20528,
       "under_500000": true,
       "files": [
         {
@@ -353,7 +353,7 @@
         },
         {
           "path": "games/invaderz.html",
-          "bytes": 2087
+          "bytes": 2630
         }
       ]
     },
@@ -371,7 +371,7 @@
       "wrapper": "games/huejumper.html",
       "touch": true,
       "note": "Enhanced single-file game. The 2KB golfed a.htm and screenshot.jpg are not deployed. GPL text is LICENSE.",
-      "bytes": 71074,
+      "bytes": 71617,
       "under_500000": true,
       "files": [
         {
@@ -388,7 +388,7 @@
         },
         {
           "path": "games/huejumper.html",
-          "bytes": 2127
+          "bytes": 2670
         }
       ]
     },
@@ -406,7 +406,7 @@
       "wrapper": "games/pong.html",
       "touch": false,
       "note": "Finished root game only. Tutorial folders part1-part5 are not deployed. Site-root tutorial links were pointed at the upstream repository.",
-      "bytes": 65048,
+      "bytes": 66564,
       "under_500000": true,
       "files": [
         {
@@ -419,11 +419,11 @@
         },
         {
           "path": "games/vendor/pong/UPSTREAM.txt",
-          "bytes": 242
+          "bytes": 361
         },
         {
           "path": "games/vendor/pong/game.js",
-          "bytes": 10108
+          "bytes": 10514
         },
         {
           "path": "games/vendor/pong/index.html",
@@ -467,7 +467,7 @@
         },
         {
           "path": "games/pong.html",
-          "bytes": 2105
+          "bytes": 3096
         }
       ]
     }

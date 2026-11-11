@@ -28,6 +28,14 @@
 		<canvas id="fg"></canvas>
 	</div>
 </section>
+<script>
+/* laotoule: the original pushState adds one history entry per tile.
+   Those entries sit in front of the hall, so the back button undoes tiles
+   instead of leaving. replaceState still keeps the map in the hash. */
+history.pushState = function (state, title, url) {
+	history.replaceState(state, title, url);
+};
+</script>
 <script src="js/main.js"></script>
 
 </body>
