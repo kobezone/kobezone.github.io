@@ -1,0 +1,41 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>等距小城 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.vendorbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8590c;color:#fff;position:sticky;top:0;z-index:50}
+.vendorbar h1{font-size:1.15rem;margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vendorbar .btn{min-height:46px;padding:4px 12px;font-size:1rem}
+.tag{display:inline-flex;align-items:center;background:#ffd43b;color:#222;border:2px solid #222;border-radius:999px;padding:0 10px;font-size:.85rem;font-weight:800;min-height:32px;white-space:nowrap}
+.stage{height:calc(100dvh - 72px);min-height:280px;background:#111}
+.stage iframe{width:100%;height:100%;border:0;display:block;background:#111}
+</style></head><body>
+<div class="vendorbar"><a class="btn" href="../index.html">← 返回</a><h1>等距小城</h1><span class="tag">手机可点</span><button class="btn" id="restart" type="button">重新开始</button></div>
+<div class="stage"><iframe id="frame" title="IsoCity" src="vendor/isocity/index.html" allow="autoplay"></iframe></div>
+<div class="wrap"><div class="help"><h2>怎么玩</h2><ul>
+<li>先点一块房子或树，再点到格子上，就放下去。</li>
+<li>手机上点选也可以。方块比较大，格子可以滑动着看。</li>
+<li>右键可以把格子清空。电脑上才方便用右键。</li>
+</ul><p>来源和许可证写在 <a href="../credits.html#isocity">致谢</a>。</p></div></div>
+<script>
+(function(){
+  var frame=document.getElementById('frame');
+  frame.tabIndex=-1;
+  function focusGame(){try{frame.focus();frame.contentWindow.focus();}catch(e){}}
+  frame.addEventListener('load', focusGame);
+  if (frame.contentDocument && frame.contentDocument.readyState === 'complete') focusGame();
+  if('serviceWorker' in navigator && location.protocol!=='file:'){
+    navigator.serviceWorker.register(new URL('../sw.js', location.href)).catch(function(){});
+  }
+  document.getElementById('restart').onclick=function(){
+    var src=frame.getAttribute('src');
+    try{
+      var w=frame.contentWindow;
+      var target=new URL(src, location.href);
+      var want=target.pathname+target.search;
+      // Hash-only location.replace does not reload IsoCity, so the city stayed drawn.
+      if(w.location.pathname+w.location.search!==want || w.location.hash)
+        w.history.replaceState(null,'',want);
+      w.location.reload();
+    }catch(e){frame.src=src;}
+  };
+})();
+</script></body></html>

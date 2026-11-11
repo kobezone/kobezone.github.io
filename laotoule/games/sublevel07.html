@@ -1,0 +1,40 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SUBLEVEL 07 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.vendorbar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e8590c;color:#fff;position:sticky;top:0;z-index:50}
+.vendorbar h1{font-size:1.15rem;margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vendorbar .btn{min-height:46px;padding:4px 12px;font-size:1rem}
+.tag{display:inline-flex;align-items:center;background:#ffd43b;color:#222;border:2px solid #222;border-radius:999px;padding:0 10px;font-size:.85rem;font-weight:800;min-height:32px;white-space:nowrap}
+.stage{height:calc(100dvh - 72px);min-height:280px;background:#111}
+.stage iframe{width:100%;height:100%;border:0;display:block;background:#111}
+</style></head><body>
+<div class="vendorbar"><a class="btn" href="../index.html">← 返回</a><h1>SUBLEVEL 07</h1><span class="tag">电脑键鼠</span><button class="btn" id="restart" type="button">重新开始</button></div>
+<div class="stage"><iframe id="frame" title="SUBLEVEL 07" src="vendor/sublevel07/index.html" allow="pointer-lock; fullscreen; autoplay"></iframe></div>
+<div class="wrap"><div class="help"><h2>怎么玩</h2><ul>
+<li>这是别人做好的第一人称成品，请用电脑。</li>
+<li>点 ENTER 进入。W A S D 移动，鼠标瞄准，左键开枪，右键瞄准镜，R 换弹，Shift 冲刺，空格跳。</li>
+<li>Esc 暂停。G 切换画面，M 静音。</li>
+<li>手机没有键盘和鼠标瞄准，这一款在手机上玩不了。</li>
+</ul><p>来源和许可证写在 <a href="../credits.html#sublevel07">致谢</a>。</p></div></div>
+<script>
+(function(){
+  var frame=document.getElementById('frame');
+  frame.tabIndex=-1;
+  function focusGame(){try{frame.focus();frame.contentWindow.focus();}catch(e){}}
+  frame.addEventListener('load', focusGame);
+  if (frame.contentDocument && frame.contentDocument.readyState === 'complete') focusGame();
+  if('serviceWorker' in navigator && location.protocol!=='file:'){
+    navigator.serviceWorker.register(new URL('../sw.js', location.href)).catch(function(){});
+  }
+  document.getElementById('restart').onclick=function(){
+    var src=frame.getAttribute('src');
+    try{
+      var w=frame.contentWindow;
+      var here=w.location.pathname+w.location.search+w.location.hash;
+      var want=new URL(src, location.href).pathname+new URL(src, location.href).search;
+      if(here!==want) w.location.replace(want);
+      else w.location.reload();
+    }catch(e){frame.src=src;}
+  };
+})();
+</script></body></html>

@@ -1,0 +1,6 @@
+Upstream: https://github.com/phoboslab/underrun
+Pinned commit: f933e29152d7fc1ca61d4b3eaa8b29551d7d7a62
+License: MIT (LICENSE.md). Sonant-X inside source/sonantx-reduced.js is zlib; that notice stays in the file.
+The repository does not contain the minified js13k build (build/dummy.txt only).
+This copy is the committed playable page index-debug.html and the scripts and images it loads.
+build.sh was not run.

@@ -1,0 +1,5 @@
+Upstream: https://github.com/jakesgordon/javascript-pong
+Pinned commit: ca3240536e4f79ab7144388e56ed19de715b6662
+License: MIT (LICENSE)
+Deployed the finished game at the repository root. Tutorial folders part1 through part5 are not deployed.
+game.js maps event.key when keyCode is 0, so the hall page can forward 1/2/0 and Q/A/P/L before the iframe is clicked.

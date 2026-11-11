@@ -1,0 +1,10 @@
+Game code: MIT, Copyright (c) 2019 Victor Ribeiro. See LICENSE.
+Pinned commit: c5772412d3e423318f2cf479ebdd50a2b9029d84
+https://github.com/victorqribeiro/isocity
+
+Texture textures/01_130x66_130x230.png is the file shipped in that commit.
+Upstream comment in js/main.js: texture from https://opengameart.org/content/isometric-landscape
+OpenGameArt page lists License: CC0, uploader Kenney.
+screenshot.png from the repository is not part of this deploy.
+history.pushState is routed to replaceState so placing tiles does not stack entries in front of the hall back button. The map is still stored in the hash.
+Restart clears that hash with replaceState and then calls location.reload(). A hash-only location.replace does not reload this page, so the drawn city would remain.
