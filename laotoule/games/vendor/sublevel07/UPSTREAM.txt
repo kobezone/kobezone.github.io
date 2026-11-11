@@ -1,0 +1,7 @@
+Upstream game: https://github.com/wquguru/fable52-fps-repro
+Pinned commit: a7e1df3ce32eb2bb05e23ae457fe5fe2bffab961
+Entry artifact: demos/04-fps/index.html (the committed single-file game, not a rebuild)
+Game license: MIT (see LICENSE)
+Three.js: 0.170.0, MIT (see three/LICENSE)
+The import map was changed from cdn.jsdelivr.net to these local files.
+No other lines of the game were edited.

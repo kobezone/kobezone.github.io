@@ -1,0 +1,4 @@
+Upstream: https://github.com/jakesgordon/javascript-pong
+Pinned commit: ca3240536e4f79ab7144388e56ed19de715b6662
+License: MIT (LICENSE)
+Deployed the finished game at the repository root. Tutorial folders part1 through part5 are not deployed.

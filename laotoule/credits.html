@@ -1,0 +1,62 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>致谢与许可 - 老头乐游戏厅</title><link rel="stylesheet" href="style.css"><link rel="icon" href="icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+.pagehead{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#e8590c;color:#fff}
+.pagehead h1{margin:0;font-size:1.35rem}
+.pagehead .btn{min-height:48px}
+.log{max-width:720px;margin:0 auto}
+.ver{background:#fff;border:3px solid #222;border-radius:18px;padding:12px 16px;margin:14px 0;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.ver h2{margin:0 0 6px;font-size:1.25rem}
+.ver p{margin:.35em 0}
+</style></head><body>
+<div class="pagehead"><a class="btn" href="index.html">← 游戏列表</a><h1>致谢与许可</h1></div>
+<main class="wrap log">
+<p>下面这些是别人已经做好的网页游戏，按原文件放进来。精确字节、提交号和测量方法在 <a href="games/vendor/PROVENANCE.json">games/vendor/PROVENANCE.json</a>。可以在仓库里运行 <b>python3 laotoule/games/vendor/measure.py</b> 再算一遍。</p>
+<p>星数是 2026-11-11 当天 GitHub 上的数字，用来在符合许可证和体积的成品里挑一批。不是全世界排行榜。</p>
+
+<article class="ver" id="sublevel07"><h2>SUBLEVEL 07</h2>
+<p>来源 <a href="https://github.com/wquguru/fable52-fps-repro">wquguru/fable52-fps-repro</a>，提交 <b>a7e1df3</b>，当天 30 星。许可证 MIT。</p>
+<p>放进来的是仓库里的 <b>demos/04-fps/index.html</b>。它原来从 jsDelivr 读取 Three.js 0.170.0。同样的文件已经放在游戏目录里，页面不再访问那个地址。Three.js 也是 MIT。</p>
+<p>这一款连库和说明一起超过 50 万字节。它是点名要的那一款，所以单独放进来，不把它算进「不到 50 万」的那一批。</p>
+<p><b>电脑键鼠。</b>手机上没有瞄准用的鼠标，卡片上写了，不当成手机游戏。</p>
+</article>
+
+<article class="ver" id="isocity"><h2>等距小城 IsoCity</h2>
+<p>来源 <a href="https://github.com/victorqribeiro/isocity">victorqribeiro/isocity</a>，提交 <b>c577241</b>，当天 3264 星。代码许可证 MIT，版权 Victor Ribeiro，2019。</p>
+<p>贴图是仓库里的那张 PNG。上游注释指向 <a href="https://opengameart.org/content/isometric-landscape">OpenGameArt 的 Isometric Landscape</a>，页面写的是 CC0，上传者 Kenney。</p>
+<p>手机可以点选方块再点到格子上。</p>
+</article>
+
+<article class="ver" id="underrun"><h2>地底突围 UNDERRUN</h2>
+<p>来源 <a href="https://github.com/phoboslab/underrun">phoboslab/underrun</a>，提交 <b>f933e29</b>，当天 1113 星。许可证 MIT，版权 Dominic Szablewski，2018。</p>
+<p>仓库里没有已经压缩好的竞赛单文件，只有一个占位文件。这里放的是作者提交的可玩页面 <b>index-debug.html</b> 和它引用的脚本、图片，没有另外跑打包脚本。</p>
+<p>声音程序 Sonant-X 是 zlib 许可，声明留在 <b>source/sonantx-reduced.js</b> 开头。</p>
+<p><b>电脑键鼠。</b>方向键或 WASD 移动，鼠标瞄准开火。</p>
+</article>
+
+<article class="ver" id="invaderz"><h2>进化入侵者 InvaderZ</h2>
+<p>来源 <a href="https://github.com/victorqribeiro/invaderz">victorqribeiro/invaderz</a>，提交 <b>a3ac957</b>，当天 711 星。许可证 MIT，版权见游戏目录里的 LICENSE。</p>
+<p>去掉了过时的应用缓存，也去掉了指向 <b>/invaderz/sw.js</b> 的服务工作线程注册。那个地址不属于本站。玩法没有改。</p>
+<p>手机上有左右和射击按钮。</p>
+</article>
+
+<article class="ver" id="huejumper"><h2>色相飞车 Hue Jumper</h2>
+<p>来源 <a href="https://github.com/KilledByAPixel/HueJumper2k">KilledByAPixel/HueJumper2k</a>，提交 <b>0dc693f</b>，当天 344 星。许可证 GPL-3.0，全文在游戏目录的 LICENSE。可玩文件就是源码。</p>
+<p>作者 Frank Force。手机上按住画面左右即可转向。</p>
+</article>
+
+<article class="ver" id="pong"><h2>乒乓 Pong</h2>
+<p>来源 <a href="https://github.com/jakesgordon/javascript-pong">jakesgordon/javascript-pong</a>，提交 <b>ca32405</b>，当天 222 星。许可证 MIT，版权 Jake Gordon。</p>
+<p>放进来的是仓库根上的完整一局，教程分步 part1 到 part5 没有放。原来指向网站根目录的教程链接改到了上游仓库，避免打开本站别的页面。</p>
+<p><b>电脑键盘。</b>按 1 单人。左边 Q/A，右边 P/L。</p>
+</article>
+
+<article class="ver"><h2>看过但没有放进来</h2>
+<p>Floppy Bird：页面会加载站外统计脚本，画面又写着原画来自 Dong Nguyen，权利说不清。</p>
+<p>HTML5 Asteroids：代码是 MIT，但音效和字体没有随仓库给出许可证。</p>
+<p>Space Huggers：仓库标记是 GPL，说明却写着不打算再分发，两种说法冲突。</p>
+<p>Hextris、叠塔、小恐龙、笨鸟、赛车、HexGL、A Dark Room：成品体积超过 50 万字节。</p>
+<p>原版 2048、另一版俄罗斯方块、另一版吃豆人：大厅里已经有同样的玩法。</p>
+</article>
+</main>
+</body></html>

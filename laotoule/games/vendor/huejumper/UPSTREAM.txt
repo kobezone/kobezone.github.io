@@ -1,0 +1,4 @@
+Upstream: https://github.com/KilledByAPixel/HueJumper2k
+Pinned commit: 0dc693f92812bf39e24964c83a7a28e03b604a54
+License: GPL-3.0 (LICENSE). The enhanced playable file is index.html, which is also the source.
+The 2KB golfed a.htm, the zip, and screenshot.jpg are not deployed.

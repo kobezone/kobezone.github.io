@@ -1,0 +1,5 @@
+Upstream: https://github.com/victorqribeiro/invaderz
+Pinned commit: a3ac9574f7a1904fb74d7fdff22b9b2e7c94a310
+License: MIT (LICENSE)
+Not deployed: sw.js, manifest.appcache, screenshot.png, CODE_OF_CONDUCT.md
+The load handler no longer calls applicationCache when the browser does not have it. Current Chrome removed that API, and the original call threw on every load. Shooting, movement, and evolution are unchanged.

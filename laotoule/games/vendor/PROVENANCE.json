@@ -1,0 +1,555 @@
+{
+  "checked": "2026-11-11",
+  "what_this_is": "Popular eligible shortlist of finished HTML games that fit the rules. Not a worldwide definitive top-N.",
+  "method": "Sum of os.stat().st_size for every deployed file of that game, including the hall wrapper, license, notices, HTML, JS, CSS, images, audio, and vendored dependencies. Raw bytes. Not gzip, not zip, not the GitHub repository size, not the HTML file alone.",
+  "limit_bytes": 500000,
+  "command": "python3 laotoule/games/vendor/measure.py",
+  "games": [
+    {
+      "id": "sublevel07",
+      "name": "SUBLEVEL 07",
+      "role": "named-request",
+      "repo": "https://github.com/wquguru/fable52-fps-repro",
+      "commit": "a7e1df3ce32eb2bb05e23ae457fe5fe2bffab961",
+      "stars": 30,
+      "stars_checked": "2026-11-11",
+      "license": "MIT",
+      "entry": "demos/04-fps/index.html",
+      "deployed_entry": "games/vendor/sublevel07/index.html",
+      "wrapper": "games/sublevel07.html",
+      "touch": false,
+      "note": "Single-file upstream game. Three.js 0.170.0 modules it imports are vendored. Import map points at those local files. Over 500000 bytes is the named-game exception.",
+      "bytes": 1565538,
+      "under_500000": false,
+      "files": [
+        {
+          "path": "games/vendor/sublevel07/LICENSE",
+          "bytes": 1064
+        },
+        {
+          "path": "games/vendor/sublevel07/UPSTREAM.txt",
+          "bytes": 390
+        },
+        {
+          "path": "games/vendor/sublevel07/index.html",
+          "bytes": 130851
+        },
+        {
+          "path": "games/vendor/sublevel07/three/LICENSE",
+          "bytes": 1081
+        },
+        {
+          "path": "games/vendor/sublevel07/three/build/three.module.js",
+          "bytes": 1314681
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/geometries/RoundedBoxGeometry.js",
+          "bytes": 4625
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/math/SimplexNoise.js",
+          "bytes": 14351
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/EffectComposer.js",
+          "bytes": 4651
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/GTAOPass.js",
+          "bytes": 16582
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/MaskPass.js",
+          "bytes": 2231
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/OutputPass.js",
+          "bytes": 2524
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/Pass.js",
+          "bytes": 1706
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/ShaderPass.js",
+          "bytes": 1576
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/postprocessing/UnrealBloomPass.js",
+          "bytes": 12410
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/shaders/CopyShader.js",
+          "bytes": 571
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/shaders/GTAOShader.js",
+          "bytes": 12990
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/shaders/LuminosityHighPassShader.js",
+          "bytes": 1147
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/shaders/OutputShader.js",
+          "bytes": 1490
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/shaders/PoissonDenoiseShader.js",
+          "bytes": 6614
+        },
+        {
+          "path": "games/vendor/sublevel07/three/examples/jsm/utils/BufferGeometryUtils.js",
+          "bytes": 31768
+        },
+        {
+          "path": "games/sublevel07.html",
+          "bytes": 2235
+        }
+      ]
+    },
+    {
+      "id": "isocity",
+      "name": "IsoCity",
+      "role": "additional",
+      "repo": "https://github.com/victorqribeiro/isocity",
+      "commit": "c5772412d3e423318f2cf479ebdd50a2b9029d84",
+      "stars": 3264,
+      "stars_checked": "2026-11-11",
+      "license": "MIT code; texture CC0 (Kenney, OpenGameArt)",
+      "entry": "index.html",
+      "deployed_entry": "games/vendor/isocity/index.html",
+      "wrapper": "games/isocity.html",
+      "touch": true,
+      "note": "screenshot.png from the repository is not deployed. Texture file is the one in the pinned commit.",
+      "bytes": 483900,
+      "under_500000": true,
+      "files": [
+        {
+          "path": "games/vendor/isocity/LICENSE",
+          "bytes": 1071
+        },
+        {
+          "path": "games/vendor/isocity/NOTICE.txt",
+          "bytes": 452
+        },
+        {
+          "path": "games/vendor/isocity/README.md",
+          "bytes": 485
+        },
+        {
+          "path": "games/vendor/isocity/favicon.png",
+          "bytes": 18614
+        },
+        {
+          "path": "games/vendor/isocity/index.html",
+          "bytes": 1125
+        },
+        {
+          "path": "games/vendor/isocity/css/main.css",
+          "bytes": 1372
+        },
+        {
+          "path": "games/vendor/isocity/js/main.js",
+          "bytes": 4667
+        },
+        {
+          "path": "games/vendor/isocity/textures/01_130x66_130x230.png",
+          "bytes": 454017
+        },
+        {
+          "path": "games/isocity.html",
+          "bytes": 2097
+        }
+      ]
+    },
+    {
+      "id": "underrun",
+      "name": "UNDERRUN",
+      "role": "additional",
+      "repo": "https://github.com/phoboslab/underrun",
+      "commit": "f933e29152d7fc1ca61d4b3eaa8b29551d7d7a62",
+      "stars": 1113,
+      "stars_checked": "2026-11-11",
+      "license": "MIT; Sonant-X zlib notice kept in source/sonantx-reduced.js",
+      "entry": "index-debug.html",
+      "deployed_entry": "games/vendor/underrun/index-debug.html",
+      "wrapper": "games/underrun.html",
+      "touch": false,
+      "note": "The minified js13k build is not in the upstream repository (build/dummy.txt only). This deploy is the committed playable page and the scripts it loads. build.sh was not run.",
+      "bytes": 54005,
+      "under_500000": true,
+      "files": [
+        {
+          "path": "games/vendor/underrun/LICENSE.md",
+          "bytes": 1075
+        },
+        {
+          "path": "games/vendor/underrun/README.md",
+          "bytes": 291
+        },
+        {
+          "path": "games/vendor/underrun/UPSTREAM.txt",
+          "bytes": 411
+        },
+        {
+          "path": "games/vendor/underrun/index-debug.html",
+          "bytes": 2043
+        },
+        {
+          "path": "games/vendor/underrun/m/l1.png",
+          "bytes": 319
+        },
+        {
+          "path": "games/vendor/underrun/m/l2.png",
+          "bytes": 344
+        },
+        {
+          "path": "games/vendor/underrun/m/l3.png",
+          "bytes": 257
+        },
+        {
+          "path": "games/vendor/underrun/m/q2.png",
+          "bytes": 2171
+        },
+        {
+          "path": "games/vendor/underrun/source/audio.js",
+          "bytes": 1285
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-cpu.js",
+          "bytes": 1118
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-explosion.js",
+          "bytes": 292
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-health.js",
+          "bytes": 196
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-particle.js",
+          "bytes": 289
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-plasma.js",
+          "bytes": 476
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-player.js",
+          "bytes": 1432
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-sentry.js",
+          "bytes": 1780
+        },
+        {
+          "path": "games/vendor/underrun/source/entity-spider.js",
+          "bytes": 1663
+        },
+        {
+          "path": "games/vendor/underrun/source/entity.js",
+          "bytes": 2011
+        },
+        {
+          "path": "games/vendor/underrun/source/game.js",
+          "bytes": 5321
+        },
+        {
+          "path": "games/vendor/underrun/source/main.js",
+          "bytes": 386
+        },
+        {
+          "path": "games/vendor/underrun/source/music-dark-meat-beat.js",
+          "bytes": 5053
+        },
+        {
+          "path": "games/vendor/underrun/source/random.js",
+          "bytes": 438
+        },
+        {
+          "path": "games/vendor/underrun/source/renderer.js",
+          "bytes": 6708
+        },
+        {
+          "path": "games/vendor/underrun/source/sonantx-reduced.js",
+          "bytes": 7933
+        },
+        {
+          "path": "games/vendor/underrun/source/sound-effects.js",
+          "bytes": 3761
+        },
+        {
+          "path": "games/vendor/underrun/source/terminal.js",
+          "bytes": 4834
+        },
+        {
+          "path": "games/underrun.html",
+          "bytes": 2118
+        }
+      ]
+    },
+    {
+      "id": "invaderz",
+      "name": "InvaderZ",
+      "role": "additional",
+      "repo": "https://github.com/victorqribeiro/invaderz",
+      "commit": "a3ac9574f7a1904fb74d7fdff22b9b2e7c94a310",
+      "stars": 711,
+      "stars_checked": "2026-11-11",
+      "license": "MIT",
+      "entry": "index.html",
+      "deployed_entry": "games/vendor/invaderz/index.html",
+      "wrapper": "games/invaderz.html",
+      "touch": true,
+      "note": "Removed obsolete appcache manifest and a service worker registration aimed at /invaderz/sw.js. sw.js itself is not deployed.",
+      "bytes": 19985,
+      "under_500000": true,
+      "files": [
+        {
+          "path": "games/vendor/invaderz/LICENSE",
+          "bytes": 1071
+        },
+        {
+          "path": "games/vendor/invaderz/README.md",
+          "bytes": 2945
+        },
+        {
+          "path": "games/vendor/invaderz/UPSTREAM.txt",
+          "bytes": 417
+        },
+        {
+          "path": "games/vendor/invaderz/favicon.png",
+          "bytes": 785
+        },
+        {
+          "path": "games/vendor/invaderz/index.html",
+          "bytes": 1200
+        },
+        {
+          "path": "games/vendor/invaderz/manifest.json",
+          "bytes": 381
+        },
+        {
+          "path": "games/vendor/invaderz/css/main.css",
+          "bytes": 727
+        },
+        {
+          "path": "games/vendor/invaderz/js/Genetics.js",
+          "bytes": 2342
+        },
+        {
+          "path": "games/vendor/invaderz/js/Invader.js",
+          "bytes": 1682
+        },
+        {
+          "path": "games/vendor/invaderz/js/Player.js",
+          "bytes": 1152
+        },
+        {
+          "path": "games/vendor/invaderz/js/main.js",
+          "bytes": 5196
+        },
+        {
+          "path": "games/invaderz.html",
+          "bytes": 2087
+        }
+      ]
+    },
+    {
+      "id": "huejumper",
+      "name": "Hue Jumper",
+      "role": "additional",
+      "repo": "https://github.com/KilledByAPixel/HueJumper2k",
+      "commit": "0dc693f92812bf39e24964c83a7a28e03b604a54",
+      "stars": 344,
+      "stars_checked": "2026-11-11",
+      "license": "GPL-3.0",
+      "entry": "index.html",
+      "deployed_entry": "games/vendor/huejumper/index.html",
+      "wrapper": "games/huejumper.html",
+      "touch": true,
+      "note": "Enhanced single-file game. The 2KB golfed a.htm and screenshot.jpg are not deployed. GPL text is LICENSE.",
+      "bytes": 71074,
+      "under_500000": true,
+      "files": [
+        {
+          "path": "games/vendor/huejumper/LICENSE",
+          "bytes": 35149
+        },
+        {
+          "path": "games/vendor/huejumper/UPSTREAM.txt",
+          "bytes": 276
+        },
+        {
+          "path": "games/vendor/huejumper/index.html",
+          "bytes": 33522
+        },
+        {
+          "path": "games/huejumper.html",
+          "bytes": 2127
+        }
+      ]
+    },
+    {
+      "id": "pong",
+      "name": "Pong",
+      "role": "additional",
+      "repo": "https://github.com/jakesgordon/javascript-pong",
+      "commit": "ca3240536e4f79ab7144388e56ed19de715b6662",
+      "stars": 222,
+      "stars_checked": "2026-11-11",
+      "license": "MIT",
+      "entry": "index.html",
+      "deployed_entry": "games/vendor/pong/index.html",
+      "wrapper": "games/pong.html",
+      "touch": false,
+      "note": "Finished root game only. Tutorial folders part1-part5 are not deployed. Site-root tutorial links were pointed at the upstream repository.",
+      "bytes": 65048,
+      "under_500000": true,
+      "files": [
+        {
+          "path": "games/vendor/pong/LICENSE",
+          "bytes": 1102
+        },
+        {
+          "path": "games/vendor/pong/README.md",
+          "bytes": 515
+        },
+        {
+          "path": "games/vendor/pong/UPSTREAM.txt",
+          "bytes": 242
+        },
+        {
+          "path": "games/vendor/pong/game.js",
+          "bytes": 10108
+        },
+        {
+          "path": "games/vendor/pong/index.html",
+          "bytes": 3658
+        },
+        {
+          "path": "games/vendor/pong/pong.css",
+          "bytes": 1933
+        },
+        {
+          "path": "games/vendor/pong/pong.js",
+          "bytes": 21945
+        },
+        {
+          "path": "games/vendor/pong/images/press1.png",
+          "bytes": 2066
+        },
+        {
+          "path": "games/vendor/pong/images/press2.png",
+          "bytes": 1928
+        },
+        {
+          "path": "games/vendor/pong/images/winner.png",
+          "bytes": 768
+        },
+        {
+          "path": "games/vendor/pong/sounds/goal.wav",
+          "bytes": 10690
+        },
+        {
+          "path": "games/vendor/pong/sounds/ping.wav",
+          "bytes": 4700
+        },
+        {
+          "path": "games/vendor/pong/sounds/pong.wav",
+          "bytes": 2220
+        },
+        {
+          "path": "games/vendor/pong/sounds/wall.wav",
+          "bytes": 1068
+        },
+        {
+          "path": "games/pong.html",
+          "bytes": 2105
+        }
+      ]
+    }
+  ],
+  "excluded": [
+    {
+      "repo": "https://github.com/nebez/floppybird",
+      "stars": 600,
+      "license": "Apache-2.0 on the repository",
+      "reason": "Page loads analytics from https://yummy.nebez.dev/script.js. Footer credits original art to Dong Nguyen / dotgears, so the sprite rights are not clearly covered by the repository license."
+    },
+    {
+      "repo": "https://github.com/dmcinnes/HTML5-Asteroids",
+      "stars": 357,
+      "license": "MIT on the code",
+      "reason": "Runtime audio files use FreeSound-style names and the vector font is marked borrowed, with no license for those assets in the repository."
+    },
+    {
+      "repo": "https://github.com/KilledByAPixel/SpaceHuggers",
+      "stars": 289,
+      "license": "GPL-3.0 metadata, README says not for redistribution",
+      "reason": "README says the game is only for learning and is not intended to be redistributed. Permission is conflicting, so it was not copied."
+    },
+    {
+      "repo": "https://github.com/Hextris/hextris",
+      "stars": 2445,
+      "license": "GPL-3.0 text in LICENSE.md",
+      "reason": "Playable tree is about 1.5MB. The style directory alone is 1037869 bytes, over the 500000 byte cap."
+    },
+    {
+      "repo": "https://github.com/iamkun/tower_game",
+      "stars": 1619,
+      "license": "MIT",
+      "reason": "Assets directory is 1881177 bytes, including music, over the cap."
+    },
+    {
+      "repo": "https://github.com/wayou/t-rex-runner",
+      "stars": 2200,
+      "license": "BSD-3-Clause",
+      "reason": "Assets directory is 2429550 bytes, over the cap."
+    },
+    {
+      "repo": "https://github.com/ellisonleao/clumsy-bird",
+      "stars": 1634,
+      "license": "GPL-3.0",
+      "reason": "data directory is 3683549 bytes, over the cap."
+    },
+    {
+      "repo": "https://github.com/jakesgordon/javascript-racer",
+      "stars": 1179,
+      "license": "MIT",
+      "reason": "Music is 8165760 bytes and images are 642057 bytes, over the cap."
+    },
+    {
+      "repo": "https://github.com/BKcore/HexGL",
+      "stars": 1753,
+      "license": "MIT",
+      "reason": "Textures and audio are multiple megabytes, over the cap."
+    },
+    {
+      "repo": "https://github.com/doublespeakgames/adarkroom",
+      "stars": 8392,
+      "license": "MPL-2.0",
+      "reason": "Shipped audio and translations are far over the cap."
+    },
+    {
+      "repo": "https://github.com/gabrielecirulli/2048",
+      "stars": 13473,
+      "license": "MIT",
+      "reason": "Same 2048 rules as the hall game already named 2048."
+    },
+    {
+      "repo": "https://github.com/jakesgordon/javascript-tetris",
+      "stars": 736,
+      "license": "MIT",
+      "reason": "Same falling-block concept as the hall game 俄罗斯方块."
+    },
+    {
+      "repo": "https://github.com/mumuy/pacman",
+      "stars": 1645,
+      "license": "MIT",
+      "reason": "Same maze-chase concept as the hall game 吃豆豆."
+    }
+  ]
+}
