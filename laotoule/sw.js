@@ -1,11 +1,11 @@
-const VERSION='laotoule-v2.19';
+const VERSION='laotoule-v2.20';
 const FILES=[
 './','index.html','style.css','common.js','settings.html','changelog.html','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png',
 'games/2048.html','games/pelican.html','games/snake.html','games/pacman.html','games/minesweeper.html','games/tetris.html','games/gomoku.html','games/memory.html',
 'games/whack.html','games/zodiac.html','games/paint.html','games/drawfish.html','games/catmouse.html','games/doctor.html','games/tank.html','games/mota.html',
 'games/ninja.html','games/sokoban.html','games/lianliankan.html','games/bloxblock.html','games/spider.html','games/xiangqi.html','games/xiangqi.engine.js',
 'games/sudoku.html','games/sudoku.engine.js','games/24.html','games/tf24.engine.js','games/bigtext.html','games/doudizhu.html','games/doudizhu.engine.js',
-'games/klondike.html','games/klondike.engine.js','games/goldminer.html','games/klotski.html','games/klotski.engine.js','games/assets/klotski/caocao.svg',
+'games/klondike.html','games/klondike.engine.js','games/goldminer.html','games/marbles.html','games/marbles.physics.js','games/klotski.html','games/klotski.engine.js','games/assets/klotski/caocao.svg',
 'games/assets/klotski/guanyu.svg','games/assets/klotski/zhangfei.svg','games/assets/klotski/zhaoyun.svg','games/assets/klotski/machao.svg','games/assets/klotski/huangzhong.svg',
 'games/assets/klotski/bing.svg','credits.html','games/vendor/PROVENANCE.json','games/vendor/measure.py','games/vendor/huejumper/LICENSE','games/vendor/huejumper/UPSTREAM.txt',
 'games/vendor/huejumper/index.html','games/vendor/invaderz/LICENSE','games/vendor/invaderz/README.md','games/vendor/invaderz/UPSTREAM.txt','games/vendor/invaderz/favicon.png',
