@@ -1,0 +1,908 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>弹珠弹弹乐 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
+<style>
+#goal{text-align:center;font-size:1.28rem;font-weight:900;margin:0;color:#7a3e00}
+#turn{text-align:center;font-size:1.12rem;font-weight:800;margin:2px 0 6px;min-height:1.45em;color:#222}
+#pips{display:flex;gap:8px;justify-content:center;height:26px;margin:0 0 8px}
+#pips i{width:22px;height:22px;border-radius:50%;border:3px solid #222;background:#fff;display:block}
+#pips i.on{background:#ffd43b}
+#stage{position:relative;width:min(100%,calc(70vh * .68));width:min(100%,calc(70dvh * .68));height:min(70vh,calc(100vh - var(--ltl-chrome,0px) - 230px));height:min(70dvh,calc(100dvh - var(--ltl-chrome,0px) - 230px));min-height:300px;margin:0 auto;touch-action:none;-webkit-user-select:none;user-select:none}
+#cv{width:100%;height:100%;display:block;border-radius:22px;touch-action:none;background:#3a2416}
+.overlay{border-radius:22px}
+#ovt{font-size:1.4rem;line-height:1.45;max-width:16em}
+.controls{position:sticky;bottom:0;z-index:6;background:rgba(255,247,230,.96);padding:8px 0 6px}
+@media (max-width:420px){#goal{font-size:1.15rem}#turn{font-size:1.05rem}}
+</style></head><body>
+<div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>弹珠弹弹乐</h1></div>
+<div class="wrap">
+<div class="stats">
+  <div class="stat"><span>分数</span><b id="score">0</b></div>
+  <div class="stat"><span>第几局</span><b id="round">1</b></div>
+  <div class="stat"><span>还剩</span><b id="shots">6</b></div>
+  <div class="stat"><span>最高</span><b id="best">0</b></div>
+</div>
+<p id="goal">把彩色弹珠撞进洞里</p>
+<p id="turn">按住金圈弹珠，往要去的方向拖</p>
+<div id="pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+<div id="stage"><canvas id="cv" width="800" height="1200" aria-label="弹珠桌"></canvas>
+<div class="overlay" id="ov"><div id="ovt"></div><button class="btn green" id="again" type="button">下一局</button></div></div>
+<div class="controls">
+  <button class="btn green" id="restart" type="button">再来一局</button>
+  <button class="btn" id="mute" type="button">声音：开</button>
+</div>
+<div class="help"><h2>怎么玩</h2><ul>
+<li>金圈那颗是<b>你的弹珠</b>。彩色的是要打进洞里的。</li>
+<li>按住你的弹珠，往想去的方向拖，松手就飞出去。线越长，打得越用力。只拖一点点就松开，这一发不算。</li>
+<li>弹珠会互相撞，也会从边上和红柱子弹开。都停稳了，才能打下一发。</li>
+<li>彩色弹珠进洞就得分。最上面中间的洞是金边，多加一点分。你的弹珠掉进去会放回原来的位置，不扣分。</li>
+<li>没有倒计时。彩色弹珠都进洞就过关，剩下的发数还会加分。发数用完还可以再试这一局。</li>
+<li>声音可以关掉，这台设备会记住。</li>
+</ul></div>
+</div>
+<script src="../common.js"></script>
+<script src="marbles.physics.js"></script>
+<script>
+const P = window.MarblePhysics;
+const SELF = location.search.indexOf('selftest=1') >= 0;
+const GLASS = {
+  cue: { light:'#ffffff', mid:'#e7f5ff', deep:'#8ec5ea', rim:'#1d4e74', swirl:'#ffe08a', swirl2:'#ffffff' },
+  ruby: { light:'#ffe8ee', mid:'#e0314d', deep:'#8d1230', rim:'#4a0616', swirl:'#ffc1ce', swirl2:'#fff7f8' },
+  cobalt: { light:'#eef4ff', mid:'#3d74e6', deep:'#173a8c', rim:'#0b1d4a', swirl:'#c5d8ff', swirl2:'#f7faff' },
+  emerald: { light:'#e7fff2', mid:'#12a35a', deep:'#0b5c34', rim:'#04331c', swirl:'#c3f8dc', swirl2:'#f4fff8' },
+  amber: { light:'#fff8dc', mid:'#f0a202', deep:'#b56a00', rim:'#6a3b00', swirl:'#ffe39a', swirl2:'#fffdf6' },
+  amethyst: { light:'#f8edff', mid:'#9b4dff', deep:'#5b1fa8', rim:'#2e0d58', swirl:'#e4ccff', swirl2:'#fdf9ff' },
+  aqua: { light:'#e9fdff', mid:'#15b8c9', deep:'#0c6e88', rim:'#063848', swirl:'#c2f6ff', swirl2:'#f5feff' },
+  rose: { light:'#ffeaf4', mid:'#f06595', deep:'#a61e4d', rim:'#5c102c', swirl:'#ffc9e2', swirl2:'#fff8fb' }
+};
+const GRAIN = [];
+for(let gi=0; gi<28; gi++){
+  GRAIN.push({ y: 30 + gi * 54, a: ((gi * 37) % 11) - 5, b: ((gi * 19) % 9) - 4 });
+}
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const stage = document.getElementById('stage');
+const ov = document.getElementById('ov');
+const goalEl = document.getElementById('goal');
+const turnEl = document.getElementById('turn');
+const pipEls = document.querySelectorAll('#pips i');
+
+let world, round = 0, score = 0, shotsLeft = 6, phase = 'aim', aim = null;
+let raf = 0, acc = 0, lastTs = 0, loopStarts = 0, binds = 0;
+let shotPockets = 0, overMode = 'retry', hintTimer = 0;
+let floats = [], sparks = [], flashes = [];
+let noiseBuf = null;
+let ac = null;
+let audioUnlocked = false;
+const view = { scale:1, ox:0, oy:0 };
+
+function muted(){ return localStorage.getItem('laotoule:mute') === '1'; }
+function paintMute(){
+  document.getElementById('mute').textContent = muted() ? '声音：关' : '声音：开';
+}
+function buzz(ms){
+  try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
+}
+function unlockAudio(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if(!AC) return;
+  if(!ac){
+    try{ ac = new AC(); }catch(e){ ac = null; return; }
+    try{
+      const len = Math.floor(ac.sampleRate * 0.03);
+      noiseBuf = ac.createBuffer(1, len, ac.sampleRate);
+      const data = noiseBuf.getChannelData(0);
+      for(let i=0;i<len;i++) data[i] = (Math.random()*2-1) * (1 - i/len);
+    }catch(e){ noiseBuf = null; }
+  }
+  audioUnlocked = true;
+  if(ac.state === 'suspended') ac.resume().catch(function(){});
+}
+function tone(freq, dur, type, peak, delay){
+  if(muted() || !ac || !audioUnlocked) return;
+  const t = ac.currentTime + (delay || 0);
+  const o = ac.createOscillator();
+  const g = ac.createGain();
+  o.type = type || 'sine';
+  o.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, peak), t + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(ac.destination);
+  o.start(t); o.stop(t + dur + 0.02);
+}
+let lastHitAt = 0;
+function playGlass(speed){
+  if(muted() || !ac || !audioUnlocked) return;
+  const now = performance.now();
+  if(now - lastHitAt < 36) return;
+  lastHitAt = now;
+  const inten = Math.max(0.35, Math.min(1, speed / 800));
+  const freq = 1400 + Math.min(1100, speed * 0.9);
+  tone(freq, 0.07, 'sine', 0.03 * inten, 0);
+  tone(freq * 0.5, 0.05, 'triangle', 0.012 * inten, 0);
+  if(!noiseBuf) return;
+  const src = ac.createBufferSource();
+  src.buffer = noiseBuf;
+  const f = ac.createBiquadFilter();
+  f.type = 'bandpass';
+  f.frequency.value = 2800;
+  f.Q.value = 0.8;
+  const g = ac.createGain();
+  g.gain.value = 0.018 * inten;
+  src.connect(f); f.connect(g); g.connect(ac.destination);
+  src.start();
+}
+function playShot(){
+  tone(240, 0.09, 'triangle', 0.04, 0);
+  tone(620, 0.05, 'sine', 0.02, 0.01);
+}
+function playPocket(scored){
+  if(scored){
+    tone(880, 0.18, 'sine', 0.04, 0);
+    tone(1320, 0.2, 'sine', 0.03, 0.07);
+  }else{
+    tone(480, 0.16, 'sine', 0.03, 0);
+  }
+}
+function setPips(n){
+  for(let i=0;i<pipEls.length;i++) pipEls[i].classList.toggle('on', i < n);
+}
+function strengthWord(p){
+  if(p < 0.34) return '轻轻';
+  if(p < 0.67) return '适中';
+  return '用力';
+}
+function setTurn(text, hold){
+  turnEl.textContent = text;
+  clearTimeout(hintTimer);
+  if(!hold){
+    hintTimer = setTimeout(function(){
+      if(phase === 'aim' && !aim) turnEl.textContent = '按住金圈弹珠，往要去的方向拖';
+    }, 1500);
+  }
+}
+function aliveTargets(){
+  let n = 0;
+  for(let i=0;i<world.balls.length;i++){
+    const b = world.balls[i];
+    if(b.role === 'target' && b.alive) n++;
+  }
+  return n;
+}
+function hud(){
+  document.getElementById('score').textContent = String(score);
+  document.getElementById('round').textContent = (round + 1) + '/' + P.LEVELS.length;
+  document.getElementById('shots').textContent = String(shotsLeft);
+  document.getElementById('best').textContent = String(LTL.getBest('marble') || 0);
+  const left = aliveTargets();
+  goalEl.textContent = left ? ('把彩色弹珠撞进洞里 · 还剩 ' + left + ' 颗') : '彩色弹珠都进洞啦';
+}
+function remember(announce){
+  const shown = LTL.getBest('marble') || 0;
+  if(SELF){ document.getElementById('best').textContent = String(shown); return; }
+  const beaten = score > shown && score > 0;
+  if(beaten) LTL.record('marble', score, true);
+  document.getElementById('best').textContent = String(LTL.getBest('marble') || 0);
+  if(announce && beaten) LTL.toast('新纪录 ' + score + ' 分');
+}
+function build(index, keepScore){
+  round = index;
+  if(!keepScore) score = 0;
+  world = P.tableWorld(round);
+  shotsLeft = P.LEVELS[round].shots;
+  phase = 'aim';
+  aim = null;
+  shotPockets = 0;
+  acc = 0;
+  floats = [];
+  sparks = [];
+  flashes = [];
+  setPips(0);
+  ov.classList.remove('show');
+  setTurn('按住金圈弹珠，往要去的方向拖', true);
+  hud();
+}
+function fullRestart(){ build(0, false); }
+function showOv(html, label, mode){
+  overMode = mode;
+  document.getElementById('ovt').innerHTML = html;
+  document.getElementById('again').textContent = label;
+  ov.classList.add('show');
+}
+function onPocket(ev){
+  flashes.push({ x:ev.x, y:ev.y, life:0.5 });
+  if(ev.role !== 'target'){
+    setTurn('你的弹珠进洞了，停稳后会放回来', true);
+    playPocket(false);
+    buzz(12);
+    return;
+  }
+  shotPockets++;
+  let pts = 100 + (shotPockets - 1) * 60;
+  if(ev.bonus) pts += 50;
+  score += pts;
+  floats.push({ x:ev.x, y:ev.y - 20, text:'+' + pts, life:1.15, gold:!!ev.bonus });
+  setTurn(shotPockets > 1 ? '连着进洞啦' : '进洞啦', true);
+  playPocket(true);
+  buzz(16);
+  remember(false);
+  hud();
+}
+function settle(){
+  const cue = P.findBall(world, 'cue');
+  if(cue && !cue.alive){
+    P.placeBall(world, 'cue', P.TABLE.cue.x, P.TABLE.cue.y);
+    setTurn('你的弹珠放回原位了', true);
+  }
+  const left = aliveTargets();
+  if(left === 0){
+    const bonus = 160 + shotsLeft * 70;
+    score += bonus;
+    floats.push({ x:500, y:760, text:'过关 +' + bonus, life:1.5, gold:true });
+    phase = 'over';
+    remember(true);
+    hud();
+    if(round >= P.LEVELS.length - 1){
+      setTurn('五局都打完啦', true);
+      showOv('五局都打完啦<br>一共 ' + score + ' 分', '再来一次', 'all');
+    }else{
+      setTurn('这一局过关啦', true);
+      showOv('彩色弹珠都进洞啦<br>过关加了 ' + bonus + ' 分', '下一局', 'next');
+    }
+    return;
+  }
+  if(shotsLeft <= 0){
+    phase = 'over';
+    remember(true);
+    hud();
+    showOv('发数用完了<br>还有 ' + left + ' 颗彩色弹珠<br>现在 ' + score + ' 分', '再试这一局', 'retry');
+    return;
+  }
+  phase = 'aim';
+  shotPockets = 0;
+  setTurn('按住金圈弹珠，往要去的方向拖', true);
+  hud();
+}
+function tryLaunch(vx, vy){
+  if(phase !== 'aim') return false;
+  if(!P.canShoot(world)) return false;
+  const ok = P.launch(world, 'cue', vx, vy);
+  if(!ok) return false;
+  shotsLeft--;
+  phase = 'roll';
+  shotPockets = 0;
+  aim = null;
+  setPips(0);
+  playShot();
+  buzz(10);
+  setTurn('弹珠还在滚，停稳再打', true);
+  hud();
+  return true;
+}
+function consumeEvents(){
+  const evs = world.events.splice(0, world.events.length);
+  for(let i=0;i<evs.length;i++){
+    const ev = evs[i];
+    if(ev.type === 'pocket') onPocket(ev);
+    else if(ev.type === 'hit'){
+      playGlass(ev.speed);
+      if(ev.speed > 160 && sparks.length < 40) burst(ev.x, ev.y, ev.kind === 'bumper' ? '#fff3bf' : '#ffffff');
+    }
+  }
+}
+function burst(x, y, color){
+  for(let i=0;i<6;i++){
+    const a = i / 6 * Math.PI * 2;
+    sparks.push({ x:x, y:y, vx:Math.cos(a)*220, vy:Math.sin(a)*220, life:0.28, color:color });
+  }
+}
+function ageFx(dt){
+  for(let i=floats.length-1;i>=0;i--){
+    floats[i].life -= dt;
+    floats[i].y -= 36 * dt;
+    if(floats[i].life <= 0) floats.splice(i, 1);
+  }
+  for(let i=sparks.length-1;i>=0;i--){
+    const s = sparks[i];
+    s.life -= dt;
+    s.x += s.vx * dt;
+    s.y += s.vy * dt;
+    s.vx *= 0.92;
+    s.vy *= 0.92;
+    if(s.life <= 0) sparks.splice(i, 1);
+  }
+  for(let i=flashes.length-1;i>=0;i--){
+    flashes[i].life -= dt;
+    if(flashes[i].life <= 0) flashes.splice(i, 1);
+  }
+}
+function worldPerCss(){
+  const rect = cv.getBoundingClientRect();
+  if(!(rect.width > 0) || !(view.scale > 0)) return 2.5;
+  return cv.width / (rect.width * view.scale);
+}
+function toWorld(e){
+  const rect = cv.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (cv.width / rect.width);
+  const y = (e.clientY - rect.top) * (cv.height / rect.height);
+  return { x:(x - view.ox) / view.scale, y:(y - view.oy) / view.scale };
+}
+function hitsCue(p){
+  const cue = P.findBall(world, 'cue');
+  if(!cue || !cue.alive) return false;
+  const d = Math.hypot(p.x - cue.x, p.y - cue.y);
+  const reach = Math.max(cue.r * 1.55, 64 * worldPerCss());
+  if(d > reach) return false;
+  for(let i=0;i<world.balls.length;i++){
+    const b = world.balls[i];
+    if(!b.alive || b.role === 'cue') continue;
+    if(Math.hypot(p.x - b.x, p.y - b.y) + 10 < d) return false;
+  }
+  return true;
+}
+function onDown(e){
+  if(e.pointerType === 'mouse' && e.button !== 0) return;
+  if(phase !== 'aim') return;
+  const p = toWorld(e);
+  if(!hitsCue(p)) return;
+  aim = { pid:e.pointerId, ox:p.x, oy:p.y, x:p.x, y:p.y };
+  try{ cv.setPointerCapture(e.pointerId); }catch(err){}
+  e.preventDefault();
+}
+function onMove(e){
+  if(!aim || e.pointerId !== aim.pid) return;
+  const p = toWorld(e);
+  aim.x = p.x;
+  aim.y = p.y;
+  const dx = aim.x - aim.ox, dy = aim.y - aim.oy;
+  const len = Math.hypot(dx, dy);
+  const v = P.shotVelocity(dx, dy);
+  if(!v){
+    setTurn(len > 12 ? '再拖远一点' : '按住金圈弹珠，往要去的方向拖', true);
+    setPips(0);
+  }else{
+    setTurn(strengthWord(v.power), true);
+    setPips(1 + Math.round(v.power * 4));
+  }
+  e.preventDefault();
+}
+function onUp(e){
+  if(!aim || e.pointerId !== aim.pid) return;
+  const a = aim;
+  aim = null;
+  setPips(0);
+  if(phase !== 'aim') return;
+  const v = P.shotVelocity(a.x - a.ox, a.y - a.oy);
+  if(!v){
+    setTurn('拖得太短，这一发不算');
+    return;
+  }
+  tryLaunch(v.vx, v.vy);
+}
+function onCancel(e){
+  if(!aim || e.pointerId !== aim.pid) return;
+  aim = null;
+  setPips(0);
+  setTurn('这一发取消了');
+}
+function fit(){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if(w < 2 || h < 2) return;
+  const dpr = Math.min(2.5, window.devicePixelRatio || 1);
+  const bw = Math.max(2, Math.round(w * dpr));
+  const bh = Math.max(2, Math.round(h * dpr));
+  if(cv.width !== bw || cv.height !== bh){
+    cv.width = bw;
+    cv.height = bh;
+  }
+  const scale = Math.min(cv.width / P.TABLE.w, cv.height / P.TABLE.h);
+  view.scale = scale;
+  view.ox = (cv.width - P.TABLE.w * scale) / 2;
+  view.oy = (cv.height - P.TABLE.h * scale) / 2;
+}
+function roundRect(x, y, w, h, r){
+  ctx.beginPath();
+  const rr = Math.min(r, w/2, h/2);
+  ctx.moveTo(x + rr, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
+  ctx.closePath();
+}
+function drawTable(){
+  const T = P.TABLE;
+  ctx.save();
+  roundRect(0, 0, T.w, T.h, 58);
+  ctx.clip();
+  const wood = ctx.createLinearGradient(0, 0, T.w, T.h);
+  wood.addColorStop(0, '#8a5a34');
+  wood.addColorStop(0.45, '#c4894e');
+  wood.addColorStop(1, '#6b3f22');
+  ctx.fillStyle = wood;
+  ctx.fillRect(0, 0, T.w, T.h);
+  ctx.save();
+  ctx.globalAlpha = 0.18;
+  ctx.strokeStyle = '#3a2412';
+  ctx.lineWidth = 3;
+  for(let i=0;i<GRAIN.length;i++){
+    const g = GRAIN[i];
+    ctx.beginPath();
+    ctx.moveTo(0, g.y);
+    ctx.bezierCurveTo(T.w * 0.3, g.y + g.a, T.w * 0.65, g.y + g.b, T.w, g.y + g.a * 0.4);
+    ctx.stroke();
+  }
+  ctx.restore();
+  ctx.strokeStyle = '#e6c98a';
+  ctx.lineWidth = 8;
+  roundRect(28, 28, T.w - 56, T.h - 56, 46);
+  ctx.stroke();
+  const felt = ctx.createRadialGradient(T.w/2, T.h*0.42, 80, T.w/2, T.h*0.55, T.h * 0.72);
+  felt.addColorStop(0, '#1f8a58');
+  felt.addColorStop(0.55, '#0e6a40');
+  felt.addColorStop(1, '#08462b');
+  ctx.fillStyle = felt;
+  roundRect(T.L, T.T, T.R - T.L, T.B - T.T, 36);
+  ctx.fill();
+  ctx.save();
+  roundRect(T.L, T.T, T.R - T.L, T.B - T.T, 36);
+  ctx.clip();
+  const vig = ctx.createRadialGradient(500, 640, 120, 500, 780, 820);
+  vig.addColorStop(0, 'rgba(255,255,255,.07)');
+  vig.addColorStop(1, 'rgba(0,0,0,.30)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(T.L, T.T, T.R - T.L, T.B - T.T);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(500, 760);
+  ctx.rotate(Math.PI / 4);
+  ctx.strokeStyle = 'rgba(255,255,255,.14)';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(-34, -34, 68, 68);
+  ctx.restore();
+  ctx.save();
+  ctx.strokeStyle = 'rgba(246,213,106,.55)';
+  ctx.lineWidth = 4;
+  ctx.setLineDash([16, 14]);
+  ctx.beginPath();
+  ctx.arc(T.cue.x, T.cue.y, T.ballR + 18, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(255,255,255,.2)';
+  ctx.lineWidth = 16;
+  ctx.lineCap = 'round';
+  const inset = 22;
+  ctx.beginPath();
+  ctx.moveTo(T.L + 150, T.T + inset);
+  ctx.lineTo(500 - 150, T.T + inset);
+  ctx.moveTo(500 + 150, T.T + inset);
+  ctx.lineTo(T.R - 150, T.T + inset);
+  ctx.moveTo(T.L + inset, T.T + 150);
+  ctx.lineTo(T.L + inset, T.B - 150);
+  ctx.moveTo(T.R - inset, T.T + 150);
+  ctx.lineTo(T.R - inset, T.B - 150);
+  ctx.moveTo(T.L + 150, T.B - inset);
+  ctx.lineTo(T.R - 150, T.B - inset);
+  ctx.stroke();
+  for(let i=0;i<P.POCKETS.length;i++) drawPocket(P.POCKETS[i]);
+  for(let i=0;i<world.bumpers.length;i++) drawBumper(world.bumpers[i]);
+  const balls = [];
+  for(let i=0;i<world.balls.length;i++) if(world.balls[i].alive) balls.push(world.balls[i]);
+  balls.sort(function(a, b){ return a.y - b.y; });
+  for(let i=0;i<balls.length;i++) drawShadow(balls[i]);
+  for(let i=0;i<balls.length;i++) drawMarble(balls[i]);
+  if(phase === 'aim'){
+    const cue = P.findBall(world, 'cue');
+    if(cue && cue.alive && !aim) drawTag(cue);
+    if(aim && cue && cue.alive) drawAim(cue);
+  }
+  for(let i=0;i<flashes.length;i++){
+    const f = flashes[i];
+    ctx.beginPath();
+    ctx.strokeStyle = 'rgba(255,224,138,' + Math.max(0, f.life) + ')';
+    ctx.lineWidth = 8;
+    ctx.arc(f.x, f.y, 40 + (0.5 - f.life) * 160, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  for(let i=0;i<sparks.length;i++){
+    const s = sparks[i];
+    ctx.globalAlpha = Math.max(0, s.life / 0.28);
+    ctx.fillStyle = s.color;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  ctx.font = '800 58px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.lineWidth = 8;
+  ctx.lineJoin = 'round';
+  for(let i=0;i<floats.length;i++){
+    const f = floats[i];
+    ctx.globalAlpha = Math.max(0, Math.min(1, f.life));
+    ctx.strokeStyle = '#1a1208';
+    ctx.fillStyle = f.gold ? '#ffe08a' : '#ffffff';
+    ctx.strokeText(f.text, f.x, f.y);
+    ctx.fillText(f.text, f.x, f.y);
+  }
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+function drawPocket(p){
+  const rad = p.capture;
+  const g = ctx.createRadialGradient(p.x - rad*0.2, p.y - rad*0.25, rad*0.08, p.x, p.y, rad);
+  g.addColorStop(0, '#000');
+  g.addColorStop(0.62, '#140e0c');
+  g.addColorStop(1, '#3a2a1c');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = p.bonus ? '#f6d56a' : '#d7b57a';
+  ctx.lineWidth = p.bonus ? 12 : 8;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, rad - 3, 0, Math.PI * 2);
+  ctx.stroke();
+  if(p.bonus){
+    ctx.strokeStyle = 'rgba(255,255,255,.55)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, rad - 12, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+}
+function drawBumper(c){
+  ctx.fillStyle = 'rgba(0,0,0,.32)';
+  ctx.beginPath();
+  ctx.ellipse(c.x + 8, c.y + c.r * 0.45, c.r * 0.95, c.r * 0.36, 0, 0, Math.PI * 2);
+  ctx.fill();
+  const g = ctx.createRadialGradient(c.x - c.r*0.32, c.y - c.r*0.38, c.r*0.1, c.x, c.y, c.r);
+  g.addColorStop(0, '#fff');
+  g.addColorStop(0.16, '#ffc9c9');
+  g.addColorStop(0.48, '#f03e3e');
+  g.addColorStop(1, '#7a1414');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.9)';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.arc(c.x, c.y, c.r * 0.58, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.ellipse(c.x - c.r*0.28, c.y - c.r*0.34, c.r*0.22, c.r*0.12, -0.6, 0, Math.PI * 2);
+  ctx.fill();
+}
+function drawShadow(b){
+  const x = b.x, y = b.y, r = b.r;
+  const g = ctx.createRadialGradient(x + r*0.15, y + r*0.55, r*0.2, x + r*0.12, y + r*0.62, r*1.25);
+  g.addColorStop(0, 'rgba(0,0,0,.38)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.ellipse(x + r*0.12, y + r*0.58, r*1.05, r*0.48, 0, 0, Math.PI * 2);
+  ctx.fill();
+}
+function drawMarble(b){
+  const x = b.x, y = b.y, r = b.r;
+  const g = GLASS[b.color] || GLASS.cobalt;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.clip();
+  const body = ctx.createRadialGradient(x - r*0.38, y - r*0.46, r*0.08, x + r*0.08, y + r*0.12, r * 1.08);
+  body.addColorStop(0, g.light);
+  body.addColorStop(0.22, mixHex(g.light, g.mid, 0.45));
+  body.addColorStop(0.5, g.mid);
+  body.addColorStop(0.78, g.deep);
+  body.addColorStop(1, g.rim);
+  ctx.fillStyle = body;
+  ctx.fillRect(x - r, y - r, r*2, r*2);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(b.heading || 0);
+  const phase = b.roll || 0;
+  ctx.rotate(phase * 0.35);
+  ctx.globalAlpha = 0.34;
+  ctx.fillStyle = g.swirl;
+  ctx.beginPath();
+  ctx.ellipse(-r * 0.08, r * 0.02, r * 0.62, r * 0.26, 0.7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 0.22;
+  ctx.fillStyle = g.light;
+  ctx.beginPath();
+  ctx.arc(r * 0.22, -r * 0.08, r * 0.24, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.rotate(-phase * 0.35);
+  ctx.translate(Math.sin(phase) * r * 0.48, 0);
+  ctx.globalAlpha = 0.72;
+  const band = ctx.createLinearGradient(-r * 0.15, 0, r * 0.15, 0);
+  band.addColorStop(0, 'rgba(255,255,255,0)');
+  band.addColorStop(0.35, 'rgba(255,255,255,.2)');
+  band.addColorStop(0.5, 'rgba(255,255,255,.95)');
+  band.addColorStop(0.65, 'rgba(255,255,255,.2)');
+  band.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = band;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, r * 0.92, r * 0.1, 0.25, 0, Math.PI * 2);
+  ctx.fill();
+  if(b.role === 'cue'){
+    ctx.globalAlpha = 0.9;
+    const core = ctx.createRadialGradient(-r*0.05, -r*0.04, r*0.02, 0, 0, r*0.42);
+    core.addColorStop(0, '#fffceb');
+    core.addColorStop(0.5, '#f0c14a');
+    core.addColorStop(1, 'rgba(240,193,74,0)');
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(0, 0, r*0.42, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+  ctx.globalAlpha = 0.2;
+  ctx.fillStyle = '#d8ffe9';
+  ctx.beginPath();
+  ctx.ellipse(x + r*0.24, y + r*0.4, r*0.5, r*0.22, 0.45, 0, Math.PI * 2);
+  ctx.fill();
+  const rim = ctx.createRadialGradient(x - r*0.1, y - r*0.15, r*0.55, x, y, r);
+  rim.addColorStop(0, 'rgba(255,255,255,0)');
+  rim.addColorStop(0.7, 'rgba(255,255,255,.05)');
+  rim.addColorStop(1, 'rgba(0,0,0,.42)');
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = rim;
+  ctx.fillRect(x - r, y - r, r*2, r*2);
+  ctx.globalAlpha = 0.55;
+  ctx.strokeStyle = 'rgba(255,255,255,.85)';
+  ctx.lineWidth = r * 0.07;
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.84, Math.PI * 1.08, Math.PI * 1.72);
+  ctx.stroke();
+  ctx.globalAlpha = 0.95;
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.ellipse(x - r*0.34, y - r*0.38, r*0.26, r*0.15, -0.65, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 0.75;
+  ctx.beginPath();
+  ctx.arc(x - r*0.06, y - r*0.14, r*0.06, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  if(b.role === 'cue'){
+    ctx.strokeStyle = '#f6d56a';
+    ctx.lineWidth = Math.max(4, r * 0.07);
+    ctx.beginPath();
+    ctx.arc(x, y, r + 3, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.8)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(x, y, r - 7, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+}
+function drawTag(cue){
+  let ly = cue.y + cue.r + 56;
+  if(ly > P.TABLE.B - 40) ly = cue.y - cue.r - 24;
+  ctx.font = '800 60px "PingFang SC","Microsoft YaHei",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = '#3a2508';
+  ctx.fillStyle = '#ffe08a';
+  ctx.strokeText('你的', cue.x, ly);
+  ctx.fillText('你的', cue.x, ly);
+}
+function drawAim(cue){
+  const dx = aim.x - aim.ox, dy = aim.y - aim.oy;
+  const len = Math.hypot(dx, dy);
+  if(len < 8) return;
+  const nx = dx / len, ny = dy / len;
+  const v = P.shotVelocity(dx, dy);
+  const power = v ? v.power : 0;
+  const color = !v ? '#ced4da' : (power < 0.34 ? '#8ce99a' : (power < 0.67 ? '#ffd43b' : '#ff922b'));
+  const reach = v ? (180 + power * 780) : Math.min(len, 140);
+  const x1 = cue.x + nx * (cue.r + 12);
+  const y1 = cue.y + ny * (cue.r + 12);
+  const x2 = cue.x + nx * reach;
+  const y2 = cue.y + ny * reach;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.setLineDash([20, 16]);
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  const ang = Math.atan2(ny, nx);
+  ctx.beginPath();
+  ctx.moveTo(x2 + Math.cos(ang) * 8, y2 + Math.sin(ang) * 8);
+  ctx.lineTo(x2 - Math.cos(ang - 0.45) * 36, y2 - Math.sin(ang - 0.45) * 36);
+  ctx.lineTo(x2 - Math.cos(ang + 0.45) * 36, y2 - Math.sin(ang + 0.45) * 36);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalAlpha = 0.35;
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.arc(x2, y2, cue.r * (0.72 + power * 0.28), 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+function mixHex(a, b, t){
+  const pa = hex(a), pb = hex(b);
+  const r = Math.round(pa[0] + (pb[0] - pa[0]) * t);
+  const g = Math.round(pa[1] + (pb[1] - pa[1]) * t);
+  const bl = Math.round(pa[2] + (pb[2] - pa[2]) * t);
+  return 'rgb(' + r + ',' + g + ',' + bl + ')';
+}
+function hex(s){
+  const n = parseInt(s.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function draw(){
+  fit();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = '#2c1a10';
+  ctx.fillRect(0, 0, cv.width, cv.height);
+  ctx.setTransform(view.scale, 0, 0, view.scale, view.ox, view.oy);
+  drawTable();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+function frame(ts){
+  raf = 0;
+  if(document.hidden) return;
+  const now = ts || performance.now();
+  let dt = lastTs ? (now - lastTs) / 1000 : 0;
+  lastTs = now;
+  if(dt < 0) dt = 0;
+  if(dt > 0.05) dt = 0.05;
+  if(phase === 'roll'){
+    acc += dt;
+    let guard = 0;
+    while(acc >= 1/120 && guard < 8){
+      P.step(world, 1/120);
+      consumeEvents();
+      acc -= 1/120;
+      guard++;
+    }
+    if(guard === 8) acc = 0;
+    if(P.canShoot(world)){
+      acc = 0;
+      settle();
+    }
+  }else{
+    acc = 0;
+  }
+  ageFx(dt);
+  draw();
+  raf = requestAnimationFrame(frame);
+}
+function ensureLoop(){
+  if(raf || document.hidden) return;
+  loopStarts++;
+  raf = requestAnimationFrame(frame);
+}
+function onHide(){
+  aim = null;
+  setPips(0);
+  acc = 0;
+  lastTs = 0;
+  if(raf){ cancelAnimationFrame(raf); raf = 0; }
+}
+function onShow(){
+  lastTs = 0;
+  ensureLoop();
+}
+function bind(){
+  binds++;
+  cv.addEventListener('pointerdown', onDown);
+  cv.addEventListener('pointermove', onMove);
+  cv.addEventListener('pointerup', onUp);
+  cv.addEventListener('pointercancel', onCancel);
+  cv.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.getElementById('restart').addEventListener('click', function(){
+    aim = null;
+    fullRestart();
+  });
+  document.getElementById('again').addEventListener('click', function(){
+    if(overMode === 'next') build(round + 1, true);
+    else if(overMode === 'retry') build(round, true);
+    else fullRestart();
+  });
+  document.getElementById('mute').addEventListener('click', function(){
+    unlockAudio();
+    localStorage.setItem('laotoule:mute', muted() ? '0' : '1');
+    paintMute();
+    if(!muted()) playPocket(true);
+  });
+  document.addEventListener('pointerdown', unlockAudio, { passive:true });
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden) onHide();
+    else onShow();
+  });
+  window.addEventListener('resize', fit);
+  if(window.ResizeObserver) new ResizeObserver(fit).observe(stage);
+  window.addEventListener('pageshow', fit);
+}
+function runPageTest(){
+  const errors = [];
+  function assert(c, m){ if(!c) errors.push(m); }
+  const phys = P.selfTest();
+  if(!phys.ok) for(let i=0;i<phys.errors.length;i++) errors.push(phys.errors[i]);
+  assert(document.getElementById('restart').tagName === 'BUTTON', '没有重新开始按钮');
+  assert(goalEl.textContent.indexOf('彩色弹珠') >= 0, '没有写出目标');
+  assert(document.getElementById('shots').textContent === '6', '开局发数不是 6');
+  assert(document.querySelector('h1').textContent.indexOf('弹珠弹弹乐') >= 0, '标题不对');
+  const b0 = binds;
+  fullRestart();
+  fullRestart();
+  assert(binds === b0, '重新开始又绑定了一次 ' + binds);
+  window.dispatchEvent(new Event('resize'));
+  fit();
+  if(stage.clientWidth > 2) assert(cv.width > 10 && cv.height > 10, '画布没有尺寸');
+  fullRestart();
+  assert(tryLaunch(0, -900) === true, '停稳时打不出去');
+  assert(tryLaunch(0, -800) === false, '还在滚就能打第二发');
+  assert(phase === 'roll', '打出后不是在滚');
+  assert(document.getElementById('shots').textContent === '5', '打出后发数没少');
+  assert(P.shotVelocity(12, -8) === null, '短拖动没有取消');
+  onHide();
+  onShow();
+  const loops = loopStarts;
+  ensureLoop();
+  assert(loopStarts === loops, '循环被重复打开');
+  const prev = localStorage.getItem('laotoule:mute');
+  try{
+    localStorage.setItem('laotoule:mute', '1');
+    paintMute();
+    assert(document.getElementById('mute').textContent.indexOf('关') >= 0, '静音没有显示');
+    localStorage.setItem('laotoule:mute', '0');
+    paintMute();
+    assert(muted() === false, '打开声音没有记住');
+  }finally{
+    if(prev === null) localStorage.removeItem('laotoule:mute');
+    else localStorage.setItem('laotoule:mute', prev);
+    paintMute();
+  }
+  fullRestart();
+  return { ok:errors.length === 0, errors:errors };
+}
+function boot(){
+  if(!P){
+    goalEl.textContent = '游戏没有载入';
+    return;
+  }
+  paintMute();
+  bind();
+  fullRestart();
+  fit();
+  draw();
+  if(SELF){
+    let report;
+    try{ report = runPageTest(); }
+    catch(e){ report = { ok:false, errors:[String(e && e.stack || e)] }; }
+    window.__selftest = report;
+    document.title = 'SELFTEST ' + (report.ok ? 'OK' : 'FAIL');
+    if(!report.ok && report.errors[0]) document.title += ' ' + report.errors[0];
+  }
+  ensureLoop();
+}
+window.__marble = {
+  get phase(){ return phase; },
+  get score(){ return score; },
+  get shots(){ return shotsLeft; },
+  get round(){ return round; },
+  get binds(){ return binds; },
+  get loopStarts(){ return loopStarts; },
+  get world(){ return world; },
+  launch: tryLaunch,
+  restart: fullRestart,
+  fit: fit,
+  hide: onHide,
+  show: onShow
+};
+boot();
+</script></body></html>
