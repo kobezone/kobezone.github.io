@@ -1,20 +1,46 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>弹珠弹弹乐 - 老头乐游戏厅</title><link rel="stylesheet" href="../style.css"><link rel="manifest" href="../manifest.webmanifest"><link rel="icon" href="../icons/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#e8590c">
 <style>
-#goal{text-align:center;font-size:1.28rem;font-weight:900;margin:0;color:#7a3e00}
-#turn{text-align:center;font-size:1.12rem;font-weight:800;margin:2px 0 6px;min-height:1.45em;color:#222}
-#pips{display:flex;gap:8px;justify-content:center;height:26px;margin:0 0 8px}
-#pips i{width:22px;height:22px;border-radius:50%;border:3px solid #222;background:#fff;display:block}
+.wrap{max-width:none;margin:0;padding:0}
+.play{box-sizing:border-box;height:calc(100vh - var(--ltl-chrome,0px));height:calc(100svh - var(--ltl-chrome,0px));display:flex;flex-direction:column;gap:2px;padding:4px 8px max(6px,env(safe-area-inset-bottom));overflow:hidden}
+body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:54px}
+.play .stats{flex:none;flex-wrap:nowrap;gap:6px;margin:0}
+.play .stat{min-width:0;flex:1 1 0;padding:1px 4px;border-width:2px;border-radius:12px;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.play .stat b{font-size:1.12rem;line-height:1.15}
+.play .stat span{font-size:.72rem}
+#goal{flex:none;text-align:center;font-size:1rem;font-weight:900;line-height:1.25;margin:0;color:#7a3e00}
+#turn{flex:none;text-align:center;font-size:.95rem;font-weight:800;line-height:1.25;margin:0;min-height:1.25em;color:#222}
+#pips{flex:none;display:flex;gap:6px;justify-content:center;height:18px;margin:0}
+#pips i{width:16px;height:16px;border-radius:50%;border:2px solid #222;background:#fff;display:block}
 #pips i.on{background:#ffd43b}
-#stage{position:relative;width:min(100%,calc(70vh * .68));width:min(100%,calc(70dvh * .68));height:min(70vh,calc(100vh - var(--ltl-chrome,0px) - 230px));height:min(70dvh,calc(100dvh - var(--ltl-chrome,0px) - 230px));min-height:300px;margin:0 auto;touch-action:none;-webkit-user-select:none;user-select:none}
-#cv{width:100%;height:100%;display:block;border-radius:22px;touch-action:none;background:#3a2416}
-.overlay{border-radius:22px}
-#ovt{font-size:1.4rem;line-height:1.45;max-width:16em}
-.controls{position:sticky;bottom:0;z-index:6;background:rgba(255,247,230,.96);padding:8px 0 6px}
-@media (max-width:420px){#goal{font-size:1.15rem}#turn{font-size:1.05rem}}
+#stage{position:relative;flex:1 1 auto;align-self:center;min-height:0;width:min(100%,calc((100vh - var(--ltl-chrome,0px) - 168px) * .667));width:min(100%,calc((100svh - var(--ltl-chrome,0px) - 168px) * .667));max-width:100%;margin:0 auto;touch-action:none;-webkit-user-select:none;user-select:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:18px;touch-action:none;background:#3a2416}
+.overlay{border-radius:18px}
+#ovt{font-size:1.25rem;line-height:1.35;max-width:16em}
+.play .controls{position:static;flex:none;z-index:auto;margin:0;padding:2px 0 0;background:transparent}
+.play .controls .btn{min-height:48px;padding:6px 12px;font-size:1rem}
+.help{margin:12px 12px 20px}
+@media (max-height:700px){
+  .play{gap:1px;padding-top:2px}
+  #goal,#turn{font-size:.88rem}
+  .play .stat b{font-size:1rem}
+  .play .controls .btn{min-height:44px;font-size:.95rem}
+}
+@media (min-width:800px){
+  .play{gap:4px;padding:8px 12px 10px}
+  .play .stat b{font-size:1.35rem}
+  .play .stat span{font-size:.8rem}
+  #goal{font-size:1.2rem}
+  #turn{font-size:1.05rem}
+  #pips{height:22px}
+  #pips i{width:20px;height:20px;border-width:3px}
+  .play .controls .btn{min-height:52px;font-size:1.05rem}
+}
 </style></head><body>
 <div class="topbar"><a class="btn" href="../index.html">← 返回</a><h1>弹珠弹弹乐</h1></div>
 <div class="wrap">
+<div class="play">
+<div class="hud">
 <div class="stats">
   <div class="stat"><span>分数</span><b id="score">0</b></div>
   <div class="stat"><span>第几局</span><b id="round">1</b></div>
@@ -24,11 +50,13 @@
 <p id="goal">把彩色弹珠撞进洞里</p>
 <p id="turn">按住金圈弹珠，往要去的方向拖</p>
 <div id="pips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+</div>
 <div id="stage"><canvas id="cv" width="800" height="1200" aria-label="弹珠桌"></canvas>
 <div class="overlay" id="ov"><div id="ovt"></div><button class="btn green" id="again" type="button">下一局</button></div></div>
 <div class="controls">
   <button class="btn green" id="restart" type="button">再来一局</button>
   <button class="btn" id="mute" type="button">声音：开</button>
+</div>
 </div>
 <div class="help"><h2>怎么玩</h2><ul>
 <li>金圈那颗是<b>你的弹珠</b>。彩色的是要打进洞里的。</li>
