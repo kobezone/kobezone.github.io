@@ -390,6 +390,18 @@
     }
   }
 
+  function openingHalf(world, p, ball, side) {
+    var reach = pocketReach(p, ball.r);
+    var rail = side === 'T' ? world.T + ball.r
+      : side === 'B' ? world.B - ball.r
+      : side === 'L' ? world.L + ball.r
+      : world.R - ball.r;
+    var center = (side === 'T' || side === 'B') ? p.y : p.x;
+    var dy = Math.abs(rail - center);
+    if (dy >= reach) return 0;
+    return Math.max(0, Math.sqrt(reach * reach - dy * dy) - 6);
+  }
+
   function gapPocket(world, side, ball) {
     for (var i = 0; i < world.pockets.length; i++) {
       var p = world.pockets[i];
@@ -404,7 +416,7 @@
         along = Math.abs(ball.y - p.y);
         into = side === 'L' ? (ball.x - world.L) : (world.R - ball.x);
       }
-      if (along < p.mouth && into < p.mouth) return p;
+      if (along < openingHalf(world, p, ball, side) && into < ball.r + 8) return p;
     }
     return null;
   }
@@ -473,7 +485,7 @@
       var d = hypot(ball.x - pk.x, ball.y - pk.y);
       if (d < bestD) { bestD = d; best = pk; }
     }
-    if (best && bestD <= best.mouth + r * 0.35) {
+    if (best && bestD <= pocketReach(best, r) + 6) {
       capture(world, ball, best);
       return;
     }
@@ -897,6 +909,53 @@
     var cueLive = findBall(live, 'cue');
     assert(finiteBall(cueLive), '默认一击后母球坏了');
     assert(pocketCount(live) === got + (cueLive.pocketed ? 1 : 0), '进洞次数和收掉的弹珠对不上');
+
+    var gold = null;
+    for (var gi = 0; gi < POCKETS.length; gi++) if (POCKETS[gi].bonus) gold = POCKETS[gi];
+    var beside = createWorld({
+      L: TABLE.L, T: TABLE.T, R: TABLE.R, B: TABLE.B,
+      pockets: POCKETS,
+      balls: [{ id: 'a', role: 'target', x: gold.x + 130, y: TABLE.T + TABLE.ballR + 4, r: TABLE.ballR, vx: 0, vy: -500, asleep: false }],
+      friction: 0, viscous: 0, restitutionWall: 1
+    });
+    simulate(beside, 0.45);
+    var sideBall = findBall(beside, 'a');
+    assert(sideBall.alive && !sideBall.pocketed, '金边洞旁边不该把球吸进去');
+    assert(sideBall.y >= TABLE.T + sideBall.r - 1.5, '球陷进上边库 ' + sideBall.y);
+    assert(sideBall.vy > 0, '上边库没有把球弹回来');
+    var into = createWorld({
+      L: TABLE.L, T: TABLE.T, R: TABLE.R, B: TABLE.B,
+      pockets: POCKETS,
+      balls: [{ id: 'a', role: 'target', x: gold.x, y: TABLE.T + TABLE.ballR + 24, r: TABLE.ballR, vx: 0, vy: -700, asleep: false }],
+      friction: 0, viscous: 0, restitutionWall: 0.7
+    });
+    simulate(into, 0.4);
+    assert(findBall(into, 'a').pocketed, '正对金边洞应该进洞');
+    var speeds = [200, 650, 1400];
+    var offsets = [80, 125, 165];
+    for (var si = 0; si < speeds.length; si++) {
+      for (var oi = 0; oi < offsets.length; oi++) {
+        var cases = [
+          { x: gold.x + offsets[oi], y: TABLE.T + TABLE.ballR + 10, vx: speeds[si] * 0.2, vy: -speeds[si] },
+          { x: gold.x - offsets[oi], y: TABLE.T + TABLE.ballR + 28, vx: speeds[si] * 0.55, vy: -speeds[si] * 0.45 }
+        ];
+        for (var ci = 0; ci < cases.length; ci++) {
+          var spec = cases[ci];
+          spec.id = 'a'; spec.role = 'target'; spec.r = TABLE.ballR; spec.asleep = false;
+          var sweep = createWorld({
+            L: TABLE.L, T: TABLE.T, R: TABLE.R, B: TABLE.B,
+            pockets: POCKETS, balls: [spec],
+            friction: 30, viscous: 0.15, restitutionWall: 0.72
+          });
+          simulate(sweep, 1.1);
+          var sb = findBall(sweep, 'a');
+          var sunk = sb.alive && (sb.y < TABLE.T + sb.r - 2 || sb.x < TABLE.L + sb.r - 2 || sb.x > TABLE.R - sb.r + 2 || sb.y > TABLE.B - sb.r + 2);
+          assert(!sunk, '擦过洞口时卡在库边 ' + speeds[si] + '/' + offsets[oi] + '/' + ci + ' y=' + sb.y.toFixed(1));
+          assert(sb.pocketed || sb.alive, '擦过洞口后弹珠丢了');
+          assert(finiteBall(sb), '擦过洞口出现非数字');
+        }
+      }
+    }
 
     // 母球进洞后可以放回，且只记一次
     var scratch = tableWorld(0, { friction: 0, viscous: 0 });

@@ -63,7 +63,7 @@ body:not(.ltl-showbar) .hud,body.ltl-need-menu .hud{padding-right:54px}
 <li>按住你的弹珠，往想去的方向拖，松手就飞出去。线越长，打得越用力。只拖一点点就松开，这一发不算。</li>
 <li>弹珠会互相撞，也会从边上和红柱子弹开。都停稳了，才能打下一发。</li>
 <li>彩色弹珠进洞就得分。最上面中间的洞是金边，多加一点分。你的弹珠掉进去会放回原来的位置，不扣分。</li>
-<li>没有倒计时。彩色弹珠都进洞就过关，剩下的发数还会加分。发数用完还可以再试这一局。</li>
+<li>没有倒计时。彩色弹珠都进洞就过关，剩下的发数还会加分。发数用完可以再试这一局，已经进洞的分还在，那些弹珠不会再回来。</li>
 <li>声音可以关掉，这台设备会记住。</li>
 </ul></div>
 </div>
@@ -97,7 +97,7 @@ const pipEls = document.querySelectorAll('#pips i');
 
 let world, round = 0, score = 0, shotsLeft = 6, phase = 'aim', aim = null;
 let raf = 0, acc = 0, lastTs = 0, loopStarts = 0, binds = 0;
-let shotPockets = 0, overMode = 'retry', hintTimer = 0;
+let shotPockets = 0, overMode = 'retry', hintTimer = 0, scored = {};
 let floats = [], sparks = [], flashes = [];
 let noiseBuf = null;
 let ac = null;
@@ -208,15 +208,15 @@ function hud(){
 }
 function remember(announce){
   const shown = LTL.getBest('marble') || 0;
-  if(SELF){ document.getElementById('best').textContent = String(shown); return; }
   const beaten = score > shown && score > 0;
   if(beaten) LTL.record('marble', score, true);
   document.getElementById('best').textContent = String(LTL.getBest('marble') || 0);
-  if(announce && beaten) LTL.toast('新纪录 ' + score + ' 分');
+  if(announce && beaten && !SELF) LTL.toast('新纪录 ' + score + ' 分');
 }
 function build(index, keepScore){
   round = index;
   if(!keepScore) score = 0;
+  scored = {};
   world = P.tableWorld(round);
   shotsLeft = P.LEVELS[round].shots;
   phase = 'aim';
@@ -232,6 +232,30 @@ function build(index, keepScore){
   hud();
 }
 function fullRestart(){ build(0, false); }
+function retryRound(){
+  const gone = [];
+  if(world){
+    for(let i=0;i<world.balls.length;i++){
+      const b = world.balls[i];
+      if(b.role === 'target' && (b.pocketed || !b.alive)) gone.push(b.id);
+    }
+  }
+  const kept = score;
+  build(round, true);
+  score = kept;
+  scored = {};
+  for(let i=0;i<gone.length;i++){
+    const b = P.findBall(world, gone[i]);
+    scored[gone[i]] = 1;
+    if(!b) continue;
+    b.alive = false;
+    b.pocketed = true;
+    b.vx = 0;
+    b.vy = 0;
+    b.asleep = true;
+  }
+  hud();
+}
 function showOv(html, label, mode){
   overMode = mode;
   document.getElementById('ovt').innerHTML = html;
@@ -246,6 +270,8 @@ function onPocket(ev){
     buzz(12);
     return;
   }
+  if(ev.id && scored[ev.id]) return;
+  if(ev.id) scored[ev.id] = 1;
   shotPockets++;
   let pts = 100 + (shotPockets - 1) * 60;
   if(ev.bonus) pts += 50;
@@ -837,7 +863,7 @@ function bind(){
   });
   document.getElementById('again').addEventListener('click', function(){
     if(overMode === 'next') build(round + 1, true);
-    else if(overMode === 'retry') build(round, true);
+    else if(overMode === 'retry') retryRound();
     else fullRestart();
   });
   document.getElementById('mute').addEventListener('click', function(){
@@ -895,7 +921,65 @@ function runPageTest(){
     else localStorage.setItem('laotoule:mute', prev);
     paintMute();
   }
-  fullRestart();
+  const bestKey = 'laotoule:marble';
+  const prevBest = localStorage.getItem(bestKey);
+  try{
+    localStorage.removeItem(bestKey);
+    fullRestart();
+    const hole = P.POCKETS[1];
+    const t0 = P.findBall(world, 't0');
+    t0.x = hole.x; t0.y = hole.y; t0.vx = 0; t0.vy = 0; t0.asleep = false;
+    phase = 'roll';
+    shotsLeft = 1;
+    P.step(world, 1/30);
+    consumeEvents();
+    assert(t0.pocketed && !t0.alive, '第一颗没有进洞');
+    assert(score > 0, '进洞没有记分');
+    const others = world.balls.filter(b => b.role==='target' && b.id!=='t0' && b.alive).length;
+    assert(others === 2, '没进洞的彩色弹珠数量不对');
+    shotsLeft = 0;
+    settle();
+    assert(phase === 'over' && overMode === 'retry', '发数用完没有进入再试');
+    const scoreAtFail = score;
+    const bestAtFail = localStorage.getItem(bestKey);
+    assert(bestAtFail === String(scoreAtFail), '失败时没有记下最高分');
+    document.getElementById('again').click();
+    const kept = P.findBall(world, 't0');
+    assert(score === scoreAtFail, '再试本身改了分数 ' + score);
+    assert(localStorage.getItem(bestKey) === bestAtFail, '再试本身改了最高分');
+    assert(kept.pocketed && !kept.alive, '再试把已经进洞的弹珠放回来了');
+    assert(document.getElementById('shots').textContent === '6', '再试没有补发数');
+    assert(world.balls.filter(b => b.role==='target' && b.alive).length === 2, '剩下的彩色弹珠没有留在桌上');
+    const beforeDup = score;
+    kept.alive = true; kept.pocketed = false; kept.x = hole.x; kept.y = hole.y;
+    P.step(world, 1/30);
+    consumeEvents();
+    assert(score === beforeDup, '同一颗在这一局又能得分');
+    assert(P.findBall(world, 't0').pocketed, '重复进洞后弹珠还在桌上');
+    const rest = world.balls.filter(b => b.role==='target' && b.alive);
+    rest.forEach((b, i) => {
+      const p = P.POCKETS[i === 0 ? 0 : 2];
+      b.x = p.x; b.y = p.y; b.vx = 0; b.vy = 0; b.asleep = false;
+    });
+    phase = 'roll';
+    shotsLeft = 4;
+    P.step(world, 1/20);
+    consumeEvents();
+    assert(aliveTargets() === 0, '剩下的弹珠没有进洞');
+    settle();
+    assert(phase === 'over' && overMode === 'next', '清空后没有过关');
+    const cleared = score;
+    document.getElementById('again').click();
+    assert(round === 1 && score === cleared, '下一局没有接着记分');
+    assert(world.balls.filter(b => b.role==='target' && b.alive).length === 4, '下一局彩色弹珠数量不对');
+    document.getElementById('restart').click();
+    assert(score === 0 && round === 0 && shotsLeft === 6, '再来一局没有从头开始');
+    assert(world.balls.filter(b => b.role==='target' && b.alive).length === 3, '再来一局没有放回全部彩色弹珠');
+  }finally{
+    if(prevBest === null) localStorage.removeItem(bestKey);
+    else localStorage.setItem(bestKey, prevBest);
+    fullRestart();
+  }
   return { ok:errors.length === 0, errors:errors };
 }
 function boot(){
